@@ -1,5 +1,6 @@
 import pytest
 
+from connect4.experiments import percentile, wilson_interval
 from connect4.engine import ConnectFour, GameResult, Player
 
 
@@ -34,4 +35,10 @@ def test_invalid_move_and_clone() -> None:
     clone.step(3)
     assert state.board != clone.board
     assert state.current_player is Player.ONE
+
+
+def test_statistics_helpers() -> None:
+    assert percentile([1.0, 2.0, 3.0, 4.0], 95) == pytest.approx(3.85)
+    lower, upper = wilson_interval(50, 100)
+    assert 0.4 < lower < 0.5 < upper < 0.6
 

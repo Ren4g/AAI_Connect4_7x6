@@ -7,6 +7,7 @@ Bộ khung triển khai các mục 1–5 trong `Proposal.docx`:
 - `connect4/training.py`: sinh ván tự đấu, nhãn policy/value, loại trùng, augmentation đối xứng, xuất CSV.
 - `connect4/model.py`: CNN policy/value hai đầu ra theo thiết kế mục 4 (PyTorch nạp khi sử dụng).
 - `connect4/experiments.py`: đấu round-robin, chia đều quyền đi trước, thu thời gian và kết quả.
+- `evaluate.py`: chạy benchmark và xuất báo cáo JSON.
 - `tests/test_engine.py`: test thắng ngang/dọc/chéo, clone và nước đi không hợp lệ.
 
 Chạy test:
@@ -37,6 +38,23 @@ python train.py --games 100 --epochs 10
 
 Checkpoint được lưu tại `checkpoints/connect4_cnn.pt`; mỗi epoch in
 training loss, validation loss và policy accuracy.
+
+## Đánh giá và thống kê
+
+Chạy round-robin 100 ván mỗi cặp:
+
+```powershell
+python evaluate.py --games 100 --output results/round_robin.json
+```
+
+Có thể ghi nhận các nước vượt ngân sách 100 ms:
+
+```powershell
+python evaluate.py --games 100 --budget-ms 100
+```
+
+Báo cáo gồm tỷ lệ thắng/hòa/thua, score, Wilson 95%, thời gian trung bình,
+p95, tổng số node Alpha-Beta, tổng số simulation MCTS và số lần vượt ngân sách.
 
 Ví dụ:
 
