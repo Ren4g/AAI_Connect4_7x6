@@ -8,6 +8,8 @@ Bộ khung triển khai các mục 1–5 trong `Proposal.docx`:
 - `connect4/model.py`: CNN policy/value hai đầu ra theo thiết kế mục 4 (PyTorch nạp khi sử dụng).
 - `connect4/experiments.py`: đấu round-robin, chia đều quyền đi trước, thu thời gian và kết quả.
 - `evaluate.py`: chạy benchmark và xuất báo cáo JSON.
+- `ablation.py`: so sánh pruning/move ordering và các mức simulation MCTS.
+- `connect4/solver.py`: adapter đối chiếu nước đi với solver Connect Four bên ngoài.
 - `tests/test_engine.py`: test thắng ngang/dọc/chéo, clone và nước đi không hợp lệ.
 
 Chạy test:
@@ -55,6 +57,25 @@ python evaluate.py --games 100 --budget-ms 100
 
 Báo cáo gồm tỷ lệ thắng/hòa/thua, score, Wilson 95%, thời gian trung bình,
 p95, tổng số node Alpha-Beta, tổng số simulation MCTS và số lần vượt ngân sách.
+
+## Ablation và solver đối chiếu
+
+Chạy ablation:
+
+```powershell
+python ablation.py --games 10 --output results/ablation.json
+```
+
+Các cấu hình gồm Alpha-Beta có/không pruning, có/không move ordering và
+MCTS với 50, 100, 500, 1000, 5000 simulation.
+
+`ExternalSolver` nhận executable của solver bên ngoài. Solver phải nhận
+board 42 ô và player qua `{board}`, `{player}`, rồi in ra cột 0–6:
+
+```python
+from connect4.solver import ExternalSolver
+solver = ExternalSolver("path/to/solver.exe", ("{board}", "{player}"))
+```
 
 Ví dụ:
 

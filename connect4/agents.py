@@ -81,10 +81,12 @@ class HeuristicAgent(Agent):
 
 
 class AlphaBetaAgent(Agent):
-    def __init__(self, depth: int = 4) -> None:
+    def __init__(self, depth: int = 4, pruning: bool = True, move_ordering: bool = True) -> None:
         if depth < 1:
             raise ValueError("depth must be positive")
         self.depth = depth
+        self.pruning = pruning
+        self.move_ordering = move_ordering
         self.nodes = 0
 
     def choose_action(self, state: ConnectFour) -> int:
@@ -96,13 +98,15 @@ class AlphaBetaAgent(Agent):
         best_score = float("-inf")
         best_action = actions[0]
         alpha, beta = float("-inf"), float("inf")
-        for action in sorted(actions, key=CENTER_ORDER.index):
+        ordered_actions = sorted(actions, key=CENTER_ORDER.index) if self.move_ordering else actions
+        for action in ordered_actions:
             child = state.clone()
             child.step(action)
             score = self._search(child, self.depth - 1, alpha, beta, player)
             if score > best_score:
                 best_score, best_action = score, action
-            alpha = max(alpha, best_score)
+            if self.pruning:
+                alpha = max(alpha, best_score)
         return best_action
 
     def _search(self, state: ConnectFour, depth: int, alpha: float, beta: float, root: Player) -> float:
@@ -115,15 +119,22 @@ class AlphaBetaAgent(Agent):
             return evaluate(state, root)
         maximizing = state.current_player is root
         value = float("-inf") if maximizing else float("inf")
-        for action in sorted(state.legal_actions(), key=CENTER_ORDER.index):
+        actions = state.legal_actions()
+        if self.move_ordering:
+            actions = sorted(actions, key=CENTER_ORDER.index)
+        for action in actions:
             child = state.clone()
             child.step(action)
             child_value = self._search(child, depth - 1, alpha, beta, root)
             if maximizing:
-                value = max(value, child_value); alpha = max(alpha, value)
+                value = max(value, child_value)
+                if self.pruning:
+                    alpha = max(alpha, value)
             else:
-                value = min(value, child_value); beta = min(beta, value)
-            if beta <= alpha:
+                value = min(value, child_value)
+                if self.pruning:
+                    beta = min(beta, value)
+            if self.pruning and beta <= alpha:
                 break
         return value
 

@@ -1,0 +1,110 @@
+[
+  {
+    "first_agent": "Random",
+    "second_agent": "Heuristic",
+    "games": 100,
+    "wins": 0,
+    "draws": 0,
+    "losses": 100,
+    "score": 0.0,
+    "win_rate_wilson_95": [
+      3.469446951953614e-18,
+      0.03699349820698568
+    ],
+    "average_move_seconds": 0.0003334325837662046,
+    "p95_move_seconds": 0.0008480299962684512,
+    "nodes": 0,
+    "simulations": 0,
+    "budget_violations": 0
+  },
+  {
+    "first_agent": "Random",
+    "second_agent": "AlphaBeta-depth4",
+    "games": 100,
+    "wins": 0,
+    "draws": 0,
+    "losses": 100,
+    "score": 0.0,
+    "win_rate_wilson_95": [
+      3.469446951953614e-18,
+      0.03699349820698568
+    ],
+    "average_move_seconds": 0.010026340098636614,
+    "p95_move_seconds": 0.031837160012219104,
+    "nodes": 245232,
+    "simulations": 0,
+    "budget_violations": 0
+  },
+  {
+    "first_agent": "Random",
+    "second_agent": "MCTS-500",
+    "games": 100,
+    "wins": 52,
+    "draws": 0,
+    "losses": 48,
+    "score": 0.52,
+    "win_rate_wilson_95": [
+      0.4231657776522397,
+      0.615354482419481
+    ],
+    "average_move_seconds": 0.024803709463778124,
+    "p95_move_seconds": 0.06884365000587422,
+    "nodes": 0,
+    "simulations": 541000,
+    "budget_violations": 0
+  },
+  {
+    "first_agent": "Heuristic",
+    "second_agent": "AlphaBeta-depth4",
+    "games": 100,
+    "wins": 0,
+    "draws": 0,
+    "losses": 100,
+    "score": 0.0,
+    "win_rate_wilson_95": [
+      3.469446951953614e-18,
+      0.03699349820698568
+    ],
+    "average_move_seconds": 0.01026583610908975,
+    "p95_move_seconds": 0.03731238000618761,
+    "nodes": 525350,
+    "simulations": 0,
+    "budget_violations": 0
+  },
+  {
+    "first_agent": "Heuristic",
+    "second_agent": "MCTS-500",
+    "games": 100,
+    "wins": 98,
+    "draws": 0,
+    "losses": 2,
+    "score": 0.98,
+    "win_rate_wilson_95": [
+      0.929988209271456,
+      0.9944980324498376
+    ],
+    "average_move_seconds": 0.028982367161345685,
+    "p95_move_seconds": 0.07330139502882958,
+    "nodes": 0,
+    "simulations": 224000,
+    "budget_violations": 0
+  },
+  {
+    "first_agent": "AlphaBeta-depth4",
+    "second_agent": "MCTS-500",
+    "games": 100,
+    "wins": 100,
+    "draws": 0,
+    "losses": 0,
+    "score": 1.0,
+    "win_rate_wilson_95": [
+      0.9630065017930143,
+      1.0
+    ],
+    "average_move_seconds": 0.038801541069466226,
+    "p95_move_seconds": 0.07175497500866186,
+    "nodes": 232644,
+    "simulations": 273000,
+    "budget_violations": 0
+  }
+]
