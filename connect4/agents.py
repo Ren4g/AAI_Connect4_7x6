@@ -194,14 +194,11 @@ class MCTSAgent(Agent):
             return float("inf")
         return node.value / node.visits + self.exploration * math.sqrt(math.log(node.parent.visits) / node.visits)
 
-    def _rollout(self, state: ConnectFour) -> float:
+    def _rollout(self, state: ConnectFour) -> GameResult:
         rollout = state.clone()
         while not rollout.is_terminal():
             rollout.step(self.random.choice(rollout.legal_actions()))
-        if rollout.result() is GameResult.DRAW:
-            return 0.0
-        return 1.0 if rollout.result() is GameResult(int(state.current_player)) else -1.0
-
+        return rollout.result()
 
 class PolicyAgent(Agent):
     """Level-5 policy/value agent backed by a callable model."""
