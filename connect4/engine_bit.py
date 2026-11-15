@@ -78,8 +78,8 @@ class ConnectFour:
             self._result = GameResult(move.player)
         elif self.moves_played == ROWS * COLS:
             self._result = GameResult.DRAW
-        else:
-            self.position ^= self.mask      # đổi góc nhìn sang đối thủ
+
+        self.position ^= self.mask      # đổi góc nhìn sang đối thủ
         return move
 
     def is_terminal(self) -> bool:
@@ -87,7 +87,26 @@ class ConnectFour:
 
     def result(self) -> GameResult:
         return self._result
-
+    
+    def to_grid(self) -> list[list[int]]:
+        mine = self.position                    # quân của current_player
+        theirs = self.position ^ self.mask      # quân của đối thủ
+        p1, p2 = (mine, theirs) if self.current_player == 1 else (theirs, mine)
+      
+        grid = []
+        for row in range(ROWS):                 # row 0 = trên cùng (như code cũ)
+            from_bottom = (ROWS - 1) - row
+            line = []
+            for col in range(COLS):
+                bit = 1 << (col * STRIDE + from_bottom)
+                line.append(1 if p1 & bit else 2 if p2 & bit else 0)
+            grid.append(line)
+        return grid
+    
+    @property
+    def board(self) -> list[list[int]]:
+        return self.to_grid()
+    
     def render(self) -> str:
         mine = self.position                  # quân người sắp đi
         theirs = self.position ^ self.mask    # quân đối thủ
@@ -144,3 +163,8 @@ if __name__ == "__main__":
     for a in [0, 0, 1, 1, 2, 2, 3]:
         g.step(a)
     assert g.result() == GameResult.PLAYER_ONE
+    
+    g = ConnectFour()
+    for a in [3, 3, 4]:
+        g.step(a)
+    print(g.render())
