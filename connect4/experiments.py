@@ -5,10 +5,13 @@ import math
 import time
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional
 
 from .agents import Agent
 from .engine import ConnectFour, GameResult, Player
+from .state import GameState
+
+StateFactory = Callable[[], GameState]
 
 
 @dataclass(frozen=True)
@@ -61,10 +64,11 @@ def play_game(
     first_agent: Optional[str] = None,
     second_agent: Optional[str] = None,
     time_budget_seconds: Optional[float] = None,
+    engine_factory: StateFactory = ConnectFour,
 ) -> GameMetrics:
     if time_budget_seconds is not None and time_budget_seconds <= 0:
         raise ValueError("time_budget_seconds must be positive")
-    state = ConnectFour()
+    state = engine_factory()
     agents = {Player.ONE: first, Player.TWO: second}
     started = time.perf_counter()
     move_times: list[float] = []
@@ -103,6 +107,7 @@ def round_robin(
     agents: dict[str, Agent],
     games_per_pair: int = 100,
     time_budget_seconds: Optional[float] = None,
+    engine_factory: StateFactory = ConnectFour,
 ) -> dict[tuple[str, str], list[GameMetrics]]:
     if games_per_pair < 1:
         raise ValueError("games_per_pair must be positive")
@@ -121,6 +126,7 @@ def round_robin(
                             second_name,
                             first_name,
                             time_budget_seconds,
+                            engine_factory,
                         )
                     )
                 else:
@@ -131,6 +137,7 @@ def round_robin(
                             first_name,
                             second_name,
                             time_budget_seconds,
+                            engine_factory,
                         )
                     )
     return results
