@@ -6,9 +6,11 @@ from pathlib import Path
 
 from connect4.agents import AlphaBetaAgent, MCTSAgent, RandomAgent
 from connect4.experiments import play_game, percentile
+from connect4.engine import ConnectFour
+from connect4.engine_bit import ConnectFour as BitboardConnectFour
 
 
-def run_ablation(games: int = 10, depth: int = 4) -> list[dict[str, object]]:
+def run_ablation(games: int = 10, depth: int = 4, engine_factory=ConnectFour) -> list[dict[str, object]]:
     if games < 1:
         raise ValueError("games must be positive")
     configurations: list[tuple[str, object]] = [
@@ -23,7 +25,7 @@ def run_ablation(games: int = 10, depth: int = 4) -> list[dict[str, object]]:
     report: list[dict[str, object]] = []
     for name, agent in configurations:
         games_played = [
-            play_game(agent, RandomAgent(seed=game), name, "Random")
+            play_game(agent, RandomAgent(seed=game), name, "Random", engine_factory=engine_factory)
             for game in range(games)
         ]
         wins = sum(game.result.value == 1 for game in games_played)
@@ -47,9 +49,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Run Alpha-Beta and MCTS ablations")
     parser.add_argument("--games", type=int, default=10)
     parser.add_argument("--depth", type=int, default=4)
+    parser.add_argument("--engine", choices=("grid", "bitboard"), default="grid")
     parser.add_argument("--output", default="results/ablation.json")
     args = parser.parse_args()
-    report = run_ablation(args.games, args.depth)
+    factory = BitboardConnectFour if args.engine == "bitboard" else ConnectFour
+    report = run_ablation(args.games, args.depth, factory)
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=2), encoding="utf-8")
