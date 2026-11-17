@@ -1,17 +1,21 @@
 from __future__ import annotations
 
+import argparse
 import tkinter as tk
 from tkinter import messagebox, ttk
 
 from .agents import Agent, AlphaBetaAgent, HeuristicAgent, MCTSAgent, RandomAgent
 from .engine import COLS, ROWS, ConnectFour, GameResult, Player
+from .engine_bit import ConnectFour as BitboardConnectFour
+from .state import GameState
 
 
 class ConnectFourApp:
-    def __init__(self, root: tk.Tk) -> None:
+    def __init__(self, root: tk.Tk, engine_factory=ConnectFour) -> None:
         self.root = root
         self.root.title("Connect Four 7x6")
-        self.state = ConnectFour()
+        self.engine_factory = engine_factory
+        self.state: GameState = engine_factory()
         self.busy = False
 
         self.mode = tk.StringVar(value="human_vs_ai")
@@ -39,7 +43,7 @@ class ConnectFourApp:
         self.draw()
 
     def new_game(self) -> None:
-        self.state.reset()
+        self.state = self.engine_factory()
         self.busy = False
         self.draw()
         if self.mode.get() == "ai_vs_ai":
@@ -105,8 +109,12 @@ class ConnectFourApp:
 
 
 def main() -> None:
+    parser = argparse.ArgumentParser(description="Play Connect Four with an AI agent")
+    parser.add_argument("--engine", choices=("grid", "bitboard"), default="grid")
+    args = parser.parse_args()
     root = tk.Tk()
-    ConnectFourApp(root)
+    factory = BitboardConnectFour if args.engine == "bitboard" else ConnectFour
+    ConnectFourApp(root, factory)
     root.mainloop()
 
 

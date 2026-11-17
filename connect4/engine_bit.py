@@ -1,26 +1,12 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
-from enum import IntEnum
 from typing import Optional
+
+from .engine import GameResult, Move, Player
 
 ROWS = 6
 COLS = 7
 STRIDE = 7
-
-
-class GameResult(IntEnum):
-    ONGOING = 0
-    PLAYER_ONE = 1
-    PLAYER_TWO = 2
-    DRAW = 3
-
-
-@dataclass(frozen=True, slots=True)
-class Move:
-    row: int
-    column: int
-    player: int  # 1 hoặc 2
 
 
 class ConnectFour:
@@ -36,9 +22,16 @@ class ConnectFour:
         self.last_move: Optional[Move] = None
         self._result: GameResult = GameResult.ONGOING
 
+    def _side_to_move(self) -> Player:
+        return Player.ONE if self.moves_played % 2 == 0 else Player.TWO
+
     @property
-    def current_player(self) -> int:
-        return 1 if (self.moves_played % 2 == 0) else 2
+    def current_player(self) -> Player:
+        if self._result in (GameResult.PLAYER_ONE, GameResult.PLAYER_TWO):
+            return Player(int(self._result))
+        if self._result is GameResult.DRAW:
+            return Player.ONE if self.moves_played % 2 else Player.TWO
+        return self._side_to_move()
     
     def clone(self) -> "ConnectFour":
         state = ConnectFour.__new__(ConnectFour)
@@ -67,7 +60,8 @@ class ConnectFour:
 
         idx = new_piece.bit_length() - 1
         row = (ROWS -1) - (idx - action * STRIDE)
-        move = Move(row, action, self.current_player)
+        mover = self._side_to_move()
+        move = Move(row, action, mover)
 
         self.position |= new_piece
         self.mask |= new_piece
@@ -75,7 +69,7 @@ class ConnectFour:
         self.moves_played += 1
 
         if self._has_connect_four(self.position):
-            self._result = GameResult(move.player)
+            self._result = GameResult(int(move.player))
         elif self.moves_played == ROWS * COLS:
             self._result = GameResult.DRAW
 
@@ -89,9 +83,9 @@ class ConnectFour:
         return self._result
     
     def to_grid(self) -> list[list[int]]:
-        mine = self.position                    # quân của current_player
+        mine = self.position                    # quân của bên sắp đi trong biểu diễn nội bộ
         theirs = self.position ^ self.mask      # quân của đối thủ
-        p1, p2 = (mine, theirs) if self.current_player == 1 else (theirs, mine)
+        p1, p2 = (mine, theirs) if self._side_to_move() is Player.ONE else (theirs, mine)
       
         grid = []
         for row in range(ROWS):                 # row 0 = trên cùng (như code cũ)
@@ -108,9 +102,9 @@ class ConnectFour:
         return self.to_grid()
     
     def render(self) -> str:
-        mine = self.position                  # quân người sắp đi
+        mine = self.position                  # quân của bên sắp đi trong biểu diễn nội bộ
         theirs = self.position ^ self.mask    # quân đối thủ
-        p1, p2 = (mine, theirs) if self.current_player == 1 else (theirs, mine)
+        p1, p2 = (mine, theirs) if self._side_to_move() is Player.ONE else (theirs, mine)
 
         lines = []
         for row in range(ROWS):               # hàng 0 = trên cùng
