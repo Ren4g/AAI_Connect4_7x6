@@ -2,6 +2,9 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
+import time
+from datetime import datetime
 from pathlib import Path
 from typing import Any
 
@@ -10,13 +13,8 @@ def board_tensor(board: tuple[tuple[int, ...], ...], player: int) -> Any:
     import torch
 
     opponent = 1 if player == 2 else 2
-    return torch.tensor(
-        [
-            [[float(cell == player) for cell in row] for row in board],
-            [[float(cell == opponent) for cell in row] for row in board],
-        ],
-        dtype=torch.float32,
-    )
+    cells = torch.as_tensor(board, dtype=torch.uint8)
+    return torch.stack((cells == player, cells == opponent)).to(torch.float32)
 
 
 def train(
@@ -29,7 +27,10 @@ def train(
     epsilon: float = 0.05,
     engine: str = "grid",
     device: str = "auto",
+    log_path: str = "results/training.json",
 ) -> list[dict[str, float]]:
+    started = time.perf_counter()
+    os.environ.setdefault("CUBLAS_WORKSPACE_CONFIG", ":4096:8")
     try:
         import torch
         from torch import nn
@@ -58,6 +59,8 @@ def train(
         raise RuntimeError("CUDA was requested but is not available")
     torch.cuda.manual_seed_all(seed) if target_device.type == "cuda" else None
     torch.use_deterministic_algorithms(True, warn_only=True)
+    if target_device.type == "cuda":
+        torch.cuda.reset_peak_memory_stats(target_device)
 
     engine_factory = BitboardConnectFour if engine == "bitboard" else ConnectFour
     splits = split_training_records(
@@ -104,6 +107,13 @@ def train(
     policy_loss = nn.CrossEntropyLoss()
     value_loss = nn.MSELoss()
     history: list[dict[str, float]] = []
+    output = Path(checkpoint)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    report_output = Path(log_path)
+    report_output.parent.mkdir(parents=True, exist_ok=True)
+    best_validation_loss = float("inf")
+    best_epoch = 0
+    best_model_state: dict[str, Any] | None = None
 
     for epoch in range(1, epochs + 1):
         model.train()
@@ -129,24 +139,81 @@ def train(
             "validation_policy_accuracy": validation_metrics["policy_accuracy"],
         }
         history.append(metrics)
+        if metrics["validation_loss"] < best_validation_loss:
+            best_validation_loss = metrics["validation_loss"]
+            best_epoch = epoch
+            best_model_state = {
+                name: tensor.detach().cpu().clone()
+                for name, tensor in model.state_dict().items()
+            }
         print(json.dumps(metrics))
+        partial_report = {
+            "status": "training",
+            "seed": seed,
+            "games": games,
+            "epsilon": epsilon,
+            "engine": engine,
+            "device": str(target_device),
+            "device_name": torch.cuda.get_device_name(target_device) if target_device.type == "cuda" else "CPU",
+            "epoch": epoch,
+            "best_epoch": best_epoch,
+            "best_validation_loss": best_validation_loss,
+            "epochs": epochs,
+            "split_sizes": {name: len(items) for name, items in splits.items()},
+            "history": history,
+        }
+        _atomic_torch_save({
+            "model_state_dict": model.state_dict(),
+            "optimizer_state_dict": optimizer.state_dict(),
+            **partial_report,
+        }, output)
+        report_output.write_text(json.dumps(partial_report, indent=2), encoding="utf-8")
 
-    output = Path(checkpoint)
-    output.parent.mkdir(parents=True, exist_ok=True)
+    if best_model_state is None:
+        raise RuntimeError("Training completed without a validation checkpoint")
+    model.load_state_dict(best_model_state)
+    model.to(target_device)
     test_metrics = evaluate_loader(model, test_loader, target_device, policy_loss, value_loss)
-    torch.save({
-        "model_state_dict": model.state_dict(),
+    training_seconds = time.perf_counter() - started
+    peak_vram_gb = (
+        torch.cuda.max_memory_allocated(target_device) / (1024 ** 3)
+        if target_device.type == "cuda" else 0.0
+    )
+    training_report = {
         "seed": seed,
         "games": games,
         "epsilon": epsilon,
         "engine": engine,
         "device": str(target_device),
+        "device_name": torch.cuda.get_device_name(target_device) if target_device.type == "cuda" else "CPU",
+        "torch_version": torch.__version__,
+        "timestamp_local": datetime.now().astimezone().isoformat(),
+        "epochs": epochs,
+        "batch_size": batch_size,
+        "learning_rate": learning_rate,
+        "best_epoch": best_epoch,
+        "best_validation_loss": best_validation_loss,
+        "training_seconds": training_seconds,
+        "peak_vram_gb": peak_vram_gb,
         "split_sizes": {name: len(records) for name, records in splits.items()},
         "history": history,
         "test_metrics": test_metrics,
+    }
+    training_report["status"] = "complete"
+    _atomic_torch_save({
+        "model_state_dict": model.state_dict(),
+        **training_report,
     }, output)
+    report_output.write_text(json.dumps(training_report, indent=2), encoding="utf-8")
     print(f"Saved checkpoint to {output}")
-    print(json.dumps({"test": test_metrics, "split_sizes": {name: len(items) for name, items in splits.items()}}))
+    print(f"Saved training report to {report_output}")
+    print(json.dumps({
+        "test": test_metrics,
+        "split_sizes": {name: len(items) for name, items in splits.items()},
+        "training_seconds": training_seconds,
+        "peak_vram_gb": peak_vram_gb,
+        "device": str(target_device),
+    }))
     return history
 
 
@@ -172,6 +239,14 @@ def evaluate_loader(model: Any, loader: Any, device: Any, policy_loss: Any, valu
     return {"loss": total_loss / total, "policy_accuracy": correct / total}
 
 
+def _atomic_torch_save(payload: dict[str, Any], path: Path) -> None:
+    import torch
+
+    temporary = path.with_name(path.name + ".tmp")
+    torch.save(payload, temporary)
+    os.replace(temporary, path)
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Train the Connect Four policy/value CNN")
     parser.add_argument("--games", type=int, default=100)
@@ -183,6 +258,7 @@ def main() -> None:
     parser.add_argument("--epsilon", type=float, default=0.05)
     parser.add_argument("--engine", choices=("grid", "bitboard"), default="grid")
     parser.add_argument("--device", default="auto", help="auto, cpu, or a torch device such as cuda")
+    parser.add_argument("--log-path", default="results/training.json")
     args = parser.parse_args()
     train(**vars(args))
 

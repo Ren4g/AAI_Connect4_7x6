@@ -26,6 +26,7 @@ class GameMetrics:
     first_agent: Optional[str] = None
     second_agent: Optional[str] = None
     budget_violations: int = 0
+    actions: tuple[int, ...] = ()
 
 
 def percentile(values: list[float], percentile_value: float) -> float:
@@ -76,6 +77,7 @@ def play_game(
     simulations = 0
     budget_violations = 0
     moves = 0
+    actions: list[int] = []
     while not state.is_terminal():
         agent = agents[state.current_player]
         move_started = time.perf_counter()
@@ -87,6 +89,7 @@ def play_game(
         nodes += int(getattr(agent, "nodes", 0))
         simulations += int(getattr(agent, "simulations_run", 0))
         state.step(action)
+        actions.append(action)
         moves += 1
     elapsed = time.perf_counter() - started
     return GameMetrics(
@@ -100,6 +103,7 @@ def play_game(
         first_agent,
         second_agent,
         budget_violations,
+        tuple(actions),
     )
 
 
@@ -206,4 +210,33 @@ def save_results(
     output = Path(path)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=2), encoding="utf-8")
+
+
+def save_game_logs(
+    results: dict[tuple[str, str], list[GameMetrics]],
+    path: str | Path,
+    metadata: dict[str, object] | None = None,
+) -> None:
+    """Write run metadata and one replayable JSONL record per game."""
+    output = Path(path)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    with output.open("w", encoding="utf-8") as file:
+        file.write(json.dumps({"record_type": "run", **(metadata or {})}, ensure_ascii=False) + "\n")
+        for pair, games in results.items():
+            for game_index, game in enumerate(games):
+                file.write(json.dumps({
+                    "record_type": "game",
+                    "pair": list(pair),
+                    "game_index": game_index,
+                    "player_one_agent": game.first_agent,
+                    "player_two_agent": game.second_agent,
+                    "result": int(game.result),
+                    "plies": game.moves,
+                    "actions": list(game.actions),
+                    "elapsed_seconds": game.elapsed_seconds,
+                    "move_times_seconds": list(game.move_times),
+                    "nodes": game.nodes,
+                    "simulations": game.simulations,
+                    "budget_violations": game.budget_violations,
+                }, ensure_ascii=False) + "\n")
 

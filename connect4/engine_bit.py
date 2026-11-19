@@ -25,6 +25,13 @@ class ConnectFour:
     def _side_to_move(self) -> Player:
         return Player.ONE if self.moves_played % 2 == 0 else Player.TWO
 
+    def player_bits(self, player: Player | int) -> int:
+        """Return a player's stones without materializing the 6×7 grid."""
+        requested = Player(int(player))
+        if requested is self._side_to_move():
+            return self.position
+        return self.position ^ self.mask
+
     @property
     def current_player(self) -> Player:
         if self._result in (GameResult.PLAYER_ONE, GameResult.PLAYER_TWO):

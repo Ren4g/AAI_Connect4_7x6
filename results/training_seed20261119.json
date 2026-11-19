@@ -1,0 +1,99 @@
+{
+  "seed": 20261119,
+  "games": 4000,
+  "epsilon": 0.05,
+  "engine": "bitboard",
+  "device": "cuda",
+  "device_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+  "epochs": 12,
+  "batch_size": 256,
+  "learning_rate": 0.001,
+  "best_epoch": 8,
+  "best_validation_loss": 1.8817777374812534,
+  "training_seconds": 268.80981319997227,
+  "peak_vram_gb": 0.07564401626586914,
+  "split_sizes": {
+    "train": 18622,
+    "validation": 875,
+    "test": 742
+  },
+  "history": [
+    {
+      "epoch": 1.0,
+      "train_loss": 2.328026926231978,
+      "validation_loss": 2.25570990889413,
+      "validation_policy_accuracy": 0.34514285714285714
+    },
+    {
+      "epoch": 2.0,
+      "train_loss": 2.0005072170778293,
+      "validation_loss": 2.0797251319885253,
+      "validation_policy_accuracy": 0.392
+    },
+    {
+      "epoch": 3.0,
+      "train_loss": 1.8581317908883466,
+      "validation_loss": 2.010668278966631,
+      "validation_policy_accuracy": 0.416
+    },
+    {
+      "epoch": 4.0,
+      "train_loss": 1.7755419259782688,
+      "validation_loss": 1.9779079288755144,
+      "validation_policy_accuracy": 0.44
+    },
+    {
+      "epoch": 5.0,
+      "train_loss": 1.7173406896113887,
+      "validation_loss": 1.9406547179903302,
+      "validation_policy_accuracy": 0.45371428571428574
+    },
+    {
+      "epoch": 6.0,
+      "train_loss": 1.6661026853711556,
+      "validation_loss": 1.892560754776001,
+      "validation_policy_accuracy": 0.4674285714285714
+    },
+    {
+      "epoch": 7.0,
+      "train_loss": 1.62424458945019,
+      "validation_loss": 1.8875250306810651,
+      "validation_policy_accuracy": 0.47085714285714286
+    },
+    {
+      "epoch": 8.0,
+      "train_loss": 1.5867925883747813,
+      "validation_loss": 1.8817777374812534,
+      "validation_policy_accuracy": 0.4845714285714286
+    },
+    {
+      "epoch": 9.0,
+      "train_loss": 1.5479134941008892,
+      "validation_loss": 1.896438037599836,
+      "validation_policy_accuracy": 0.4982857142857143
+    },
+    {
+      "epoch": 10.0,
+      "train_loss": 1.505325901189535,
+      "validation_loss": 1.8867138731820243,
+      "validation_policy_accuracy": 0.4948571428571429
+    },
+    {
+      "epoch": 11.0,
+      "train_loss": 1.4688825682837858,
+      "validation_loss": 1.8877905336107526,
+      "validation_policy_accuracy": 0.496
+    },
+    {
+      "epoch": 12.0,
+      "train_loss": 1.4334524992700166,
+      "validation_loss": 1.8997116866792951,
+      "validation_policy_accuracy": 0.4937142857142857
+    }
+  ],
+  "test_metrics": {
+    "loss": 1.8951216441280436,
+    "policy_accuracy": 0.5053908355795148
+  },
+  "status": "complete"
+}

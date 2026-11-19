@@ -1,0 +1,20 @@
+[
+  {
+    "first_agent": "Heuristic",
+    "second_agent": "CNN-Policy",
+    "games": 100,
+    "wins": 100,
+    "draws": 0,
+    "losses": 0,
+    "score": 1.0,
+    "win_rate_wilson_95": [
+      0.9630065017930143,
+      1.0
+    ],
+    "average_move_seconds": 0.0005458620003358062,
+    "p95_move_seconds": 0.0009091399959288536,
+    "nodes": 0,
+    "simulations": 0,
+    "budget_violations": 0
+  }
+]

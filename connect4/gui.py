@@ -4,19 +4,29 @@ import argparse
 import tkinter as tk
 from tkinter import messagebox, ttk
 
-from .agents import Agent, AlphaBetaAgent, HeuristicAgent, MCTSAgent, RandomAgent
+from .agents import Agent, AlphaBetaAgent, HeuristicAgent, MCTSAgent, PolicyAgent, RandomAgent
 from .engine import COLS, ROWS, ConnectFour, GameResult, Player
 from .engine_bit import ConnectFour as BitboardConnectFour
 from .state import GameState
 
 
 class ConnectFourApp:
-    def __init__(self, root: tk.Tk, engine_factory=ConnectFour) -> None:
+    def __init__(
+        self,
+        root: tk.Tk,
+        engine_factory=ConnectFour,
+        checkpoint: str | None = None,
+        device: str = "cpu",
+    ) -> None:
         self.root = root
         self.root.title("Connect Four 7x6")
         self.engine_factory = engine_factory
         self.state: GameState = engine_factory()
         self.busy = False
+        self.policy_agent = (
+            PolicyAgent.from_checkpoint(checkpoint, device=device)
+            if checkpoint else None
+        )
 
         self.mode = tk.StringVar(value="human_vs_ai")
         self.level = tk.StringVar(value="Alpha-Beta")
@@ -31,9 +41,12 @@ class ConnectFourApp:
             state="readonly", width=16,
         ).grid(row=2, column=1, sticky="w")
         ttk.Label(root, text="AI").grid(row=2, column=2, sticky="e")
+        agent_choices = ("Random", "Heuristic", "Alpha-Beta", "MCTS")
+        if self.policy_agent is not None:
+            agent_choices += ("CNN-Policy",)
         ttk.Combobox(
             root, textvariable=self.level,
-            values=("Random", "Heuristic", "Alpha-Beta", "MCTS"),
+            values=agent_choices,
             state="readonly", width=16,
         ).grid(row=2, column=3, sticky="w")
         ttk.Button(root, text="New game", command=self.new_game).grid(
@@ -81,6 +94,8 @@ class ConnectFourApp:
             return HeuristicAgent()
         if level == "MCTS":
             return MCTSAgent(simulations=150, seed=42)
+        if level == "CNN-Policy" and self.policy_agent is not None:
+            return self.policy_agent
         return AlphaBetaAgent(depth=4)
 
     def draw(self) -> None:
@@ -111,10 +126,12 @@ class ConnectFourApp:
 def main() -> None:
     parser = argparse.ArgumentParser(description="Play Connect Four with an AI agent")
     parser.add_argument("--engine", choices=("grid", "bitboard"), default="grid")
+    parser.add_argument("--checkpoint", default=None, help="Optional trained CNN policy checkpoint")
+    parser.add_argument("--device", default="cpu", help="Inference device for a CNN checkpoint")
     args = parser.parse_args()
     root = tk.Tk()
     factory = BitboardConnectFour if args.engine == "bitboard" else ConnectFour
-    ConnectFourApp(root, factory)
+    ConnectFourApp(root, factory, args.checkpoint, args.device)
     root.mainloop()
 
 

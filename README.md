@@ -36,6 +36,12 @@ Có thể chọn engine bitboard cho demo:
 python -m connect4.gui --engine bitboard
 ```
 
+Nạp CNN đã huấn luyện vào giao diện (thêm lựa chọn `CNN-Policy`):
+
+```powershell
+python -m connect4.gui --engine bitboard --checkpoint checkpoints/connect4_cnn_seed20261119.pt --device cuda
+```
+
 ## Huấn luyện CNN
 
 PyTorch là dependency tùy chọn:
@@ -45,12 +51,29 @@ python -m pip install torch
 python train.py --games 100 --epochs 10 --engine bitboard
 ```
 
+Hoặc cài các dependency của dự án bằng `python -m pip install -r requirements.txt`.
+Để tái lập lần huấn luyện đã lưu trong repository, dùng seed `20261119` và
+cấu hình ở `results/training_seed20261119.json`:
+
+```powershell
+python train.py --games 4000 --epochs 12 --batch-size 256 --learning-rate 0.001 --epsilon 0.05 --seed 20261119 --engine bitboard --device cuda --checkpoint checkpoints/connect4_cnn_seed20261119.pt --log-path results/training_seed20261119.json
+```
+
 Checkpoint được lưu tại `checkpoints/connect4_cnn.pt`; mỗi epoch in
 training loss, validation loss và policy accuracy. Dữ liệu được tạo với
 epsilon exploration có seed, chia theo ván thành train/validation/test,
 loại vị trí trùng giữa các tập và chỉ augmentation tập train. Kết quả test
 cùng cấu hình được lưu trong checkpoint. Có thể nạp checkpoint bằng
 `PolicyAgent.from_checkpoint(...)`.
+
+## Kết quả huấn luyện hiện tại
+
+Checkpoint `checkpoints/connect4_cnn_seed20261119.pt` được huấn luyện từ 4.000
+ván Alpha-Beta trên bitboard, dùng seed `20261119`, batch size 256 và 12 epoch.
+Mô hình tốt nhất được chọn theo validation loss. Tập test độc lập đạt policy
+accuracy khoảng 50,5%; kết quả benchmark đối kháng được lưu dưới `results/`.
+Trong 100 ván đối đầu Heuristic, CNN chưa thắng ván nào. CNN hiện là bản thử
+nghiệm và cần dữ liệu nhãn mạnh hơn trước khi dùng làm agent cạnh tranh.
 
 ## Đánh giá và thống kê
 
@@ -86,11 +109,15 @@ p95, tổng số node Alpha-Beta, tổng số simulation MCTS và số lần vư
 Chạy ablation:
 
 ```powershell
-python ablation.py --games 10 --output results/ablation.json
+python ablation.py --games 10 --depth 4 --engine bitboard --seed 20261119 --output results/ablation_bitboard_seed20261119.json
 ```
 
 Các cấu hình gồm Alpha-Beta có/không pruning, có/không move ordering và
 MCTS với 50, 100, 500, 1000, 5000 simulation.
+Kết quả hiện tại cho thấy pruning giảm số node khoảng 5,5 lần so với tắt
+pruning ở depth 4; ordering giảm thêm số node so với cấu hình không ordering.
+Các cấu hình đều thắng Random trong 10 ván, nên tỷ lệ thắng đã chạm trần và
+không dùng để kết luận sức mạnh tương đối giữa chúng.
 
 `ExternalSolver` nhận executable của solver bên ngoài. Solver phải nhận
 board 42 ô và player qua `{board}`, `{player}`, rồi in ra cột 0–6:

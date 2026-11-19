@@ -1,0 +1,20 @@
+[
+  {
+    "first_agent": "AlphaBeta-time0.1s",
+    "second_agent": "MCTS-time0.1s",
+    "games": 200,
+    "wins": 119,
+    "draws": 10,
+    "losses": 71,
+    "score": 0.62,
+    "win_rate_wilson_95": [
+      0.525797100813387,
+      0.6606222871749323
+    ],
+    "average_move_seconds": 0.0942331619900081,
+    "p95_move_seconds": 0.10008750000270084,
+    "nodes": 22626244,
+    "simulations": 10683813,
+    "budget_violations": 5967
+  }
+]

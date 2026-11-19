@@ -6,11 +6,17 @@ from pathlib import Path
 
 from connect4.agents import AlphaBetaAgent, MCTSAgent, RandomAgent
 from connect4.experiments import play_game, percentile
-from connect4.engine import ConnectFour
+from connect4.engine import ConnectFour, GameResult
 from connect4.engine_bit import ConnectFour as BitboardConnectFour
 
 
-def run_ablation(games: int = 10, depth: int = 4, engine_factory=ConnectFour) -> list[dict[str, object]]:
+def run_ablation(
+    games: int = 10,
+    depth: int = 4,
+    engine_factory=ConnectFour,
+    seed: int = 42,
+    engine_name: str = "grid",
+) -> list[dict[str, object]]:
     if games < 1:
         raise ValueError("games must be positive")
     configurations: list[tuple[str, object]] = [
@@ -24,18 +30,35 @@ def run_ablation(games: int = 10, depth: int = 4, engine_factory=ConnectFour) ->
     )
     report: list[dict[str, object]] = []
     for name, agent in configurations:
-        games_played = [
-            play_game(agent, RandomAgent(seed=game), name, "Random", engine_factory=engine_factory)
-            for game in range(games)
-        ]
-        wins = sum(game.result.value == 1 for game in games_played)
+        games_played = []
+        for game_index in range(games):
+            random_agent = RandomAgent(seed=seed + game_index)
+            if game_index % 2:
+                games_played.append(
+                    play_game(random_agent, agent, "Random", name, engine_factory=engine_factory)
+                )
+            else:
+                games_played.append(
+                    play_game(agent, random_agent, name, "Random", engine_factory=engine_factory)
+                )
+        wins = sum(
+            game.result.value == (1 if game.first_agent == name else 2)
+            for game in games_played
+        )
+        draws = sum(game.result is GameResult.DRAW for game in games_played)
+        losses = games - wins - draws
         move_times = [move_time for game in games_played for move_time in game.move_times]
         report.append(
             {
                 "configuration": name,
                 "games": games,
-                "wins_as_first_player": wins,
-                "win_rate": wins / games,
+                "seed": seed,
+                "depth": depth,
+                "engine": engine_name,
+                "wins": wins,
+                "draws": draws,
+                "losses": losses,
+                "score": (wins + 0.5 * draws) / games,
                 "average_move_seconds": sum(move_times) / len(move_times),
                 "p95_move_seconds": percentile(move_times, 95),
                 "nodes": sum(game.nodes for game in games_played),
@@ -50,10 +73,11 @@ def main() -> None:
     parser.add_argument("--games", type=int, default=10)
     parser.add_argument("--depth", type=int, default=4)
     parser.add_argument("--engine", choices=("grid", "bitboard"), default="grid")
+    parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--output", default="results/ablation.json")
     args = parser.parse_args()
     factory = BitboardConnectFour if args.engine == "bitboard" else ConnectFour
-    report = run_ablation(args.games, args.depth, factory)
+    report = run_ablation(args.games, args.depth, factory, args.seed, args.engine)
     output = Path(args.output)
     output.parent.mkdir(parents=True, exist_ok=True)
     output.write_text(json.dumps(report, indent=2), encoding="utf-8")

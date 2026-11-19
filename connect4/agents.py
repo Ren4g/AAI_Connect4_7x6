@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import math
 import random
+import time
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, Optional, Sequence
@@ -10,6 +11,20 @@ from .engine import COLS, GameResult, Player, ROWS
 from .state import GameState
 
 CENTER_ORDER = (3, 2, 4, 1, 5, 0, 6)
+_CENTER_RANK = {column: rank for rank, column in enumerate(CENTER_ORDER)}
+_BIT_STRIDE = 7
+_CENTER_MASK = sum(1 << (3 * _BIT_STRIDE + row) for row in range(6))
+_BITBOARD_WINDOWS = tuple(
+    sum(1 << ((column + dx * offset) * _BIT_STRIDE + row + dy * offset) for offset in range(4))
+    for dx, dy, columns, rows in (
+        (1, 0, range(4), range(6)),
+        (0, 1, range(7), range(3)),
+        (1, 1, range(4), range(3)),
+        (1, -1, range(4), range(3, 6)),
+    )
+    for column in columns
+    for row in rows
+)
 
 
 class Agent:
@@ -48,6 +63,18 @@ def _window_score(window: list[int], player: int) -> float:
 
 def evaluate(state: GameState, player: Player | int) -> float:
     player = Player(int(player))
+    player_bits = getattr(state, "player_bits", None)
+    if player_bits is not None:
+        own_bits = player_bits(player)
+        opponent_bits = player_bits(player.opponent)
+        score = 3.0 * (own_bits & _CENTER_MASK).bit_count()
+        for window in _BITBOARD_WINDOWS:
+            own = (own_bits & window).bit_count()
+            other = (opponent_bits & window).bit_count()
+            empty = 4 - own - other
+            score += _window_score_counts(own, other, empty)
+        return score
+
     board = state.board
     score = 3.0 * sum(board[row][COLS // 2] == int(player) for row in range(ROWS))
     for row in range(ROWS):
@@ -61,6 +88,20 @@ def evaluate(state: GameState, player: Player | int) -> float:
             score += _window_score([board[row + offset][column + offset] for offset in range(4)], int(player))
             score += _window_score([board[row + 3 - offset][column + offset] for offset in range(4)], int(player))
     return score
+
+
+def _window_score_counts(own: int, other: int, empty: int) -> float:
+    if own == 4:
+        return 100000.0
+    if own == 3 and empty == 1:
+        return 100.0 if other == 0 else 10.0
+    if own == 2 and empty == 2:
+        return 10.0
+    if other == 3 and empty == 1:
+        return -120.0 if own == 0 else -20.0
+    if other == 2 and empty == 2:
+        return -8.0
+    return 0.0
 
 
 class HeuristicAgent(Agent):
@@ -106,12 +147,21 @@ class HeuristicAgent(Agent):
 
 
 class AlphaBetaAgent(Agent):
-    def __init__(self, depth: int = 4, pruning: bool = True, move_ordering: bool = True) -> None:
+    def __init__(
+        self,
+        depth: int = 4,
+        pruning: bool = True,
+        move_ordering: bool = True,
+        time_budget_seconds: float | None = None,
+    ) -> None:
         if depth < 1:
             raise ValueError("depth must be positive")
+        if time_budget_seconds is not None and time_budget_seconds <= 0:
+            raise ValueError("time_budget_seconds must be positive")
         self.depth = depth
         self.pruning = pruning
         self.move_ordering = move_ordering
+        self.time_budget_seconds = time_budget_seconds
         self.nodes = 0
 
     def choose_action(self, state: GameState) -> int:
@@ -120,21 +170,52 @@ class AlphaBetaAgent(Agent):
             raise ValueError("No legal actions available")
         self.nodes = 0
         player = state.current_player
+        ordered_actions = sorted(actions, key=_CENTER_RANK.__getitem__) if self.move_ordering else actions
+        if self.time_budget_seconds is not None:
+            # Leave a small guard band for returning the action and timing overhead.
+            deadline = time.perf_counter() + self.time_budget_seconds * 0.95
+            best_action = ordered_actions[0]
+            for depth in range(1, self.depth + 1):
+                try:
+                    best_action = self._search_root(state, ordered_actions, depth, player, deadline)
+                except _SearchTimeout:
+                    break
+            return best_action
+
+        return self._search_root(state, ordered_actions, self.depth, player, None)
+
+    def _search_root(
+        self,
+        state: GameState,
+        actions: list[int],
+        depth: int,
+        player: Player,
+        deadline: float | None,
+    ) -> int:
         best_score = float("-inf")
         best_action = actions[0]
         alpha, beta = float("-inf"), float("inf")
-        ordered_actions = sorted(actions, key=CENTER_ORDER.index) if self.move_ordering else actions
-        for action in ordered_actions:
+        for action in actions:
             child = state.clone()
             child.step(action)
-            score = self._search(child, self.depth - 1, alpha, beta, player)
+            score = self._search(child, depth - 1, alpha, beta, player, deadline)
             if score > best_score:
                 best_score, best_action = score, action
             if self.pruning:
                 alpha = max(alpha, best_score)
         return best_action
 
-    def _search(self, state: GameState, depth: int, alpha: float, beta: float, root: Player) -> float:
+    def _search(
+        self,
+        state: GameState,
+        depth: int,
+        alpha: float,
+        beta: float,
+        root: Player,
+        deadline: float | None = None,
+    ) -> float:
+        if deadline is not None and time.perf_counter() >= deadline:
+            raise _SearchTimeout
         self.nodes += 1
         if state.result() == GameResult(int(root)):
             return 1000000.0 + depth
@@ -146,11 +227,11 @@ class AlphaBetaAgent(Agent):
         value = float("-inf") if maximizing else float("inf")
         actions = state.legal_actions()
         if self.move_ordering:
-            actions = sorted(actions, key=CENTER_ORDER.index)
+            actions = sorted(actions, key=_CENTER_RANK.__getitem__)
         for action in actions:
             child = state.clone()
             child.step(action)
-            child_value = self._search(child, depth - 1, alpha, beta, root)
+            child_value = self._search(child, depth - 1, alpha, beta, root, deadline)
             if maximizing:
                 value = max(value, child_value)
                 if self.pruning:
@@ -164,6 +245,10 @@ class AlphaBetaAgent(Agent):
         return value
 
 
+class _SearchTimeout(Exception):
+    pass
+
+
 @dataclass
 class _MCTSNode:
     state: GameState
@@ -175,12 +260,21 @@ class _MCTSNode:
 
 
 class MCTSAgent(Agent):
-    def __init__(self, simulations: int = 500, exploration: float = math.sqrt(2), seed: Optional[int] = None) -> None:
+    def __init__(
+        self,
+        simulations: int = 500,
+        exploration: float = math.sqrt(2),
+        seed: Optional[int] = None,
+        time_budget_seconds: float | None = None,
+    ) -> None:
         if simulations < 1:
             raise ValueError("simulations must be positive")
+        if time_budget_seconds is not None and time_budget_seconds <= 0:
+            raise ValueError("time_budget_seconds must be positive")
         self.simulations = simulations
         self.exploration = exploration
         self.random = random.Random(seed)
+        self.time_budget_seconds = time_budget_seconds
         self.simulations_run = 0
 
     def choose_action(self, state: GameState) -> int:
@@ -188,11 +282,24 @@ class MCTSAgent(Agent):
             raise ValueError("No legal actions available")
         root = _MCTSNode(state.clone())
         self.simulations_run = 0
+        deadline = (
+            # Rollouts finish as a unit, so reserve 5% to keep wall time within budget.
+            time.perf_counter() + self.time_budget_seconds * 0.95
+            if self.time_budget_seconds is not None else None
+        )
         for _ in range(self.simulations):
+            if deadline is not None and self.simulations_run and time.perf_counter() >= deadline:
+                break
             node = root
-            while not node.state.is_terminal() and not set(node.state.legal_actions()) - set(node.children):
+            while not node.state.is_terminal():
+                actions = node.state.legal_actions()
+                unexpanded = [action for action in actions if action not in node.children]
+                if unexpanded:
+                    break
                 node = max(node.children.values(), key=self._ucb)
-            unexpanded = [action for action in node.state.legal_actions() if action not in node.children]
+            else:
+                actions = []
+                unexpanded = []
             if unexpanded:
                 action = self.random.choice(unexpanded)
                 child_state = node.state.clone()
@@ -209,7 +316,7 @@ class MCTSAgent(Agent):
                     elif winner != GameResult.DRAW:
                         node.value -= 1.0
                 node = node.parent
-        self.simulations_run = self.simulations
+            self.simulations_run += 1
         return max(root.children.values(), key=lambda child: child.visits).action
 
     def _ucb(self, node: _MCTSNode) -> float:
@@ -261,6 +368,22 @@ class PolicyAgent(Agent):
         actions = state.legal_actions()
         if not actions:
             raise ValueError("No legal actions available")
+        player = state.current_player
+        winning = HeuristicAgent._winning_actions(state, player)
+        if winning:
+            return min(winning, key=CENTER_ORDER.index)
+
+        safe_actions: list[int] = []
+        for action in actions:
+            child = state.clone()
+            child.step(action)
+            if child.is_terminal():
+                continue
+            if not HeuristicAgent._winning_actions(child, player.opponent):
+                safe_actions.append(action)
+        if safe_actions:
+            actions = safe_actions
+
         scores = self.policy(state)
         if len(scores) != COLS:
             raise ValueError(f"Policy must return {COLS} scores")
