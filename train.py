@@ -11,10 +11,9 @@ from typing import Any
 
 def board_tensor(board: tuple[tuple[int, ...], ...], player: int) -> Any:
     import torch
+    from connect4.encoding import encode_planes
 
-    opponent = 1 if player == 2 else 2
-    cells = torch.as_tensor(board, dtype=torch.uint8)
-    return torch.stack((cells == player, cells == opponent)).to(torch.float32)
+    return torch.as_tensor(encode_planes(board, player), dtype=torch.float32)
 
 
 def train(
@@ -25,6 +24,7 @@ def train(
     seed: int = 42,
     checkpoint: str = "checkpoints/connect4_cnn.pt",
     epsilon: float = 0.05,
+    teacher_depth: int = 3,
     engine: str = "grid",
     device: str = "auto",
     log_path: str = "results/training.json",
@@ -41,11 +41,12 @@ def train(
         ) from error
 
     from connect4.model import ConnectFourCNN
+    from connect4.agents import AlphaBetaAgent
     from connect4.training import split_training_records
     from connect4.engine import ConnectFour
     from connect4.engine_bit import ConnectFour as BitboardConnectFour
 
-    if games < 3 or epochs < 1 or batch_size < 1:
+    if games < 3 or epochs < 1 or batch_size < 1 or teacher_depth < 1:
         raise ValueError("games must be at least 3; epochs and batch_size must be positive")
     if learning_rate <= 0:
         raise ValueError("learning_rate must be positive")
@@ -64,7 +65,8 @@ def train(
 
     engine_factory = BitboardConnectFour if engine == "bitboard" else ConnectFour
     splits = split_training_records(
-        games, seed=seed, epsilon=epsilon, engine_factory=engine_factory
+        games, seed=seed, epsilon=epsilon,
+        agent=AlphaBetaAgent(depth=teacher_depth), engine_factory=engine_factory
     )
 
     class PositionDataset(Dataset):
@@ -152,6 +154,9 @@ def train(
             "seed": seed,
             "games": games,
             "epsilon": epsilon,
+            "label_agent": "AlphaBetaAgent",
+            "teacher_depth": teacher_depth,
+            "evaluator": "gravity-aware playable-threat heuristic",
             "engine": engine,
             "device": str(target_device),
             "device_name": torch.cuda.get_device_name(target_device) if target_device.type == "cuda" else "CPU",
@@ -183,10 +188,13 @@ def train(
         "seed": seed,
         "games": games,
         "epsilon": epsilon,
+        "label_agent": "AlphaBetaAgent",
+        "teacher_depth": teacher_depth,
+        "evaluator": "gravity-aware playable-threat heuristic",
         "engine": engine,
         "device": str(target_device),
         "device_name": torch.cuda.get_device_name(target_device) if target_device.type == "cuda" else "CPU",
-        "torch_version": torch.__version__,
+        "torch_version": str(torch.__version__),
         "timestamp_local": datetime.now().astimezone().isoformat(),
         "epochs": epochs,
         "batch_size": batch_size,
@@ -256,6 +264,7 @@ def main() -> None:
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--checkpoint", default="checkpoints/connect4_cnn.pt")
     parser.add_argument("--epsilon", type=float, default=0.05)
+    parser.add_argument("--teacher-depth", type=int, default=3)
     parser.add_argument("--engine", choices=("grid", "bitboard"), default="grid")
     parser.add_argument("--device", default="auto", help="auto, cpu, or a torch device such as cuda")
     parser.add_argument("--log-path", default="results/training.json")

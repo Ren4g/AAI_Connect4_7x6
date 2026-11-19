@@ -1,0 +1,104 @@
+{
+  "seed": 20261119,
+  "games": 4000,
+  "epsilon": 0.05,
+  "label_agent": "AlphaBetaAgent",
+  "teacher_depth": 3,
+  "evaluator": "gravity-aware playable-threat heuristic",
+  "engine": "bitboard",
+  "device": "cuda",
+  "device_name": "NVIDIA GeForce RTX 3050 Laptop GPU",
+  "torch_version": "2.9.1+cu128",
+  "timestamp_local": "2026-11-19T22:32:45.006660+07:00",
+  "epochs": 12,
+  "batch_size": 256,
+  "learning_rate": 0.001,
+  "best_epoch": 11,
+  "best_validation_loss": 1.8259517993263752,
+  "training_seconds": 279.87135989998933,
+  "peak_vram_gb": 0.07564401626586914,
+  "split_sizes": {
+    "train": 20355,
+    "validation": 949,
+    "test": 931
+  },
+  "history": [
+    {
+      "epoch": 1.0,
+      "train_loss": 2.4511017833110946,
+      "validation_loss": 2.2243622962240175,
+      "validation_policy_accuracy": 0.37407797681770283
+    },
+    {
+      "epoch": 2.0,
+      "train_loss": 2.107630495977062,
+      "validation_loss": 2.0055852692546785,
+      "validation_policy_accuracy": 0.40569020021074814
+    },
+    {
+      "epoch": 3.0,
+      "train_loss": 1.9629316681112479,
+      "validation_loss": 1.953267949901215,
+      "validation_policy_accuracy": 0.4520547945205479
+    },
+    {
+      "epoch": 4.0,
+      "train_loss": 1.8795101922081368,
+      "validation_loss": 1.8944170324267275,
+      "validation_policy_accuracy": 0.4657534246575342
+    },
+    {
+      "epoch": 5.0,
+      "train_loss": 1.8105019402486398,
+      "validation_loss": 1.8468957098065488,
+      "validation_policy_accuracy": 0.4678609062170706
+    },
+    {
+      "epoch": 6.0,
+      "train_loss": 1.7597985163978909,
+      "validation_loss": 1.8552079235917023,
+      "validation_policy_accuracy": 0.4952581664910432
+    },
+    {
+      "epoch": 7.0,
+      "train_loss": 1.710220353651972,
+      "validation_loss": 1.8435780205641206,
+      "validation_policy_accuracy": 0.5036880927291886
+    },
+    {
+      "epoch": 8.0,
+      "train_loss": 1.6733399037499592,
+      "validation_loss": 1.848353796437367,
+      "validation_policy_accuracy": 0.5015806111696522
+    },
+    {
+      "epoch": 9.0,
+      "train_loss": 1.6246401786335678,
+      "validation_loss": 1.8597309315543782,
+      "validation_policy_accuracy": 0.48472075869336145
+    },
+    {
+      "epoch": 10.0,
+      "train_loss": 1.58399303505269,
+      "validation_loss": 1.8647837495653095,
+      "validation_policy_accuracy": 0.49209694415173866
+    },
+    {
+      "epoch": 11.0,
+      "train_loss": 1.5561239521909305,
+      "validation_loss": 1.8259517993263752,
+      "validation_policy_accuracy": 0.5089567966280295
+    },
+    {
+      "epoch": 12.0,
+      "train_loss": 1.5221246368731014,
+      "validation_loss": 1.8316725807772798,
+      "validation_policy_accuracy": 0.5036880927291886
+    }
+  ],
+  "test_metrics": {
+    "loss": 1.7901855661072614,
+    "policy_accuracy": 0.5123523093447906
+  },
+  "status": "complete"
+}

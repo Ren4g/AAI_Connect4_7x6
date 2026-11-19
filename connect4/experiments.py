@@ -2,13 +2,14 @@ from __future__ import annotations
 
 import json
 import math
+import random
 import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Optional
 
 from .agents import Agent
-from .engine import ConnectFour, GameResult, Player
+from .engine import COLS, ROWS, ConnectFour, GameResult, Player
 from .state import GameState
 
 StateFactory = Callable[[], GameState]
@@ -27,6 +28,11 @@ class GameMetrics:
     second_agent: Optional[str] = None
     budget_violations: int = 0
     actions: tuple[int, ...] = ()
+    move_players: tuple[int, ...] = ()
+    nodes_by_player: tuple[int, int] = (0, 0)
+    simulations_by_player: tuple[int, int] = (0, 0)
+    budget_violations_by_player: tuple[int, int] = (0, 0)
+    opening_actions: tuple[int, ...] = ()
 
 
 def percentile(values: list[float], percentile_value: float) -> float:
@@ -66,28 +72,44 @@ def play_game(
     second_agent: Optional[str] = None,
     time_budget_seconds: Optional[float] = None,
     engine_factory: StateFactory = ConnectFour,
+    opening_actions: tuple[int, ...] = (),
 ) -> GameMetrics:
     if time_budget_seconds is not None and time_budget_seconds <= 0:
         raise ValueError("time_budget_seconds must be positive")
     state = engine_factory()
+    for action in opening_actions:
+        state.step(action)
+        if state.is_terminal():
+            raise ValueError("Opening actions must not end the game")
     agents = {Player.ONE: first, Player.TWO: second}
     started = time.perf_counter()
     move_times: list[float] = []
+    move_players: list[int] = []
     nodes = 0
     simulations = 0
     budget_violations = 0
-    moves = 0
-    actions: list[int] = []
+    nodes_by_player = [0, 0]
+    simulations_by_player = [0, 0]
+    violations_by_player = [0, 0]
+    moves = len(opening_actions)
+    actions: list[int] = list(opening_actions)
     while not state.is_terminal():
-        agent = agents[state.current_player]
+        player = state.current_player
+        agent = agents[player]
         move_started = time.perf_counter()
         action = agent.choose_action(state)
         move_elapsed = time.perf_counter() - move_started
         move_times.append(move_elapsed)
+        move_players.append(int(player))
         if time_budget_seconds is not None and move_elapsed > time_budget_seconds:
             budget_violations += 1
-        nodes += int(getattr(agent, "nodes", 0))
-        simulations += int(getattr(agent, "simulations_run", 0))
+            violations_by_player[int(player) - 1] += 1
+        move_nodes = int(getattr(agent, "nodes", 0))
+        move_simulations = int(getattr(agent, "simulations_run", 0))
+        nodes += move_nodes
+        simulations += move_simulations
+        nodes_by_player[int(player) - 1] += move_nodes
+        simulations_by_player[int(player) - 1] += move_simulations
         state.step(action)
         actions.append(action)
         moves += 1
@@ -96,7 +118,7 @@ def play_game(
         state.result(),
         moves,
         elapsed,
-        elapsed / moves,
+        elapsed / len(move_times) if move_times else 0.0,
         tuple(move_times),
         nodes,
         simulations,
@@ -104,7 +126,79 @@ def play_game(
         second_agent,
         budget_violations,
         tuple(actions),
+        tuple(move_players),
+        tuple(nodes_by_player),
+        tuple(simulations_by_player),
+        tuple(violations_by_player),
+        tuple(opening_actions),
     )
+
+
+def _make_openings(
+    games: int,
+    plies: int,
+    seed: int,
+    engine_factory: StateFactory,
+) -> list[tuple[int, ...]]:
+    if plies == 0:
+        return [()] * games
+    rng = random.Random(seed)
+    openings: list[tuple[int, ...]] = []
+    seen_positions: set[tuple[tuple[int, ...], ...]] = set()
+    attempts = 0
+    max_attempts = max(1000, games * 100)
+    while len(openings) < games and attempts < max_attempts:
+        attempts += 1
+        state = engine_factory()
+        actions: list[int] = []
+        for _ in range(plies):
+            legal = state.legal_actions()
+            if not legal or state.is_terminal():
+                break
+            action = rng.choice(legal)
+            actions.append(action)
+            state.step(action)
+        if len(actions) != plies or state.is_terminal():
+            continue
+        # Do not hand either search agent a win before it has made a decision,
+        # and reject starts where every move concedes an immediate reply win.
+        if _has_immediate_win(state) or not _has_safe_action(state):
+            continue
+        position = tuple(tuple(row) for row in state.board)
+        if position in seen_positions:
+            continue
+        seen_positions.add(position)
+        openings.append(tuple(actions))
+    if len(openings) != games:
+        raise ValueError(
+            f"Could generate only {len(openings)} unique {plies}-ply openings for {games} games; "
+            "increase opening_plies"
+        )
+    return openings
+
+
+def _has_immediate_win(state: GameState) -> bool:
+    player = state.current_player
+    for action in state.legal_actions():
+        child = state.clone()
+        child.step(action)
+        if child.result() is GameResult(int(player)):
+            return True
+    return False
+
+
+def _has_safe_action(state: GameState) -> bool:
+    player = state.current_player
+    for action in state.legal_actions():
+        child = state.clone()
+        child.step(action)
+        if child.is_terminal():
+            if child.result() is GameResult.DRAW:
+                return True
+            continue
+        if not _has_immediate_win(child):
+            return True
+    return False
 
 
 def round_robin(
@@ -112,10 +206,17 @@ def round_robin(
     games_per_pair: int = 100,
     time_budget_seconds: Optional[float] = None,
     engine_factory: StateFactory = ConnectFour,
+    seed: int = 42,
+    opening_plies: int = 6,
 ) -> dict[tuple[str, str], list[GameMetrics]]:
     if games_per_pair < 1:
         raise ValueError("games_per_pair must be positive")
+    if games_per_pair % 2:
+        raise ValueError("games_per_pair must be even to balance seats")
+    if not 0 <= opening_plies < ROWS * COLS:
+        raise ValueError("opening_plies must be between 0 and 41")
     names = list(agents)
+    openings = _make_openings(games_per_pair, opening_plies, seed, engine_factory)
     results: dict[tuple[str, str], list[GameMetrics]] = {}
     for index, first_name in enumerate(names):
         for second_name in names[index + 1 :]:
@@ -131,6 +232,7 @@ def round_robin(
                             first_name,
                             time_budget_seconds,
                             engine_factory,
+                            openings[game],
                         )
                     )
                 else:
@@ -142,6 +244,7 @@ def round_robin(
                             second_name,
                             time_budget_seconds,
                             engine_factory,
+                            openings[game],
                         )
                     )
     return results
@@ -155,12 +258,20 @@ def summarize_pair(
     if not games:
         raise ValueError("games must not be empty")
     wins = draws = losses = 0
-    move_times: list[float] = []
-    nodes = simulations = violations = 0
+    per_agent: dict[str, dict[str, object]] = {
+        name: {"move_times": [], "nodes_total": 0, "simulations_total": 0,
+              "budget_violations": 0, "moves": 0}
+        for name in (first_name, second_name)
+    }
+    score_by_seat: dict[int, list[float]] = {1: [], 2: []}
+    budget_violations = 0
+    opening_positions: set[tuple[int, ...]] = set()
     for game in games:
+        game_first = game.first_agent or first_name
+        game_second = game.second_agent or second_name
         if game.result is GameResult.DRAW:
             draws += 1
-        elif game.first_agent == first_name:
+        elif game_first == first_name:
             if game.result is GameResult.PLAYER_ONE:
                 wins += 1
             else:
@@ -170,12 +281,42 @@ def summarize_pair(
                 wins += 1
             else:
                 losses += 1
-        move_times.extend(game.move_times)
-        nodes += game.nodes
-        simulations += game.simulations
-        violations += game.budget_violations
+        if game.result is GameResult.DRAW:
+            score = 0.5
+        elif (game_first == first_name and game.result is GameResult.PLAYER_ONE) or (
+            game_second == first_name and game.result is GameResult.PLAYER_TWO
+        ):
+            score = 1.0
+        else:
+            score = 0.0
+        seat = 1 if game_first == first_name else 2
+        score_by_seat[seat].append(score)
+        opening_positions.add(game.opening_actions)
+        budget_violations += game.budget_violations
+        for index, player_value in enumerate(game.move_players):
+            agent_name = game_first if player_value == 1 else game_second
+            if agent_name not in per_agent:
+                continue
+            metrics = per_agent[agent_name]
+            metrics["move_times"].append(game.move_times[index])
+            metrics["moves"] += 1
+        for player_index, agent_name in enumerate((game_first, game_second)):
+            if agent_name not in per_agent:
+                continue
+            metrics = per_agent[agent_name]
+            metrics["nodes_total"] += game.nodes_by_player[player_index]
+            metrics["simulations_total"] += game.simulations_by_player[player_index]
+            metrics["budget_violations"] += game.budget_violations_by_player[player_index]
     total = len(games)
     score = (wins + 0.5 * draws) / total
+    for metrics in per_agent.values():
+        times = metrics.pop("move_times")
+        count = metrics["moves"]
+        metrics["average_move_seconds"] = sum(times) / len(times) if times else 0.0
+        metrics["p95_move_seconds"] = percentile(times, 95)
+        metrics["nodes_per_move"] = metrics["nodes_total"] / count if count else 0.0
+        metrics["simulations_per_move"] = metrics["simulations_total"] / count if count else 0.0
+    score_interval = _bootstrap_score_interval(score_by_seat)
     return {
         "first_agent": first_name,
         "second_agent": second_name,
@@ -184,13 +325,34 @@ def summarize_pair(
         "draws": draws,
         "losses": losses,
         "score": score,
+        # Draws are included in total and count as non-wins for this interval.
         "win_rate_wilson_95": wilson_interval(wins, total),
-        "average_move_seconds": sum(move_times) / len(move_times) if move_times else 0.0,
-        "p95_move_seconds": percentile(move_times, 95),
-        "nodes": nodes,
-        "simulations": simulations,
-        "budget_violations": violations,
+        "decisive_win_rate_wilson_95": (
+            wilson_interval(wins, wins + losses) if wins + losses else None
+        ),
+        "score_bootstrap_95": score_interval,
+        "unique_openings": len(opening_positions),
+        "per_agent": per_agent,
+        "budget_violations": budget_violations,
     }
+
+
+def _bootstrap_score_interval(
+    score_by_seat: dict[int, list[float]],
+    replicates: int = 10000,
+    seed: int = 20261119,
+) -> tuple[float, float]:
+    rng = random.Random(seed)
+    groups = [scores for scores in score_by_seat.values() if scores]
+    total = sum(len(scores) for scores in groups)
+    estimates = []
+    for _ in range(replicates):
+        resampled_total = sum(
+            sum(rng.choices(scores, k=len(scores))) for scores in groups
+        )
+        estimates.append(resampled_total / total)
+    estimates.sort()
+    return estimates[int(0.025 * replicates)], estimates[min(replicates - 1, int(0.975 * replicates))]
 
 
 def summarize_results(
@@ -233,10 +395,15 @@ def save_game_logs(
                     "result": int(game.result),
                     "plies": game.moves,
                     "actions": list(game.actions),
+                    "opening_actions": list(game.opening_actions),
+                    "move_players": list(game.move_players),
                     "elapsed_seconds": game.elapsed_seconds,
                     "move_times_seconds": list(game.move_times),
-                    "nodes": game.nodes,
-                    "simulations": game.simulations,
+                    "nodes_total": game.nodes,
+                    "nodes_by_player": list(game.nodes_by_player),
+                    "simulations_total": game.simulations,
+                    "simulations_by_player": list(game.simulations_by_player),
                     "budget_violations": game.budget_violations,
+                    "budget_violations_by_player": list(game.budget_violations_by_player),
                 }, ensure_ascii=False) + "\n")
 

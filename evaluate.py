@@ -42,6 +42,8 @@ def main() -> None:
     parser.add_argument("--games", type=int, default=100, help="Games per pair")
     parser.add_argument("--budget-ms", type=float, default=None)
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--opening-plies", type=int, default=6,
+                        help="Seeded random opening length; set 0 to disable")
     parser.add_argument("--engine", choices=("grid", "bitboard"), default="grid")
     parser.add_argument("--checkpoint", default=None, help="Optional trained policy/value checkpoint")
     parser.add_argument("--device", default="cpu", help="PyTorch device used for checkpoint inference")
@@ -66,6 +68,8 @@ def main() -> None:
         games_per_pair=args.games,
         time_budget_seconds=budget_seconds,
         engine_factory=BitboardConnectFour if args.engine == "bitboard" else ConnectFour,
+        seed=args.seed,
+        opening_plies=args.opening_plies,
     )
     save_results(results, args.output)
     game_log = args.game_log or str(Path(args.output).with_suffix(".games.jsonl"))
@@ -74,8 +78,17 @@ def main() -> None:
         "seed": args.seed,
         "games_per_pair": args.games,
         "time_budget_seconds": budget_seconds,
+        "opening_plies": args.opening_plies,
+        "opening_filter": "no immediate win for side to move; at least one move avoids an immediate losing reply",
         "engine": args.engine,
         "agents": list(agents),
+        "timed_search_agents": [
+            name for name in agents if name.startswith("AlphaBeta-") or name.startswith("MCTS-time")
+        ] if budget_seconds is not None else [],
+        "time_budget_semantics": (
+            "maximum per decision; AlphaBeta and MCTS use timed search, other agents run normally"
+            if budget_seconds is not None else "fixed depth/simulation settings"
+        ),
         "checkpoint": args.checkpoint,
     })
     print(f"Saved evaluation report to {args.output}")

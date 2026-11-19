@@ -9,10 +9,16 @@
     "draws": 0,
     "losses": 0,
     "score": 1.0,
-    "average_move_seconds": 0.004065631301162521,
-    "p95_move_seconds": 0.014026340033160518,
-    "nodes": 28038,
-    "simulations": 0
+    "agent_metrics": {
+      "nodes_total": 23756,
+      "simulations_total": 0,
+      "budget_violations": 0,
+      "moves": 58,
+      "average_move_seconds": 0.006638134482461189,
+      "p95_move_seconds": 0.01244287996960338,
+      "nodes_per_move": 409.58620689655174,
+      "simulations_per_move": 0.0
+    }
   },
   {
     "configuration": "ab-no-pruning",
@@ -24,10 +30,16 @@
     "draws": 0,
     "losses": 0,
     "score": 1.0,
-    "average_move_seconds": 0.024705801739195444,
-    "p95_move_seconds": 0.05618522004806436,
-    "nodes": 155500,
-    "simulations": 0
+    "agent_metrics": {
+      "nodes_total": 151157,
+      "simulations_total": 0,
+      "budget_violations": 0,
+      "moves": 58,
+      "average_move_seconds": 0.045773446553884524,
+      "p95_move_seconds": 0.05217815501382574,
+      "nodes_per_move": 2606.155172413793,
+      "simulations_per_move": 0.0
+    }
   },
   {
     "configuration": "ab-no-move-ordering",
@@ -39,10 +51,16 @@
     "draws": 0,
     "losses": 0,
     "score": 1.0,
-    "average_move_seconds": 0.00625961111076415,
-    "p95_move_seconds": 0.019029479986056686,
-    "nodes": 48327,
-    "simulations": 0
+    "agent_metrics": {
+      "nodes_total": 44480,
+      "simulations_total": 0,
+      "budget_violations": 0,
+      "moves": 59,
+      "average_move_seconds": 0.012112410167839883,
+      "p95_move_seconds": 0.019590420019812885,
+      "nodes_per_move": 753.8983050847457,
+      "simulations_per_move": 0.0
+    }
   },
   {
     "configuration": "mcts-50",
@@ -54,10 +72,16 @@
     "draws": 0,
     "losses": 0,
     "score": 1.0,
-    "average_move_seconds": 0.0014537369079212815,
-    "p95_move_seconds": 0.0039935600128956136,
-    "nodes": 0,
-    "simulations": 3850
+    "agent_metrics": {
+      "nodes_total": 0,
+      "simulations_total": 3600,
+      "budget_violations": 0,
+      "moves": 72,
+      "average_move_seconds": 0.002874247226120335,
+      "p95_move_seconds": 0.0038770349900005387,
+      "nodes_per_move": 0.0,
+      "simulations_per_move": 50.0
+    }
   },
   {
     "configuration": "mcts-100",
@@ -69,10 +93,16 @@
     "draws": 0,
     "losses": 0,
     "score": 1.0,
-    "average_move_seconds": 0.0032070829649455844,
-    "p95_move_seconds": 0.008987560006789862,
-    "nodes": 0,
-    "simulations": 7000
+    "agent_metrics": {
+      "nodes_total": 0,
+      "simulations_total": 7600,
+      "budget_violations": 0,
+      "moves": 76,
+      "average_move_seconds": 0.005396176314159101,
+      "p95_move_seconds": 0.007653300010133535,
+      "nodes_per_move": 0.0,
+      "simulations_per_move": 100.0
+    }
   },
   {
     "configuration": "mcts-500",
@@ -84,10 +114,16 @@
     "draws": 0,
     "losses": 0,
     "score": 1.0,
-    "average_move_seconds": 0.01531557184508414,
-    "p95_move_seconds": 0.0423212499881629,
-    "nodes": 0,
-    "simulations": 27000
+    "agent_metrics": {
+      "nodes_total": 0,
+      "simulations_total": 27000,
+      "budget_violations": 0,
+      "moves": 54,
+      "average_move_seconds": 0.02933170185402829,
+      "p95_move_seconds": 0.039961859985487534,
+      "nodes_per_move": 0.0,
+      "simulations_per_move": 500.0
+    }
   },
   {
     "configuration": "mcts-1000",
@@ -99,10 +135,16 @@
     "draws": 0,
     "losses": 0,
     "score": 1.0,
-    "average_move_seconds": 0.030503525209863585,
-    "p95_move_seconds": 0.07855517998686991,
-    "nodes": 0,
-    "simulations": 62000
+    "agent_metrics": {
+      "nodes_total": 0,
+      "simulations_total": 59000,
+      "budget_violations": 0,
+      "moves": 59,
+      "average_move_seconds": 0.05664855932276222,
+      "p95_move_seconds": 0.07782597001059913,
+      "nodes_per_move": 0.0,
+      "simulations_per_move": 1000.0
+    }
   },
   {
     "configuration": "mcts-5000",
@@ -114,9 +156,15 @@
     "draws": 0,
     "losses": 0,
     "score": 1.0,
-    "average_move_seconds": 0.154746844957117,
-    "p95_move_seconds": 0.419863260013517,
-    "nodes": 0,
-    "simulations": 285000
+    "agent_metrics": {
+      "nodes_total": 0,
+      "simulations_total": 260000,
+      "budget_violations": 0,
+      "moves": 52,
+      "average_move_seconds": 0.29959399423499306,
+      "p95_move_seconds": 0.4199293150100857,
+      "nodes_per_move": 0.0,
+      "simulations_per_move": 5000.0
+    }
   }
 ]

@@ -1,11 +1,18 @@
+import random
+import time
+
 import pytest
 
-from connect4.experiments import percentile, wilson_interval
-from connect4.agents import AlphaBetaAgent
+from connect4.experiments import (
+    _has_immediate_win, _has_safe_action, percentile, play_game, round_robin,
+    summarize_pair, wilson_interval,
+)
+from connect4.agents import AlphaBetaAgent, MCTSAgent, _window_score, _window_score_counts
 from connect4.engine import ConnectFour, GameResult, Player
 from connect4.engine_bit import ConnectFour as BitboardConnectFour
 from connect4.agents import HeuristicAgent, MCTSAgent, PolicyAgent, RandomAgent, evaluate
 from connect4.training import split_training_records
+from connect4.encoding import encode_planes
 
 ENGINES = (ConnectFour, BitboardConnectFour)
 
@@ -105,6 +112,84 @@ def test_grid_and_bitboard_evaluators_match() -> None:
         if not grid.is_terminal():
             for player in (Player.ONE, Player.TWO):
                 assert evaluate(bitboard, player) == evaluate(grid, player)
+
+
+def test_grid_bitboard_and_training_encoding_share_top_row_orientation() -> None:
+    grid, bitboard = ConnectFour(), BitboardConnectFour()
+    rng = random.Random(71)
+    while not grid.is_terminal():
+        action = rng.choice(grid.legal_actions())
+        grid.step(action)
+        bitboard.step(action)
+        assert grid.board == bitboard.board
+        for player in (1, 2):
+            assert encode_planes(grid.board, player) == encode_planes(bitboard.board, player)
+            assert evaluate(grid, player) == evaluate(bitboard, player)
+
+    bottom_stone = [[0] * 7 for _ in range(6)]
+    bottom_stone[5][3] = 1
+    encoded = encode_planes(bottom_stone, 1)
+    assert encoded[0][5][3] == 1
+    assert encoded[0][0][3] == 0
+
+
+def test_window_scores_distinguish_playable_and_floating_threats() -> None:
+    assert _window_score([1, 1, 1, 0], 1, playable=True) == 100
+    assert _window_score([1, 1, 1, 0], 1, playable=False) == 20
+    assert _window_score([2, 2, 2, 0], 1, playable=True) == -120
+    assert _window_score([2, 2, 2, 0], 1, playable=False) == -20
+    assert _window_score_counts(3, 0, 1, playable=False) == 20
+
+
+def test_mcts_reward_is_normalized_to_unit_interval() -> None:
+    assert MCTSAgent._reward(GameResult.PLAYER_ONE, Player.ONE) == 1.0
+    assert MCTSAgent._reward(GameResult.PLAYER_ONE, Player.TWO) == 0.0
+    assert MCTSAgent._reward(GameResult.DRAW, Player.ONE) == 0.5
+
+
+def test_round_robin_uses_unique_seeded_openings_and_separates_agent_metrics() -> None:
+    class FirstLegalAgent:
+        def choose_action(self, state):
+            return state.legal_actions()[0]
+
+    agents = {"left": FirstLegalAgent(), "right": FirstLegalAgent()}
+    games = round_robin(
+        agents, games_per_pair=20, seed=99, opening_plies=6,
+        engine_factory=BitboardConnectFour,
+    )[("left", "right")]
+    assert sum(game.first_agent == "left" for game in games) == 10
+    assert len({game.opening_actions for game in games}) == 20
+    opening_state = BitboardConnectFour()
+    for action in games[0].opening_actions:
+        opening_state.step(action)
+    assert not _has_immediate_win(opening_state)
+    assert _has_safe_action(opening_state)
+    summary = summarize_pair("left", "right", games)
+    assert summary["unique_openings"] == 20
+    assert summary["per_agent"]["left"]["moves"] > 0
+    assert summary["score_bootstrap_95"][0] <= summary["score"] <= summary["score_bootstrap_95"][1]
+
+
+def test_budget_violations_and_latency_are_attributed_to_the_acting_agent() -> None:
+    class FirstLegalAgent:
+        def __init__(self, delay=0.0):
+            self.delay = delay
+
+        def choose_action(self, state):
+            if self.delay:
+                time.sleep(self.delay)
+            return state.legal_actions()[0]
+
+    game = play_game(
+        FirstLegalAgent(delay=0.002), FirstLegalAgent(), "slow", "fast",
+        time_budget_seconds=0.001,
+    )
+    summary = summarize_pair("slow", "fast", [game])
+    assert game.budget_violations_by_player[0] > 0
+    assert game.budget_violations_by_player[1] == 0
+    assert summary["per_agent"]["slow"]["budget_violations"] > 0
+    assert summary["per_agent"]["fast"]["budget_violations"] == 0
+    assert summary["per_agent"]["slow"]["average_move_seconds"] > summary["per_agent"]["fast"]["average_move_seconds"]
 
 
 def test_time_limited_agents_return_legal_actions() -> None:

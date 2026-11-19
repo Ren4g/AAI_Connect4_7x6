@@ -25,6 +25,17 @@ _BITBOARD_WINDOWS = tuple(
     for column in columns
     for row in rows
 )
+_WINDOW_COORDS = tuple(
+    tuple((ROWS - 1 - (row + dy * offset), column + dx * offset) for offset in range(4))
+    for dx, dy, columns, rows in (
+        (1, 0, range(4), range(6)),
+        (0, 1, range(7), range(3)),
+        (1, 1, range(4), range(3)),
+        (1, -1, range(4), range(3, 6)),
+    )
+    for column in columns
+    for row in rows
+)
 
 
 class Agent:
@@ -43,7 +54,7 @@ class RandomAgent(Agent):
         return self.random.choice(actions)
 
 
-def _window_score(window: list[int], player: int) -> float:
+def _window_score(window: list[int], player: int, playable: bool = False) -> float:
     opponent = 1 if player == 2 else 2
     own = window.count(player)
     other = window.count(opponent)
@@ -51,11 +62,11 @@ def _window_score(window: list[int], player: int) -> float:
     if own == 4:
         return 100000.0
     if own == 3 and empty == 1:
-        return 100.0 if other == 0 else 10.0
+        return 100.0 if playable else 20.0
     if own == 2 and empty == 2:
         return 10.0
     if other == 3 and empty == 1:
-        return -120.0 if own == 0 else -20.0
+        return -120.0 if playable else -20.0
     if other == 2 and empty == 2:
         return -8.0
     return 0.0
@@ -68,37 +79,46 @@ def evaluate(state: GameState, player: Player | int) -> float:
         own_bits = player_bits(player)
         opponent_bits = player_bits(player.opponent)
         score = 3.0 * (own_bits & _CENTER_MASK).bit_count()
+        occupied = own_bits | opponent_bits
         for window in _BITBOARD_WINDOWS:
             own = (own_bits & window).bit_count()
             other = (opponent_bits & window).bit_count()
             empty = 4 - own - other
-            score += _window_score_counts(own, other, empty)
+            playable = False
+            if empty == 1 and (own == 3 or other == 3):
+                missing = window & ~occupied
+                missing_index = missing.bit_length() - 1
+                row_from_bottom = missing_index % _BIT_STRIDE
+                playable = row_from_bottom == 0 or bool(occupied & (1 << (missing_index - 1)))
+            score += _window_score_counts(own, other, empty, playable)
         return score
 
     board = state.board
     score = 3.0 * sum(board[row][COLS // 2] == int(player) for row in range(ROWS))
-    for row in range(ROWS):
-        for column in range(COLS - 3):
-            score += _window_score(board[row][column : column + 4], int(player))
-    for row in range(ROWS - 3):
-        for column in range(COLS):
-            score += _window_score([board[row + offset][column] for offset in range(4)], int(player))
-    for row in range(ROWS - 3):
-        for column in range(COLS - 3):
-            score += _window_score([board[row + offset][column + offset] for offset in range(4)], int(player))
-            score += _window_score([board[row + 3 - offset][column + offset] for offset in range(4)], int(player))
+    for coordinates in _WINDOW_COORDS:
+        window = [board[row][column] for row, column in coordinates]
+        empty_cells = [
+            (row, column)
+            for (row, column), cell in zip(coordinates, window)
+            if cell == 0
+        ]
+        playable = False
+        if len(empty_cells) == 1:
+            row, column = empty_cells[0]
+            playable = row == ROWS - 1 or board[row + 1][column] != 0
+        score += _window_score(window, int(player), playable)
     return score
 
 
-def _window_score_counts(own: int, other: int, empty: int) -> float:
+def _window_score_counts(own: int, other: int, empty: int, playable: bool = False) -> float:
     if own == 4:
         return 100000.0
     if own == 3 and empty == 1:
-        return 100.0 if other == 0 else 10.0
+        return 100.0 if playable else 20.0
     if own == 2 and empty == 2:
         return 10.0
     if other == 3 and empty == 1:
-        return -120.0 if own == 0 else -20.0
+        return -120.0 if playable else -20.0
     if other == 2 and empty == 2:
         return -8.0
     return 0.0
@@ -311,10 +331,7 @@ class MCTSAgent(Agent):
                 node.visits += 1
                 if node.parent is not None:
                     mover = node.parent.state.current_player
-                    if winner == GameResult(int(mover)):
-                        node.value += 1.0
-                    elif winner != GameResult.DRAW:
-                        node.value -= 1.0
+                    node.value += self._reward(winner, mover)
                 node = node.parent
             self.simulations_run += 1
         return max(root.children.values(), key=lambda child: child.visits).action
@@ -323,6 +340,13 @@ class MCTSAgent(Agent):
         if node.visits == 0:
             return float("inf")
         return node.value / node.visits + self.exploration * math.sqrt(math.log(node.parent.visits) / node.visits)
+
+    @staticmethod
+    def _reward(winner: GameResult, player: Player) -> float:
+        """Return a UCT reward on [0, 1] from this edge's mover perspective."""
+        if winner is GameResult.DRAW:
+            return 0.5
+        return 1.0 if winner is GameResult(int(player)) else 0.0
 
     def _rollout(self, state: GameState) -> GameResult:
         rollout = state.clone()
@@ -343,8 +367,9 @@ class PolicyAgent(Agent):
         except ImportError as error:
             raise RuntimeError("Install PyTorch to load a trained policy") from error
         from .model import ConnectFourCNN
+        from .encoding import encode_planes
 
-        checkpoint = torch.load(path, map_location=device)
+        checkpoint = torch.load(path, map_location=device, weights_only=True)
         model = ConnectFourCNN().to(device)
         state_dict = checkpoint.get("model_state_dict", checkpoint) if isinstance(checkpoint, dict) else checkpoint
         model.load_state_dict(state_dict)
@@ -352,12 +377,9 @@ class PolicyAgent(Agent):
 
         def policy(state: GameState) -> Sequence[float]:
             player = int(state.current_player)
-            opponent = 1 if player == 2 else 2
-            planes = [
-                [[float(cell == player) for cell in row] for row in state.board],
-                [[float(cell == opponent) for cell in row] for row in state.board],
-            ]
-            inputs = torch.tensor([planes], dtype=torch.float32, device=device)
+            inputs = torch.as_tensor(
+                encode_planes(state.board, player), dtype=torch.float32, device=device
+            ).unsqueeze(0)
             with torch.inference_mode():
                 logits, _ = model(inputs)
             return logits[0].detach().cpu().tolist()

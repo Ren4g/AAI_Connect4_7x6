@@ -5,8 +5,8 @@ import json
 from pathlib import Path
 
 from connect4.agents import AlphaBetaAgent, MCTSAgent, RandomAgent
-from connect4.experiments import play_game, percentile
-from connect4.engine import ConnectFour, GameResult
+from connect4.experiments import play_game, summarize_pair
+from connect4.engine import ConnectFour
 from connect4.engine_bit import ConnectFour as BitboardConnectFour
 
 
@@ -41,13 +41,8 @@ def run_ablation(
                 games_played.append(
                     play_game(agent, random_agent, name, "Random", engine_factory=engine_factory)
                 )
-        wins = sum(
-            game.result.value == (1 if game.first_agent == name else 2)
-            for game in games_played
-        )
-        draws = sum(game.result is GameResult.DRAW for game in games_played)
-        losses = games - wins - draws
-        move_times = [move_time for game in games_played for move_time in game.move_times]
+        summary = summarize_pair(name, "Random", games_played)
+        agent_metrics = summary["per_agent"][name]
         report.append(
             {
                 "configuration": name,
@@ -55,14 +50,11 @@ def run_ablation(
                 "seed": seed,
                 "depth": depth,
                 "engine": engine_name,
-                "wins": wins,
-                "draws": draws,
-                "losses": losses,
-                "score": (wins + 0.5 * draws) / games,
-                "average_move_seconds": sum(move_times) / len(move_times),
-                "p95_move_seconds": percentile(move_times, 95),
-                "nodes": sum(game.nodes for game in games_played),
-                "simulations": sum(game.simulations for game in games_played),
+                "wins": summary["wins"],
+                "draws": summary["draws"],
+                "losses": summary["losses"],
+                "score": summary["score"],
+                "agent_metrics": agent_metrics,
             }
         )
     return report

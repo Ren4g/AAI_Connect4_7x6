@@ -90,12 +90,12 @@ class ConnectFour:
         return self._result
     
     def to_grid(self) -> list[list[int]]:
-        mine = self.position                    # quân của bên sắp đi trong biểu diễn nội bộ
-        theirs = self.position ^ self.mask      # quân của đối thủ
+        mine = self.position                    
+        theirs = self.position ^ self.mask      
         p1, p2 = (mine, theirs) if self._side_to_move() is Player.ONE else (theirs, mine)
       
         grid = []
-        for row in range(ROWS):                 # row 0 = trên cùng (như code cũ)
+        for row in range(ROWS):                 
             from_bottom = (ROWS - 1) - row
             line = []
             for col in range(COLS):
@@ -109,12 +109,12 @@ class ConnectFour:
         return self.to_grid()
     
     def render(self) -> str:
-        mine = self.position                  # quân của bên sắp đi trong biểu diễn nội bộ
-        theirs = self.position ^ self.mask    # quân đối thủ
+        mine = self.position                  
+        theirs = self.position ^ self.mask    
         p1, p2 = (mine, theirs) if self._side_to_move() is Player.ONE else (theirs, mine)
 
         lines = []
-        for row in range(ROWS):               # hàng 0 = trên cùng
+        for row in range(ROWS):               
             from_bottom = (ROWS - 1) - row
             cells = []
             for col in range(COLS):
