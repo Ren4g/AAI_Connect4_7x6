@@ -1,0 +1,3 @@
+[submodule "solver/connect4"]
+	path = solver/connect4
+	url = https://github.com/PascalPons/connect4.git

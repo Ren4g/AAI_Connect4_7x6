@@ -39,7 +39,7 @@ class ConnectFour:
         if self._result is GameResult.DRAW:
             return Player.ONE if self.moves_played % 2 else Player.TWO
         return self._side_to_move()
-    
+
     def clone(self) -> "ConnectFour":
         state = ConnectFour.__new__(ConnectFour)
         state.position = self.position
@@ -88,14 +88,14 @@ class ConnectFour:
 
     def result(self) -> GameResult:
         return self._result
-    
+
     def to_grid(self) -> list[list[int]]:
-        mine = self.position                    
-        theirs = self.position ^ self.mask      
+        mine = self.position
+        theirs = self.position ^ self.mask
         p1, p2 = (mine, theirs) if self._side_to_move() is Player.ONE else (theirs, mine)
-      
+
         grid = []
-        for row in range(ROWS):                 
+        for row in range(ROWS):
             from_bottom = (ROWS - 1) - row
             line = []
             for col in range(COLS):
@@ -103,18 +103,18 @@ class ConnectFour:
                 line.append(1 if p1 & bit else 2 if p2 & bit else 0)
             grid.append(line)
         return grid
-    
+
     @property
     def board(self) -> list[list[int]]:
         return self.to_grid()
-    
+
     def render(self) -> str:
-        mine = self.position                  
-        theirs = self.position ^ self.mask    
+        mine = self.position
+        theirs = self.position ^ self.mask
         p1, p2 = (mine, theirs) if self._side_to_move() is Player.ONE else (theirs, mine)
 
         lines = []
-        for row in range(ROWS):               
+        for row in range(ROWS):
             from_bottom = (ROWS - 1) - row
             cells = []
             for col in range(COLS):
@@ -122,7 +122,7 @@ class ConnectFour:
                 cells.append("1" if p1 & bit else "2" if p2 & bit else ".")
             lines.append(" ".join(cells))
         return "\n".join(lines) + "\n" + " ".join(str(c) for c in range(COLS))
-    
+
     def _is_column_available(self, col)->bool:
         topbit = 1 << (col * STRIDE + (ROWS -1))
         return (self.mask & topbit) == 0
@@ -136,7 +136,7 @@ class ConnectFour:
 
 def debug_bits(bitboard: int, title: str = "") -> None:
     print(f"--- {title} (Giá trị số: {bitboard}) ---")
-    for r in range(STRIDE - 1, -1, -1):  # In từ hàng đệm (6) xuống đáy (0)
+    for r in range(STRIDE - 1, -1, -1):
         row_str = []
         for c in range(COLS):
             bit_index = c * STRIDE + r
@@ -147,24 +147,21 @@ def debug_bits(bitboard: int, title: str = "") -> None:
         print(f"{label}: " + " ".join(row_str))
 
 if __name__ == "__main__":
-    # debug_bits((1 << 0) | (1 << 14), "Thử nghiệm bật 2 ô đáy")
     g = ConnectFour()
-    for a in [0, 1, 0, 1, 0, 1, 0]:      # người 1 xếp 4 quân dọc ở cột 0
+    for a in [0, 1, 0, 1, 0, 1, 0]:
         g.step(a)
     assert g.result() == GameResult.PLAYER_ONE
 
-    # cột đầy phải báo lỗi
     g = ConnectFour()
     for a in [0, 0, 0, 0, 0, 0]:
         g.step(a)
     assert g.legal_actions() == [1, 2, 3, 4, 5, 6]
 
-    # ngang
     g = ConnectFour()
     for a in [0, 0, 1, 1, 2, 2, 3]:
         g.step(a)
     assert g.result() == GameResult.PLAYER_ONE
-    
+
     g = ConnectFour()
     for a in [3, 3, 4]:
         g.step(a)

@@ -2,3 +2,8 @@ __pycache__/
 *.py[cod]
 .pytest_cache/
 .venv*/
+artifacts/
+results/colab/
+results/colab_inbox/
+colab/source_bundle.zip
+colab/source_bundle.manifest.json

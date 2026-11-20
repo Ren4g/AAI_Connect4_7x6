@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, Optional, Sequence
 
-from .engine import COLS, GameResult, Player, ROWS
+from .engine import COLS, ConnectFour, GameResult, Player, ROWS
 from .state import GameState
 
 CENTER_ORDER = (3, 2, 4, 1, 5, 0, 6)
@@ -173,15 +173,20 @@ class AlphaBetaAgent(Agent):
         pruning: bool = True,
         move_ordering: bool = True,
         time_budget_seconds: float | None = None,
+        time_check_interval: int = 1024,
     ) -> None:
         if depth < 1:
             raise ValueError("depth must be positive")
         if time_budget_seconds is not None and time_budget_seconds <= 0:
             raise ValueError("time_budget_seconds must be positive")
+        if time_check_interval < 1 or time_check_interval & (time_check_interval - 1):
+            raise ValueError("time_check_interval must be a positive power of two")
         self.depth = depth
         self.pruning = pruning
         self.move_ordering = move_ordering
         self.time_budget_seconds = time_budget_seconds
+        self.time_check_interval = time_check_interval
+        self._time_check_mask = time_check_interval - 1
         self.nodes = 0
 
     def choose_action(self, state: GameState) -> int:
@@ -196,8 +201,15 @@ class AlphaBetaAgent(Agent):
             deadline = time.perf_counter() + self.time_budget_seconds * 0.95
             best_action = ordered_actions[0]
             for depth in range(1, self.depth + 1):
+                if time.perf_counter() >= deadline:
+                    break
+                root_actions = ordered_actions
+                if self.move_ordering and depth > 1:
+                    root_actions = [best_action] + [
+                        action for action in ordered_actions if action != best_action
+                    ]
                 try:
-                    best_action = self._search_root(state, ordered_actions, depth, player, deadline)
+                    best_action = self._search_root(state, root_actions, depth, player, deadline)
                 except _SearchTimeout:
                     break
             return best_action
@@ -216,6 +228,8 @@ class AlphaBetaAgent(Agent):
         best_action = actions[0]
         alpha, beta = float("-inf"), float("inf")
         for action in actions:
+            if deadline is not None and time.perf_counter() >= deadline:
+                raise _SearchTimeout
             child = state.clone()
             child.step(action)
             score = self._search(child, depth - 1, alpha, beta, player, deadline)
@@ -223,6 +237,8 @@ class AlphaBetaAgent(Agent):
                 best_score, best_action = score, action
             if self.pruning:
                 alpha = max(alpha, best_score)
+        if deadline is not None and time.perf_counter() >= deadline:
+            raise _SearchTimeout
         return best_action
 
     def _search(
@@ -234,9 +250,10 @@ class AlphaBetaAgent(Agent):
         root: Player,
         deadline: float | None = None,
     ) -> float:
-        if deadline is not None and time.perf_counter() >= deadline:
-            raise _SearchTimeout
         self.nodes += 1
+        if deadline is not None and not (self.nodes & self._time_check_mask):
+            if time.perf_counter() >= deadline:
+                raise _SearchTimeout
         if state.result() == GameResult(int(root)):
             return 1000000.0 + depth
         if state.result() == GameResult(int(root.opponent)):
@@ -384,7 +401,14 @@ class PolicyAgent(Agent):
                 logits, _ = model(inputs)
             return logits[0].detach().cpu().tolist()
 
-        return cls(policy)
+        agent = cls(policy)
+        warmup_state = ConnectFour()
+        for _ in range(2):
+            policy(warmup_state)
+        if torch.device(device).type == "cuda":
+            torch.cuda.synchronize(torch.device(device))
+        agent.warmup_runs = 2
+        return agent
 
     def choose_action(self, state: GameState) -> int:
         actions = state.legal_actions()
@@ -410,4 +434,118 @@ class PolicyAgent(Agent):
         if len(scores) != COLS:
             raise ValueError(f"Policy must return {COLS} scores")
         return max(actions, key=lambda action: (float(scores[action]), -CENTER_ORDER.index(action)))
+
+
+@dataclass
+class _PUCTNode:
+    state: GameState
+    parent: Optional["_PUCTNode"] = None
+    action: Optional[int] = None
+    prior: float = 0.0
+    visits: int = 0
+    value_sum: float = 0.0  # value from this node's side-to-move perspective
+    children: dict[int, "_PUCTNode"] = field(default_factory=dict)
+
+
+class PUCTAgent(Agent):
+    """Policy-prior/value-leaf MCTS (AlphaGo-inspired inference, no RL)."""
+
+    def __init__(self, policy_value: Callable[[GameState], tuple[Sequence[float], float]],
+                 simulations: int = 200, c_puct: float = 1.5,
+                 seed: Optional[int] = None) -> None:
+        if simulations < 1 or c_puct <= 0:
+            raise ValueError("simulations and c_puct must be positive")
+        self.policy_value = policy_value
+        self.simulations = simulations
+        self.c_puct = c_puct
+        self.random = random.Random(seed)
+        self.simulations_run = 0
+
+    @classmethod
+    def from_checkpoint(cls, path: str | Path, simulations: int = 200,
+                        c_puct: float = 1.5, device: str = "cpu") -> "PUCTAgent":
+        try:
+            import torch
+        except ImportError as error:
+            raise RuntimeError("Install PyTorch to load a policy/value checkpoint") from error
+        from .encoding import encode_planes
+        from .model import ConnectFourCNN
+
+        checkpoint = torch.load(path, map_location=device, weights_only=True)
+        model = ConnectFourCNN().to(device)
+        model.load_state_dict(checkpoint.get("model_state_dict", checkpoint))
+        model.eval()
+
+        def policy_value(state: GameState) -> tuple[Sequence[float], float]:
+            inputs = torch.as_tensor(encode_planes(state.board, int(state.current_player)),
+                                     dtype=torch.float32, device=device).unsqueeze(0)
+            with torch.inference_mode():
+                logits, value = model(inputs)
+            return logits[0].detach().cpu().tolist(), float(value[0].detach().cpu())
+
+        return cls(policy_value, simulations, c_puct)
+
+    def choose_action(self, state: GameState) -> int:
+        legal = state.legal_actions()
+        if not legal:
+            raise ValueError("No legal actions available")
+        root = _PUCTNode(state.clone())
+        self._expand(root)
+        self.simulations_run = 0
+        for _ in range(self.simulations):
+            node = root
+            while not node.state.is_terminal() and node.children:
+                node = max(node.children.values(), key=self._puct_score)
+            if node.state.is_terminal():
+                value = self._terminal_value(node.state)
+            else:
+                value = self._expand(node)
+            node.visits += 1
+            node.value_sum += value
+            while node.parent is not None:
+                parent = node.parent
+                if node.state.current_player != parent.state.current_player:
+                    value = -value
+                node = parent
+                node.visits += 1
+                node.value_sum += value
+            self.simulations_run += 1
+        return max(root.children.values(), key=lambda child: child.visits).action
+
+    def _expand(self, node: _PUCTNode) -> float:
+        if node.state.is_terminal():
+            return self._terminal_value(node.state)
+        logits, value = self.policy_value(node.state)
+        if len(logits) != COLS:
+            raise ValueError(f"Policy must return {COLS} logits")
+        actions = node.state.legal_actions()
+        maximum = max(float(logits[action]) for action in actions)
+        weights = {action: math.exp(max(-80.0, float(logits[action]) - maximum))
+                   for action in actions}
+        normalizer = sum(weights.values())
+        for action in actions:
+            child_state = node.state.clone()
+            child_state.step(action)
+            node.children[action] = _PUCTNode(
+                child_state, node, action, weights[action] / normalizer
+            )
+        return max(-1.0, min(1.0, float(value)))
+
+    def _puct_score(self, child: _PUCTNode) -> float:
+        parent = child.parent
+        assert parent is not None
+        if child.visits:
+            q_child = child.value_sum / child.visits
+            q_parent = q_child if child.state.current_player == parent.state.current_player else -q_child
+        else:
+            q_parent = 0.0
+        prior_term = self.c_puct * child.prior * math.sqrt(max(1, parent.visits)) / (1 + child.visits)
+        return q_parent + prior_term
+
+    @staticmethod
+    def _terminal_value(state: GameState) -> float:
+        result = state.result()
+        if result is GameResult.DRAW:
+            return 0.0
+        return 1.0 if result is GameResult(int(state.current_player)) else -1.0
 

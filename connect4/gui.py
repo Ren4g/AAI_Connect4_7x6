@@ -4,7 +4,8 @@ import argparse
 import tkinter as tk
 from tkinter import messagebox, ttk
 
-from .agents import Agent, AlphaBetaAgent, HeuristicAgent, MCTSAgent, PolicyAgent, RandomAgent
+from .agents import (Agent, AlphaBetaAgent, HeuristicAgent, MCTSAgent, PolicyAgent,
+                     PUCTAgent, RandomAgent)
 from .engine import COLS, ROWS, ConnectFour, GameResult, Player
 from .engine_bit import ConnectFour as BitboardConnectFour
 from .state import GameState
@@ -17,6 +18,9 @@ class ConnectFourApp:
         engine_factory=ConnectFour,
         checkpoint: str | None = None,
         device: str = "cpu",
+        rl_checkpoint: str | None = None,
+        puct_checkpoint: str | None = None,
+        puct_simulations: int = 200,
     ) -> None:
         self.root = root
         self.root.title("Connect Four 7x6")
@@ -27,6 +31,10 @@ class ConnectFourApp:
             PolicyAgent.from_checkpoint(checkpoint, device=device)
             if checkpoint else None
         )
+        self.rl_agent = PolicyAgent.from_checkpoint(rl_checkpoint, device=device) if rl_checkpoint else None
+        self.puct_agent = (PUCTAgent.from_checkpoint(puct_checkpoint, simulations=puct_simulations,
+                                                    device=device)
+                           if puct_checkpoint else None)
 
         self.mode = tk.StringVar(value="human_vs_ai")
         self.level = tk.StringVar(value="Alpha-Beta")
@@ -44,6 +52,10 @@ class ConnectFourApp:
         agent_choices = ("Random", "Heuristic", "Alpha-Beta", "MCTS")
         if self.policy_agent is not None:
             agent_choices += ("CNN-Policy",)
+        if self.rl_agent is not None:
+            agent_choices += ("RL-Policy",)
+        if self.puct_agent is not None:
+            agent_choices += ("PUCT",)
         ttk.Combobox(
             root, textvariable=self.level,
             values=agent_choices,
@@ -96,6 +108,10 @@ class ConnectFourApp:
             return MCTSAgent(simulations=150, seed=42)
         if level == "CNN-Policy" and self.policy_agent is not None:
             return self.policy_agent
+        if level == "RL-Policy" and self.rl_agent is not None:
+            return self.rl_agent
+        if level == "PUCT" and self.puct_agent is not None:
+            return self.puct_agent
         return AlphaBetaAgent(depth=4)
 
     def draw(self) -> None:
@@ -127,11 +143,15 @@ def main() -> None:
     parser = argparse.ArgumentParser(description="Play Connect Four with an AI agent")
     parser.add_argument("--engine", choices=("grid", "bitboard"), default="grid")
     parser.add_argument("--checkpoint", default=None, help="Optional trained CNN policy checkpoint")
+    parser.add_argument("--rl-checkpoint", default=None, help="Optional policy-gradient checkpoint")
+    parser.add_argument("--puct-checkpoint", default=None, help="Optional PUCT policy/value checkpoint")
+    parser.add_argument("--puct-simulations", type=int, default=200)
     parser.add_argument("--device", default="cpu", help="Inference device for a CNN checkpoint")
     args = parser.parse_args()
     root = tk.Tk()
     factory = BitboardConnectFour if args.engine == "bitboard" else ConnectFour
-    ConnectFourApp(root, factory, args.checkpoint, args.device)
+    ConnectFourApp(root, factory, args.checkpoint, args.device,
+                   args.rl_checkpoint, args.puct_checkpoint, args.puct_simulations)
     root.mainloop()
 
 
