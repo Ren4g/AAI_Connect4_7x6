@@ -1,0 +1,79 @@
+{
+  "schema_version": 1,
+  "run_id": "solverlabels_20261120_seed20261120_v2",
+  "phase": "solver_labelled_cnn_data",
+  "created_at_local": "2026-11-20T17:26:34.943265+07:00",
+  "seed": 20261120,
+  "source_code_commit": "b65dc3fefaf742218124e095bd9953a28a0272c4",
+  "source_code_sha256": "110050aef103b4b5775ec47e766664e62a2c88244f313ebacea08665646c8e45",
+  "solver_commit": "d6ba50d8aaf2308c769d9bf2abd42d90f34baf41",
+  "solver_binary_sha256": "13903490c56862be0eb02bad67087bd77035392786978b04cc5455e4ab5a45fe",
+  "frozen_test_dataset_id": "solver_eval_seed20261122_frozen",
+  "frozen_test_sha256": "3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01",
+  "frozen_state_overlap_count": 0,
+  "blocked_frozen_source_games": true,
+  "configuration": {
+    "input_logs": {
+      "benchmarks\\round_robin\\round_robin_full_seed20261119.games.jsonl": "86b7603151e43b93e3e7e6e3b22a397fa634d3fa67af782c85b1ef401e58de0c",
+      "benchmarks\\round_robin\\round_robin_filtered_paired_seed20261124.games.jsonl": "7b68600ec935d235b51e3cda85e0c1291d674ac35309c2f1f89246077af80638",
+      "benchmarks\\round_robin\\round_robin_unfiltered_paired_seed20261124.games.jsonl": "996c58c3db0bd487600e55a001d1711e94c01af280eaabb9b10fd3fd4bdf7d93",
+      "benchmarks\\head_to_head\\benchmark_ab_mcts_standard_100_paired_seed20261126.games.jsonl": "7c4d4f3233e2118a64416b8d00d8400295371e6c19cf6c558a55b478bf0927a2",
+      "benchmarks\\head_to_head\\benchmark_heuristic_ab6_seed20261130.games.jsonl": "9e3850446a4d5a4c94029ebd416264cadbfec0df4ce1e50f28430fa645799c01"
+    },
+    "positions_per_stage": 500,
+    "validation_fraction": 0.15,
+    "policy_temperature": 2.0,
+    "solver_workers": 8,
+    "smoke": false
+  },
+  "selection": {
+    "opening": {
+      "candidates": 2412,
+      "selected": 500,
+      "frozen_state_rejections": 23,
+      "mirror_duplicate_rejections": 86
+    },
+    "middle": {
+      "candidates": 1984,
+      "selected": 500,
+      "frozen_state_rejections": 0,
+      "mirror_duplicate_rejections": 5
+    },
+    "endgame": {
+      "candidates": 841,
+      "selected": 500,
+      "frozen_state_rejections": 0,
+      "mirror_duplicate_rejections": 5
+    }
+  },
+  "splits": {
+    "train": {
+      "positions": 1284,
+      "source_games": 1023,
+      "by_stage": {
+        "opening": 433,
+        "middle": 427,
+        "endgame": 424
+      }
+    },
+    "validation": {
+      "positions": 216,
+      "source_games": 181,
+      "by_stage": {
+        "opening": 67,
+        "middle": 73,
+        "endgame": 76
+      }
+    }
+  },
+  "files_sha256": {
+    "train_validation.npz": "eebca0b5d238b0431266ff30019c36adbdcbb37d1f18919c1eee4287d3f44ac1",
+    "hashes.json": "41939436ee514c8ababb2c924345fb0b8ce4b053d90c79049d9008f34e67b571",
+    "frozen_test_hashes.json": "c3621785eb96e9504e5331ddc2aa8cd3f0e6a3b1a4cd43f4dd9c388a8193e7eb"
+  },
+  "local_label_seconds": 130.63923749997048,
+  "producer_environment": {
+    "python": "3.13.5",
+    "platform": "Windows-11-10.0.26300-SP0"
+  }
+}

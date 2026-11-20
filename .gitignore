@@ -7,3 +7,5 @@ results/colab/
 results/colab_inbox/
 colab/source_bundle.zip
 colab/source_bundle.manifest.json
+colab/source_bundle_*.zip
+colab/source_bundle_*.manifest.json

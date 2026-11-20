@@ -1,5 +1,12 @@
 # Connect4 7x6
 
+Báo cáo tiến độ và kết quả thí nghiệm mới nhất: [docs/PROGRESS_REPORT.md](docs/PROGRESS_REPORT.md).
+
+Kết quả được phân thư mục theo mục đích: `benchmarks/` chứa dữ liệu trận đấu,
+round-robin và ablation; `results/` chứa đánh giá solver, dữ liệu/nhật ký huấn
+luyện và phân tích CNN. Các benchmark chính đã chạy lại được giữ cùng JSONL
+ván gốc; các bản pilot và kết quả cũ bị thay thế đã được dọn.
+
 Bộ khung triển khai các mục 1–5 trong `Proposal.docx`:
 
 - `connect4/engine.py`: engine chuẩn 7×6, API `reset`, `legal_actions`, `step`, `is_terminal`, `result`, `render`, `clone`.
@@ -83,13 +90,13 @@ Loại khai cuộc có thắng tức thì sẵn hoặc không có nước an to�
 100 vị trí được dùng cho mọi cặp:
 
 ```powershell
-python evaluate.py --games 100 --seed 20261119 --opening-plies 6 --engine bitboard --checkpoint checkpoints/connect4_cnn_gravityaware_seed20261119.pt --device cuda --output results/round_robin_full_seed20261119.json
+python evaluate.py --games 100 --seed 20261119 --opening-plies 6 --engine bitboard --checkpoint checkpoints/connect4_cnn_gravityaware_seed20261119.pt --device cuda --output benchmarks/round_robin/round_robin_full_seed20261119.json
 ```
 
 Chạy cùng giải đấu với engine bitboard:
 
 ```powershell
-python evaluate.py --games 100 --engine bitboard --output results/round_robin_bitboard.json
+python evaluate.py --games 100 --engine bitboard --output benchmarks/round_robin/round_robin_bitboard.json
 ```
 
 Để tắt khai cuộc ngẫu nhiên, dùng `--opening-plies 0`. Các ván deterministic
@@ -104,8 +111,14 @@ python evaluate.py --games 100 --engine bitboard --checkpoint checkpoints/connec
 Có thể giới hạn thời gian suy nghĩ của AlphaBeta và MCTS:
 
 ```powershell
-python evaluate.py --games 100 --budget-ms 25 --include AlphaBeta MCTS
+# AlphaBeta depth 4 / 100 ms va MCTS 100 ms
+python evaluate.py --games 100 --preset fast --paired-openings --include AlphaBeta MCTS
+
+# AlphaBeta depth 8 / 500 ms va MCTS 500 ms
+python evaluate.py --games 100 --preset standard --paired-openings --include AlphaBeta MCTS
 ```
+
+`fast` la AlphaBeta depth 4 so voi MCTS 100 ms; AlphaBeta da dung khoang 7,37 ms/nuoc trong benchmark truoc. `paired-openings` chay moi opening hai lan, doi ghe, va CI bootstrap gom theo opening. `standard` la depth toi da 8, 500 ms; day la ngan sach toi da, khong dam bao hai agent tieu thu cung compute.
 
 Báo cáo tách thời gian, node/lượt, simulation/lượt và vượt ngân sách theo từng
 agent. `win_rate_wilson_95` dùng tổng số ván; hòa được tính là kết quả không
@@ -134,14 +147,65 @@ bootstrap phân tầng 95% là `[0.3825, 0.5175]`, nên chưa kết luận đư�
 thống kê. Mỗi cặp dùng 100 bàn khai cuộc khác nhau; cùng một bộ khai cuộc được
 dùng chung giữa các cặp và luân phiên ghế.
 Ma trận đầy đủ nằm trong
-`results/round_robin_full_seed20261119.json`.
+`benchmarks/round_robin/round_robin_full_seed20261119.json`.
+
+## Chẩn đoán CNN và tiêu chí chuyển giao
+
+Phân tích 194 ván CNN thua bằng Pons solver ghi riêng nước kém exact score và nước làm xấu WDL. Có 181 ván có nước kém exact, 145 ván có nước WDL-degrading; 14 trong số này tạo fork theo kiểm tra tác chiến hai ply. 97 opening đã là thế thua cưỡng bức cho CNN trước nước đi đầu tiên. Cả hai ván CNN thua Random đều thuộc nhóm này; một ván không có nước kém tối ưu, ván còn lại CNN chọn đường thua nhanh hơn nhưng không thể cứu WDL. Chi tiết trong `docs/CNN_LOSS_ANALYSIS.md` và `results/cnn_first_errors_seed20261122.json`.
+
+Cổng tối thiểu trước RL được đề xuất là CNN không kém AlphaBeta depth 3 quá 5 điểm phần trăm theo CI bootstrap cụm ván, và WDL-preserving không kém quá 3 điểm. 85% exact-optimal là mục tiêu, không phải cổng chặn. Xem `docs/CNN_PROMOTION_CRITERIA.md`.
+
+## AlphaBeta depth curve theo solver
+
+Mỗi depth được chấm trên cùng 300 vị trí, chia 100 theo mỗi giai đoạn. Exact-optimal rate depth 1–6 lần lượt là 74,7%, 77,3%, 79,0%, 79,7%, 81,3%, 82,0%; CI 95% bootstrap gom theo ván nguồn được lưu trong `results/solver_depth_curve_seed20261125.json`. Mẫu 300 vị trí là benchmark thăm dò, không phải test held-out của CNN.
+
+## Solver absolute evaluation
+
+The original solver table below is a historical, no-CI result. It remains for
+comparison and is superseded for non-CNN agents by the new frozen-set evaluation.
+The CNN values below are not certified held-out results: the prior training
+position history was not stored.
+
+| Agent | Exact-optimal | WDL-preserving |
+|---|---:|---:|
+| Random | 35.0% | 69.6% |
+| Heuristic | 73.5% | 88.3% |
+| AlphaBeta depth 4 | 80.5% | 91.7% |
+| MCTS-500 | 75.7% | 91.3% |
+| CNN-Policy | 70.4% | 87.8% |
+
+The frozen test is `results/solver_eval_seed20261122.positions.json`, with
+source-game and mirror hashes in
+`results/solver_eval_seed20261122.manifest.json`. Its new non-CNN evaluation is
+`results/solver_eval_final_20261120_seed20261125.json`, with 10,000 clustered
+bootstrap replicates. Generate the report and depth plot from the JSON:
+
+```powershell
+python -m scripts.render_solver_report --input results/solver_eval_final_20261120_seed20261125.json --markdown docs/solver_eval_frozen_20261120_seed20261125.md --svg results/solver_depth_curve_frozen_20261120_seed20261125.svg
+```
+
+The solver-label CNN checkpoint is excluded from this frozen-set comparison:
+audit found 129 train and 25 validation state hashes overlapping the locked test.
+The earlier 898-position comparison remains legacy and cannot pass the CNN gate.
+
+## Ma trận ghép cặp và benchmark mới
+
+Các bộ kết quả paired và fair-filter đã dùng 50 khai cuộc, mỗi khai cuộc chơi cả hai ghế. Seed `20261124` không lọc loại 5/50 opening có thắng tức thì; fair filter loại 5 và sinh 5 opening thay thế. Hai ma trận trước/sau lọc nằm trong `benchmarks/round_robin/round_robin_unfiltered_paired_seed20261124.json` và `benchmarks/round_robin/round_robin_filtered_paired_seed20261124.json`; metadata và JSONL có cùng tên.
+
+Sau fair filter, Heuristic–AlphaBeta depth 4 có score Heuristic 0,225 (21–3–76); AlphaBeta depth4–MCTS500 score AlphaBeta 0,635 (61–5–34); Heuristic–CNN score Heuristic 0,570 (53–8–39); AlphaBeta depth4–CNN score AlphaBeta 0,840 (83–2–15). Khoảng tin cậy bootstrap lấy opening làm cụm.
+
+Benchmark standard 100 ván/50 opening paired: AlphaBeta depth trần 8 / 500 ms đạt 39–9–52 trước MCTS 500 ms (score 0,435; CI 95% theo opening `[0,345; 0,525]`). AlphaBeta vượt 2/1.346 lượt, MCTS vượt 13/1.353 lượt. Xem `benchmarks/head_to_head/benchmark_ab_mcts_standard_100_paired_seed20261126.json`.
+
+AlphaBeta depth 6 đạt score 0,845 trước Heuristic trên 100 ván paired (CI 95% `[0,78; 0,91]`); thời gian trung bình 62 ms/nước. Ablation ba seed, mỗi seed 10 ván ghép opening trước Heuristic, cho score trung bình của AlphaBeta có ordering 0,767 và MCTS 1000/5000 lần lượt 0,833/0,833. Mẫu ablation còn nhỏ, chủ yếu dùng để so chi phí và tìm xu hướng; file `benchmarks/ablation/ablation_vs_heuristic_3seeds_paired.json`.
+
+Chạy ma trận ghép opening bằng `--paired-openings`; mỗi cặp số ván phải chẵn, vì mỗi opening xuất hiện hai lần, đổi ghế. Score bootstrap khi đó lấy opening làm đơn vị lấy mẫu.
 
 ## Ablation và solver đối chiếu
 
 Chạy ablation:
 
 ```powershell
-python ablation.py --games 10 --depth 4 --engine bitboard --seed 20261119 --output results/ablation_bitboard_seed20261119.json
+python ablation.py --games 10 --depth 4 --engine bitboard --seed 20261119 --output benchmarks/ablation/ablation_bitboard_seed20261119.json
 ```
 
 Các cấu hình gồm Alpha-Beta có/không pruning, có/không move ordering và
@@ -169,3 +233,21 @@ from connect4.experiments import play_game
 metrics = play_game(AlphaBetaAgent(depth=4), RandomAgent(seed=42))
 print(metrics)
 ```
+# Huấn luyện và agent PUCT (tiến độ hiện tại)
+
+Gói nhãn solver sạch đang dùng: `colab/data/solverlabels_20261120_seed20261120_v2/`.
+Nhãn được sinh từ solver vendored `solver/connect4/c4solver.exe`; tám worker gửi nhiều
+position qua stdin của một tiến trình solver sống lâu cho mỗi worker.
+
+Smoke local (CUDA nếu có):
+
+```powershell
+python -m connect4.train_cnn --dataset colab/data/solverlabels_20261120_seed20261120_v2 --output-root artifacts/smoke --run-id cnn-smoke --device cuda --smoke --max-minutes 2
+```
+
+Mở `colab/02_train_cnn.ipynb` để huấn luyện CNN trên Colab. Notebook tiếp tục run
+đang có trên Drive; chỉ mang checkpoint về sau khi trạng thái `complete`, rồi xác
+minh bằng hướng dẫn trong `docs/COLAB.md`. PUCT có thể đánh giá với checkpoint đã
+ingest bằng `evaluate_solver.py --puct-checkpoints LABEL=PATH --puct-simulations 200`.
+Đây hiện là PUCT suy luận với policy/value đã huấn luyện; self-play AlphaZero cấp 8
+và RL cấp 6 chưa được bàn giao.
