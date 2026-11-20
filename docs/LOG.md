@@ -91,3 +91,20 @@
 - B? sung GUI l?a ch?n checkpoint CNN, RL policy ho?c PUCT; b? sung PUCT v?o round-robin cu?i v? script arena paired-opening.
 - X?c minh hi?n tr?ng: 41 passed, 3 skipped; py_compile, help CLI, 3 notebook nbformat-valid (8 cell), `git diff --check` qua. Ba skip l? ph?n ph? thu?c PyTorch ? system Python; c?c smoke GPU v? ingest probe ?? ch?y b?ng `.venv-gpu`.
 - C?n thi?u k?t qu? th?t t? Colab, benchmark PUCT ?? c?, arena 100 opening tr?n checkpoint th?t, round-robin cu?i v? ph?n b?o c?o/slide c? s? li?u h?c ???c. C?c probe ??a ph??ng kh?ng ???c xem l? k?t lu?n s?c ch?i.
+
+### 2026-11-20 — Colab artifact ingested
+
+- {"date": "2026-11-20", "event": "colab_run_ingested", "run_id": "cnn_seed20261120_colab1", "artifact": "results\\colab\\cnn_seed20261120_colab1", "seed": 20261120, "steps": 609, "frozen_test_sha256": "3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01", "local_leakage_check": "passed", "inference_check": "passed"}
+
+### 2026-11-20 — Colab artifact ingested
+
+- {"date": "2026-11-20", "event": "colab_run_ingested", "run_id": "cnn_seed20261121_colab1", "artifact": "results\\colab\\cnn_seed20261121_colab1", "seed": 20261121, "steps": 630, "frozen_test_sha256": "3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01", "local_leakage_check": "passed", "inference_check": "passed"}
+
+### 2026-11-20 — Colab artifact ingested
+
+- {"date": "2026-11-20", "event": "colab_run_ingested", "run_id": "cnn_seed20261122_colab1", "artifact": "results\\colab\\cnn_seed20261122_colab1", "seed": 20261122, "steps": 630, "frozen_test_sha256": "3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01", "local_leakage_check": "passed", "inference_check": "passed"}
+
+Nhận định kỹ thuật cho Pha 2
+Value Head hiện tại còn yếu và bị overconfident (tự tin thái quá): Ở các bin dự đoán cực trị (~ -0.76 hoặc +0.80), giá trị thực tế trung bình chỉ đạt quanh -0.45 đến +0.71. Độ chính xác phân loại Thắng/Hòa/Thua (WDL accuracy) dao động quanh 50,5% – 53,5% (gần như ngang bằng mức đoán bừa theo lớp đa số 52,1%), và tụt mạnh ở tàn cuộc (42,4% – 45,8%).
+
+Kết luận cho Cấp 7 & Cấp 8: Không thể dùng đơn lẻ Value Head này thay thế hoàn toàn rollout mà thiếu tìm kiếm sâu, nhưng hoàn toàn dùng được làm giá trị khởi tạo (warm-start) cho Cấp 7 (PUCT + rollout ngắn) và Cấp 8 (AlphaZero self-play), nơi vòng lặp tự đấu sẽ tự hiệu chỉnh lại đầu Value qua hàng nghìn ván thực chiến.
