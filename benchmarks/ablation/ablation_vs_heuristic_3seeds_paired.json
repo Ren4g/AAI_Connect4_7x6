@@ -1,0 +1,650 @@
+[
+  {
+    "configuration": "ab-pruning-ordering",
+    "opponent": "Heuristic",
+    "games": 10,
+    "seed": 20261127,
+    "depth": 4,
+    "engine": "bitboard",
+    "unique_openings": 5,
+    "wins": 8,
+    "draws": 1,
+    "losses": 1,
+    "score": 0.85,
+    "score_bootstrap_95": [
+      0.65,
+      1.0
+    ],
+    "agent_metrics": {
+      "nodes_total": 41126,
+      "simulations_total": 0,
+      "budget_violations": 0,
+      "moves": 120,
+      "average_move_seconds": 0.006259665835629372,
+      "p95_move_seconds": 0.016552159990533256,
+      "nodes_per_move": 342.71666666666664,
+      "simulations_per_move": 0.0
+    }
+  },
+  {
+    "configuration": "ab-no-pruning",
+    "opponent": "Heuristic",
+    "games": 10,
+    "seed": 20261127,
+    "depth": 4,
+    "engine": "bitboard",
+    "unique_openings": 5,
+    "wins": 8,
+    "draws": 1,
+    "losses": 1,
+    "score": 0.85,
+    "score_bootstrap_95": [
+      0.65,
+      1.0
+    ],
+    "agent_metrics": {
+      "nodes_total": 190731,
+      "simulations_total": 0,
+      "budget_violations": 0,
+      "moves": 120,
+      "average_move_seconds": 0.02892324333418704,
+      "p95_move_seconds": 0.05515151003783103,
+      "nodes_per_move": 1589.425,
+      "simulations_per_move": 0.0
+    }
+  },
+  {
+    "configuration": "ab-no-move-ordering",
+    "opponent": "Heuristic",
+    "games": 10,
+    "seed": 20261127,
+    "depth": 4,
+    "engine": "bitboard",
+    "unique_openings": 5,
+    "wins": 8,
+    "draws": 1,
+    "losses": 1,
+    "score": 0.85,
+    "score_bootstrap_95": [
+      0.65,
+      1.0
+    ],
+    "agent_metrics": {
+      "nodes_total": 64282,
+      "simulations_total": 0,
+      "budget_violations": 0,
+      "moves": 135,
+      "average_move_seconds": 0.007891645184200671,
+      "p95_move_seconds": 0.02157938000746071,
+      "nodes_per_move": 476.162962962963,
+      "simulations_per_move": 0.0
+    }
+  },
+  {
+    "configuration": "mcts-50",
+    "opponent": "Heuristic",
+    "games": 10,
+    "seed": 20261127,
+    "depth": 4,
+    "engine": "bitboard",
+    "unique_openings": 5,
+    "wins": 1,
+    "draws": 0,
+    "losses": 9,
+    "score": 0.1,
+    "score_bootstrap_95": [
+      0.0,
+      0.3
+    ],
+    "agent_metrics": {
+      "nodes_total": 0,
+      "simulations_total": 2650,
+      "budget_violations": 0,
+      "moves": 53,
+      "average_move_seconds": 0.002543326416755763,
+      "p95_move_seconds": 0.003929160023108124,
+      "nodes_per_move": 0.0,
+      "simulations_per_move": 50.0
+    }
+  },
+  {
+    "configuration": "mcts-100",
+    "opponent": "Heuristic",
+    "games": 10,
+    "seed": 20261127,
+    "depth": 4,
+    "engine": "bitboard",
+    "unique_openings": 5,
+    "wins": 3,
+    "draws": 0,
+    "losses": 7,
+    "score": 0.3,
+    "score_bootstrap_95": [
+      0.0,
+      0.7
+    ],
+    "agent_metrics": {
+      "nodes_total": 0,
+      "simulations_total": 6500,
+      "budget_violations": 0,
+      "moves": 65,
+      "average_move_seconds": 0.004296501538752077,
+      "p95_move_seconds": 0.006951800012029707,
+      "nodes_per_move": 0.0,
+      "simulations_per_move": 100.0
+    }
+  },
+  {
+    "configuration": "mcts-500",
+    "opponent": "Heuristic",
+    "games": 10,
+    "seed": 20261127,
+    "depth": 4,
+    "engine": "bitboard",
+    "unique_openings": 5,
+    "wins": 7,
+    "draws": 0,
+    "losses": 3,
+    "score": 0.7,
+    "score_bootstrap_95": [
+      0.3,
+      1.0
+    ],
+    "agent_metrics": {
+      "nodes_total": 0,
+      "simulations_total": 59000,
+      "budget_violations": 0,
+      "moves": 118,
+      "average_move_seconds": 0.02035601271397308,
+      "p95_move_seconds": 0.03224817000154872,
+      "nodes_per_move": 0.0,
+      "simulations_per_move": 500.0
+    }
+  },
+  {
+    "configuration": "mcts-1000",
+    "opponent": "Heuristic",
+    "games": 10,
+    "seed": 20261127,
+    "depth": 4,
+    "engine": "bitboard",
+    "unique_openings": 5,
+    "wins": 9,
+    "draws": 0,
+    "losses": 1,
+    "score": 0.9,
+    "score_bootstrap_95": [
+      0.7,
+      1.0
+    ],
+    "agent_metrics": {
+      "nodes_total": 0,
+      "simulations_total": 95000,
+      "budget_violations": 0,
+      "moves": 95,
+      "average_move_seconds": 0.04055082421186135,
+      "p95_move_seconds": 0.06655792003148235,
+      "nodes_per_move": 0.0,
+      "simulations_per_move": 1000.0
+    }
+  },
+  {
+    "configuration": "mcts-5000",
+    "opponent": "Heuristic",
+    "games": 10,
+    "seed": 20261127,
+    "depth": 4,
+    "engine": "bitboard",
+    "unique_openings": 5,
+    "wins": 9,
+    "draws": 0,
+    "losses": 1,
+    "score": 0.9,
+    "score_bootstrap_95": [
+      0.7,
+      1.0
+    ],
+    "agent_metrics": {
+      "nodes_total": 0,
+      "simulations_total": 455000,
+      "budget_violations": 0,
+      "moves": 91,
+      "average_move_seconds": 0.2090132725258757,
+      "p95_move_seconds": 0.32531505002407357,
+      "nodes_per_move": 0.0,
+      "simulations_per_move": 5000.0
+    }
+  },
+  {
+    "configuration": "ab-pruning-ordering",
+    "opponent": "Heuristic",
+    "games": 10,
+    "seed": 20261128,
+    "depth": 4,
+    "engine": "bitboard",
+    "unique_openings": 5,
+    "wins": 7,
+    "draws": 0,
+    "losses": 3,
+    "score": 0.7,
+    "score_bootstrap_95": [
+      0.5,
+      0.9
+    ],
+    "agent_metrics": {
+      "nodes_total": 36057,
+      "simulations_total": 0,
+      "budget_violations": 0,
+      "moves": 90,
+      "average_move_seconds": 0.006738973333267495,
+      "p95_move_seconds": 0.014816649985732505,
+      "nodes_per_move": 400.6333333333333,
+      "simulations_per_move": 0.0
+    }
+  },
+  {
+    "configuration": "ab-no-pruning",
+    "opponent": "Heuristic",
+    "games": 10,
+    "seed": 20261128,
+    "depth": 4,
+    "engine": "bitboard",
+    "unique_openings": 5,
+    "wins": 7,
+    "draws": 0,
+    "losses": 3,
+    "score": 0.7,
+    "score_bootstrap_95": [
+      0.5,
+      0.9
+    ],
+    "agent_metrics": {
+      "nodes_total": 187832,
+      "simulations_total": 0,
+      "budget_violations": 0,
+      "moves": 90,
+      "average_move_seconds": 0.03761387555342582,
+      "p95_move_seconds": 0.05130337998270988,
+      "nodes_per_move": 2087.0222222222224,
+      "simulations_per_move": 0.0
+    }
+  },
+  {
+    "configuration": "ab-no-move-ordering",
+    "opponent": "Heuristic",
+    "games": 10,
+    "seed": 20261128,
+    "depth": 4,
+    "engine": "bitboard",
+    "unique_openings": 5,
+    "wins": 6,
+    "draws": 1,
+    "losses": 3,
+    "score": 0.65,
+    "score_bootstrap_95": [
+      0.5,
+      0.85
+    ],
+    "agent_metrics": {
+      "nodes_total": 55138,
+      "simulations_total": 0,
+      "budget_violations": 0,
+      "moves": 105,
+      "average_move_seconds": 0.008607058097896653,
+      "p95_move_seconds": 0.018701100000180302,
+      "nodes_per_move": 525.1238095238095,
+      "simulations_per_move": 0.0
+    }
+  },
+  {
+    "configuration": "mcts-50",
+    "opponent": "Heuristic",
+    "games": 10,
+    "seed": 20261128,
+    "depth": 4,
+    "engine": "bitboard",
+    "unique_openings": 5,
+    "wins": 0,
+    "draws": 0,
+    "losses": 10,
+    "score": 0.0,
+    "score_bootstrap_95": [
+      0.0,
+      0.0
+    ],
+    "agent_metrics": {
+      "nodes_total": 0,
+      "simulations_total": 2250,
+      "budget_violations": 0,
+      "moves": 45,
+      "average_move_seconds": 0.0022692266657638053,
+      "p95_move_seconds": 0.003470540011767297,
+      "nodes_per_move": 0.0,
+      "simulations_per_move": 50.0
+    }
+  },
+  {
+    "configuration": "mcts-100",
+    "opponent": "Heuristic",
+    "games": 10,
+    "seed": 20261128,
+    "depth": 4,
+    "engine": "bitboard",
+    "unique_openings": 5,
+    "wins": 4,
+    "draws": 0,
+    "losses": 6,
+    "score": 0.4,
+    "score_bootstrap_95": [
+      0.2,
+      0.5
+    ],
+    "agent_metrics": {
+      "nodes_total": 0,
+      "simulations_total": 8800,
+      "budget_violations": 0,
+      "moves": 88,
+      "average_move_seconds": 0.004875295456837524,
+      "p95_move_seconds": 0.006118244997924195,
+      "nodes_per_move": 0.0,
+      "simulations_per_move": 100.0
+    }
+  },
+  {
+    "configuration": "mcts-500",
+    "opponent": "Heuristic",
+    "games": 10,
+    "seed": 20261128,
+    "depth": 4,
+    "engine": "bitboard",
+    "unique_openings": 5,
+    "wins": 3,
+    "draws": 1,
+    "losses": 6,
+    "score": 0.35,
+    "score_bootstrap_95": [
+      0.15,
+      0.5
+    ],
+    "agent_metrics": {
+      "nodes_total": 0,
+      "simulations_total": 50500,
+      "budget_violations": 0,
+      "moves": 101,
+      "average_move_seconds": 0.01906266435519746,
+      "p95_move_seconds": 0.029627999989315867,
+      "nodes_per_move": 0.0,
+      "simulations_per_move": 500.0
+    }
+  },
+  {
+    "configuration": "mcts-1000",
+    "opponent": "Heuristic",
+    "games": 10,
+    "seed": 20261128,
+    "depth": 4,
+    "engine": "bitboard",
+    "unique_openings": 5,
+    "wins": 8,
+    "draws": 0,
+    "losses": 2,
+    "score": 0.8,
+    "score_bootstrap_95": [
+      0.6,
+      1.0
+    ],
+    "agent_metrics": {
+      "nodes_total": 0,
+      "simulations_total": 106000,
+      "budget_violations": 0,
+      "moves": 106,
+      "average_move_seconds": 0.04064737358251323,
+      "p95_move_seconds": 0.062381249997997656,
+      "nodes_per_move": 0.0,
+      "simulations_per_move": 1000.0
+    }
+  },
+  {
+    "configuration": "mcts-5000",
+    "opponent": "Heuristic",
+    "games": 10,
+    "seed": 20261128,
+    "depth": 4,
+    "engine": "bitboard",
+    "unique_openings": 5,
+    "wins": 7,
+    "draws": 0,
+    "losses": 3,
+    "score": 0.7,
+    "score_bootstrap_95": [
+      0.5,
+      0.9
+    ],
+    "agent_metrics": {
+      "nodes_total": 0,
+      "simulations_total": 495000,
+      "budget_violations": 0,
+      "moves": 99,
+      "average_move_seconds": 0.2034764686879241,
+      "p95_move_seconds": 0.3189267299661878,
+      "nodes_per_move": 0.0,
+      "simulations_per_move": 5000.0
+    }
+  },
+  {
+    "configuration": "ab-pruning-ordering",
+    "opponent": "Heuristic",
+    "games": 10,
+    "seed": 20261129,
+    "depth": 4,
+    "engine": "bitboard",
+    "unique_openings": 5,
+    "wins": 7,
+    "draws": 1,
+    "losses": 2,
+    "score": 0.75,
+    "score_bootstrap_95": [
+      0.55,
+      0.95
+    ],
+    "agent_metrics": {
+      "nodes_total": 41797,
+      "simulations_total": 0,
+      "budget_violations": 0,
+      "moves": 117,
+      "average_move_seconds": 0.0059244649536493756,
+      "p95_move_seconds": 0.015958980016876012,
+      "nodes_per_move": 357.2393162393162,
+      "simulations_per_move": 0.0
+    }
+  },
+  {
+    "configuration": "ab-no-pruning",
+    "opponent": "Heuristic",
+    "games": 10,
+    "seed": 20261129,
+    "depth": 4,
+    "engine": "bitboard",
+    "unique_openings": 5,
+    "wins": 7,
+    "draws": 1,
+    "losses": 2,
+    "score": 0.75,
+    "score_bootstrap_95": [
+      0.55,
+      0.95
+    ],
+    "agent_metrics": {
+      "nodes_total": 199492,
+      "simulations_total": 0,
+      "budget_violations": 0,
+      "moves": 117,
+      "average_move_seconds": 0.030888680343786813,
+      "p95_move_seconds": 0.05156489998335019,
+      "nodes_per_move": 1705.059829059829,
+      "simulations_per_move": 0.0
+    }
+  },
+  {
+    "configuration": "ab-no-move-ordering",
+    "opponent": "Heuristic",
+    "games": 10,
+    "seed": 20261129,
+    "depth": 4,
+    "engine": "bitboard",
+    "unique_openings": 5,
+    "wins": 8,
+    "draws": 0,
+    "losses": 2,
+    "score": 0.8,
+    "score_bootstrap_95": [
+      0.6,
+      1.0
+    ],
+    "agent_metrics": {
+      "nodes_total": 52690,
+      "simulations_total": 0,
+      "budget_violations": 0,
+      "moves": 125,
+      "average_move_seconds": 0.006890891200862825,
+      "p95_move_seconds": 0.017856579972431064,
+      "nodes_per_move": 421.52,
+      "simulations_per_move": 0.0
+    }
+  },
+  {
+    "configuration": "mcts-50",
+    "opponent": "Heuristic",
+    "games": 10,
+    "seed": 20261129,
+    "depth": 4,
+    "engine": "bitboard",
+    "unique_openings": 5,
+    "wins": 0,
+    "draws": 0,
+    "losses": 10,
+    "score": 0.0,
+    "score_bootstrap_95": [
+      0.0,
+      0.0
+    ],
+    "agent_metrics": {
+      "nodes_total": 0,
+      "simulations_total": 2000,
+      "budget_violations": 0,
+      "moves": 40,
+      "average_move_seconds": 0.002947987498191651,
+      "p95_move_seconds": 0.00469781497376971,
+      "nodes_per_move": 0.0,
+      "simulations_per_move": 50.0
+    }
+  },
+  {
+    "configuration": "mcts-100",
+    "opponent": "Heuristic",
+    "games": 10,
+    "seed": 20261129,
+    "depth": 4,
+    "engine": "bitboard",
+    "unique_openings": 5,
+    "wins": 2,
+    "draws": 2,
+    "losses": 6,
+    "score": 0.3,
+    "score_bootstrap_95": [
+      0.05,
+      0.55
+    ],
+    "agent_metrics": {
+      "nodes_total": 0,
+      "simulations_total": 10400,
+      "budget_violations": 0,
+      "moves": 104,
+      "average_move_seconds": 0.004037215388402378,
+      "p95_move_seconds": 0.006557374965632334,
+      "nodes_per_move": 0.0,
+      "simulations_per_move": 100.0
+    }
+  },
+  {
+    "configuration": "mcts-500",
+    "opponent": "Heuristic",
+    "games": 10,
+    "seed": 20261129,
+    "depth": 4,
+    "engine": "bitboard",
+    "unique_openings": 5,
+    "wins": 6,
+    "draws": 0,
+    "losses": 4,
+    "score": 0.6,
+    "score_bootstrap_95": [
+      0.5,
+      0.8
+    ],
+    "agent_metrics": {
+      "nodes_total": 0,
+      "simulations_total": 62500,
+      "budget_violations": 0,
+      "moves": 125,
+      "average_move_seconds": 0.020841995195951313,
+      "p95_move_seconds": 0.033026780001819134,
+      "nodes_per_move": 0.0,
+      "simulations_per_move": 500.0
+    }
+  },
+  {
+    "configuration": "mcts-1000",
+    "opponent": "Heuristic",
+    "games": 10,
+    "seed": 20261129,
+    "depth": 4,
+    "engine": "bitboard",
+    "unique_openings": 5,
+    "wins": 8,
+    "draws": 0,
+    "losses": 2,
+    "score": 0.8,
+    "score_bootstrap_95": [
+      0.6,
+      1.0
+    ],
+    "agent_metrics": {
+      "nodes_total": 0,
+      "simulations_total": 124000,
+      "budget_violations": 0,
+      "moves": 124,
+      "average_move_seconds": 0.041959140323489276,
+      "p95_move_seconds": 0.06995173502946272,
+      "nodes_per_move": 0.0,
+      "simulations_per_move": 1000.0
+    }
+  },
+  {
+    "configuration": "mcts-5000",
+    "opponent": "Heuristic",
+    "games": 10,
+    "seed": 20261129,
+    "depth": 4,
+    "engine": "bitboard",
+    "unique_openings": 5,
+    "wins": 9,
+    "draws": 0,
+    "losses": 1,
+    "score": 0.9,
+    "score_bootstrap_95": [
+      0.7,
+      1.0
+    ],
+    "agent_metrics": {
+      "nodes_total": 0,
+      "simulations_total": 640000,
+      "budget_violations": 0,
+      "moves": 128,
+      "average_move_seconds": 0.2071582835924346,
+      "p95_move_seconds": 0.3413215099979425,
+      "nodes_per_move": 0.0,
+      "simulations_per_move": 5000.0
+    }
+  }
+]

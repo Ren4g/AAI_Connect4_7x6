@@ -1,0 +1,30 @@
+{
+  "timestamp_local": "2026-11-20T15:52:04.237287+07:00",
+  "seed": 20261130,
+  "games_per_pair": 100,
+  "time_budget_seconds": null,
+  "preset": null,
+  "opening_plies": 6,
+  "paired_openings": true,
+  "opening_filter": "fair",
+  "opening_filter_definition": "reject starts with an immediate win for side to move or no move that avoids an immediate losing reply",
+  "opening_generation": {
+    "attempts": 60,
+    "accepted": 50,
+    "incomplete": 0,
+    "would_reject_immediate_win": 8,
+    "would_reject_no_safe_action": 0,
+    "duplicate_position": 2,
+    "filtered_immediate_win": 8,
+    "filtered_no_safe_action": 0
+  },
+  "engine": "bitboard",
+  "agents": [
+    "Heuristic",
+    "AlphaBeta-depth6"
+  ],
+  "cnn_warmup_runs": 0,
+  "timed_search_agents": [],
+  "time_budget_semantics": "fixed depth/simulation settings",
+  "checkpoint": null
+}

@@ -1,0 +1,1580 @@
+{
+  "run_id": "solver_eval_frozen_20261120_seed20261125",
+  "timestamp_local": "2026-11-20T16:49:12.008207+07:00",
+  "root_commit": "b65dc3fefaf742218124e095bd9953a28a0272c4",
+  "solver_commit": "d6ba50d8aaf2308c769d9bf2abd42d90f34baf41",
+  "source_tree_sha256": "145087cc3f731f67d70beaf4c0495f375d6882b1d9684f76cdd043b9c5fce00f",
+  "solver_root": "solver",
+  "solver_binary_sha256": "13903490c56862be0eb02bad67087bd77035392786978b04cc5455e4ab5a45fe",
+  "frozen_dataset_id": "solver_eval_seed20261122_frozen",
+  "frozen_positions_sha256": "3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01",
+  "positions": 6,
+  "requested_frozen_positions": 1500,
+  "partial_diagnostic_only": true,
+  "unique_mirror_canonical_states": 1498,
+  "bootstrap": {
+    "replicates": 200,
+    "seed": 20261125,
+    "cluster": "source game; paired difference on identical positions"
+  },
+  "agents": [
+    "Random",
+    "Heuristic",
+    "AlphaBeta-depth1",
+    "AlphaBeta-depth2",
+    "AlphaBeta-depth3",
+    "AlphaBeta-depth4",
+    "AlphaBeta-depth5",
+    "AlphaBeta-depth6",
+    "MCTS-500"
+  ],
+  "checkpoints": {},
+  "environment": {
+    "python": "3.13.5",
+    "platform": "Windows-11-10.0.26300-SP0",
+    "device": "cpu"
+  },
+  "solver_seconds": 15.781664500012994,
+  "scores_by_position": [
+    {
+      "stage": "opening",
+      "source_game": "Heuristic|CNN-Policy|61",
+      "theoretical_wdl": 1,
+      "decision_position": true,
+      "best_score": 3
+    },
+    {
+      "stage": "opening",
+      "source_game": "MCTS-500|CNN-Policy|28",
+      "theoretical_wdl": 1,
+      "decision_position": true,
+      "best_score": 2
+    },
+    {
+      "stage": "opening",
+      "source_game": "Random|AlphaBeta-depth4|92",
+      "theoretical_wdl": 1,
+      "decision_position": true,
+      "best_score": 3
+    },
+    {
+      "stage": "opening",
+      "source_game": "MCTS-500|CNN-Policy|51",
+      "theoretical_wdl": 0,
+      "decision_position": true,
+      "best_score": 0
+    },
+    {
+      "stage": "opening",
+      "source_game": "Random|AlphaBeta-depth4|68",
+      "theoretical_wdl": 1,
+      "decision_position": true,
+      "best_score": 1
+    },
+    {
+      "stage": "opening",
+      "source_game": "Random|MCTS-500|81",
+      "theoretical_wdl": 1,
+      "decision_position": true,
+      "best_score": 2
+    }
+  ],
+  "metrics": {
+    "Random": {
+      "all": {
+        "positions": 6,
+        "optimal": {
+          "successes": 1,
+          "rate": 0.16666666666666666,
+          "cluster_bootstrap_95": [
+            0.0,
+            0.5
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 2,
+          "rate": 0.3333333333333333,
+          "cluster_bootstrap_95": [
+            0.0,
+            0.6708333333333343
+          ]
+        }
+      },
+      "decision_positions": {
+        "positions": 6,
+        "optimal": {
+          "successes": 1,
+          "rate": 0.16666666666666666,
+          "cluster_bootstrap_95": [
+            0.0,
+            0.5
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 2,
+          "rate": 0.3333333333333333,
+          "cluster_bootstrap_95": [
+            0.0,
+            0.6666666666666666
+          ]
+        }
+      },
+      "theoretical_win": {
+        "positions": 5,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": [
+            0.0,
+            0.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 1,
+          "rate": 0.2,
+          "cluster_bootstrap_95": [
+            0.0,
+            0.6
+          ]
+        }
+      },
+      "theoretical_draw": {
+        "positions": 1,
+        "optimal": {
+          "successes": 1,
+          "rate": 1.0,
+          "cluster_bootstrap_95": [
+            1.0,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 1,
+          "rate": 1.0,
+          "cluster_bootstrap_95": [
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "theoretical_loss": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "stage_opening": {
+        "positions": 6,
+        "optimal": {
+          "successes": 1,
+          "rate": 0.16666666666666666,
+          "cluster_bootstrap_95": [
+            0.0,
+            0.5
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 2,
+          "rate": 0.3333333333333333,
+          "cluster_bootstrap_95": [
+            0.0,
+            0.6666666666666666
+          ]
+        }
+      },
+      "stage_middle": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "stage_endgame": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "local_cost": {
+        "moves": 6,
+        "mean_seconds_per_move": 5.083342936510841e-06,
+        "p95_seconds_per_move": 7.099995855242014e-06,
+        "mean_nodes_per_move": 0.0,
+        "mean_simulations_per_move": 0.0,
+        "measurement_machine_only": true
+      }
+    },
+    "Heuristic": {
+      "all": {
+        "positions": 6,
+        "optimal": {
+          "successes": 5,
+          "rate": 0.8333333333333334,
+          "cluster_bootstrap_95": [
+            0.6625000000000001,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 5,
+          "rate": 0.8333333333333334,
+          "cluster_bootstrap_95": [
+            0.5,
+            1.0
+          ]
+        }
+      },
+      "decision_positions": {
+        "positions": 6,
+        "optimal": {
+          "successes": 5,
+          "rate": 0.8333333333333334,
+          "cluster_bootstrap_95": [
+            0.5,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 5,
+          "rate": 0.8333333333333334,
+          "cluster_bootstrap_95": [
+            0.5,
+            1.0
+          ]
+        }
+      },
+      "theoretical_win": {
+        "positions": 5,
+        "optimal": {
+          "successes": 4,
+          "rate": 0.8,
+          "cluster_bootstrap_95": [
+            0.4,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 4,
+          "rate": 0.8,
+          "cluster_bootstrap_95": [
+            0.39500000000000013,
+            1.0
+          ]
+        }
+      },
+      "theoretical_draw": {
+        "positions": 1,
+        "optimal": {
+          "successes": 1,
+          "rate": 1.0,
+          "cluster_bootstrap_95": [
+            1.0,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 1,
+          "rate": 1.0,
+          "cluster_bootstrap_95": [
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "theoretical_loss": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "stage_opening": {
+        "positions": 6,
+        "optimal": {
+          "successes": 5,
+          "rate": 0.8333333333333334,
+          "cluster_bootstrap_95": [
+            0.5,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 5,
+          "rate": 0.8333333333333334,
+          "cluster_bootstrap_95": [
+            0.5,
+            1.0
+          ]
+        }
+      },
+      "stage_middle": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "stage_endgame": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "local_cost": {
+        "moves": 6,
+        "mean_seconds_per_move": 0.001586633346353968,
+        "p95_seconds_per_move": 0.001692875026492402,
+        "mean_nodes_per_move": 0.0,
+        "mean_simulations_per_move": 0.0,
+        "measurement_machine_only": true
+      }
+    },
+    "AlphaBeta-depth1": {
+      "all": {
+        "positions": 6,
+        "optimal": {
+          "successes": 5,
+          "rate": 0.8333333333333334,
+          "cluster_bootstrap_95": [
+            0.5,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 5,
+          "rate": 0.8333333333333334,
+          "cluster_bootstrap_95": [
+            0.5,
+            1.0
+          ]
+        }
+      },
+      "decision_positions": {
+        "positions": 6,
+        "optimal": {
+          "successes": 5,
+          "rate": 0.8333333333333334,
+          "cluster_bootstrap_95": [
+            0.5,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 5,
+          "rate": 0.8333333333333334,
+          "cluster_bootstrap_95": [
+            0.4958333333333334,
+            1.0
+          ]
+        }
+      },
+      "theoretical_win": {
+        "positions": 5,
+        "optimal": {
+          "successes": 4,
+          "rate": 0.8,
+          "cluster_bootstrap_95": [
+            0.39500000000000013,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 4,
+          "rate": 0.8,
+          "cluster_bootstrap_95": [
+            0.4,
+            1.0
+          ]
+        }
+      },
+      "theoretical_draw": {
+        "positions": 1,
+        "optimal": {
+          "successes": 1,
+          "rate": 1.0,
+          "cluster_bootstrap_95": [
+            1.0,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 1,
+          "rate": 1.0,
+          "cluster_bootstrap_95": [
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "theoretical_loss": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "stage_opening": {
+        "positions": 6,
+        "optimal": {
+          "successes": 5,
+          "rate": 0.8333333333333334,
+          "cluster_bootstrap_95": [
+            0.5,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 5,
+          "rate": 0.8333333333333334,
+          "cluster_bootstrap_95": [
+            0.5,
+            1.0
+          ]
+        }
+      },
+      "stage_middle": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "stage_endgame": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "local_cost": {
+        "moves": 6,
+        "mean_seconds_per_move": 0.0005673000026339045,
+        "p95_seconds_per_move": 0.000592349999351427,
+        "mean_nodes_per_move": 7.0,
+        "mean_simulations_per_move": 0.0,
+        "measurement_machine_only": true
+      }
+    },
+    "AlphaBeta-depth2": {
+      "all": {
+        "positions": 6,
+        "optimal": {
+          "successes": 4,
+          "rate": 0.6666666666666666,
+          "cluster_bootstrap_95": [
+            0.16666666666666666,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 4,
+          "rate": 0.6666666666666666,
+          "cluster_bootstrap_95": [
+            0.3333333333333333,
+            1.0
+          ]
+        }
+      },
+      "decision_positions": {
+        "positions": 6,
+        "optimal": {
+          "successes": 4,
+          "rate": 0.6666666666666666,
+          "cluster_bootstrap_95": [
+            0.3333333333333333,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 4,
+          "rate": 0.6666666666666666,
+          "cluster_bootstrap_95": [
+            0.16666666666666666,
+            1.0
+          ]
+        }
+      },
+      "theoretical_win": {
+        "positions": 5,
+        "optimal": {
+          "successes": 3,
+          "rate": 0.6,
+          "cluster_bootstrap_95": [
+            0.19500000000000012,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 3,
+          "rate": 0.6,
+          "cluster_bootstrap_95": [
+            0.2,
+            1.0
+          ]
+        }
+      },
+      "theoretical_draw": {
+        "positions": 1,
+        "optimal": {
+          "successes": 1,
+          "rate": 1.0,
+          "cluster_bootstrap_95": [
+            1.0,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 1,
+          "rate": 1.0,
+          "cluster_bootstrap_95": [
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "theoretical_loss": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "stage_opening": {
+        "positions": 6,
+        "optimal": {
+          "successes": 4,
+          "rate": 0.6666666666666666,
+          "cluster_bootstrap_95": [
+            0.3333333333333333,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 4,
+          "rate": 0.6666666666666666,
+          "cluster_bootstrap_95": [
+            0.3333333333333333,
+            1.0
+          ]
+        }
+      },
+      "stage_middle": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "stage_endgame": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "local_cost": {
+        "moves": 6,
+        "mean_seconds_per_move": 0.0019100333156529814,
+        "p95_seconds_per_move": 0.002841649984475225,
+        "mean_nodes_per_move": 28.0,
+        "mean_simulations_per_move": 0.0,
+        "measurement_machine_only": true
+      }
+    },
+    "AlphaBeta-depth3": {
+      "all": {
+        "positions": 6,
+        "optimal": {
+          "successes": 2,
+          "rate": 0.3333333333333333,
+          "cluster_bootstrap_95": [
+            0.0,
+            0.6666666666666666
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 3,
+          "rate": 0.5,
+          "cluster_bootstrap_95": [
+            0.16666666666666666,
+            0.8333333333333334
+          ]
+        }
+      },
+      "decision_positions": {
+        "positions": 6,
+        "optimal": {
+          "successes": 2,
+          "rate": 0.3333333333333333,
+          "cluster_bootstrap_95": [
+            0.0,
+            0.6666666666666666
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 3,
+          "rate": 0.5,
+          "cluster_bootstrap_95": [
+            0.16666666666666666,
+            0.8333333333333334
+          ]
+        }
+      },
+      "theoretical_win": {
+        "positions": 5,
+        "optimal": {
+          "successes": 1,
+          "rate": 0.2,
+          "cluster_bootstrap_95": [
+            0.0,
+            0.6
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 2,
+          "rate": 0.4,
+          "cluster_bootstrap_95": [
+            0.0,
+            0.8
+          ]
+        }
+      },
+      "theoretical_draw": {
+        "positions": 1,
+        "optimal": {
+          "successes": 1,
+          "rate": 1.0,
+          "cluster_bootstrap_95": [
+            1.0,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 1,
+          "rate": 1.0,
+          "cluster_bootstrap_95": [
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "theoretical_loss": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "stage_opening": {
+        "positions": 6,
+        "optimal": {
+          "successes": 2,
+          "rate": 0.3333333333333333,
+          "cluster_bootstrap_95": [
+            0.0,
+            0.8333333333333334
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 3,
+          "rate": 0.5,
+          "cluster_bootstrap_95": [
+            0.16666666666666666,
+            0.8333333333333334
+          ]
+        }
+      },
+      "stage_middle": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "stage_endgame": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "local_cost": {
+        "moves": 6,
+        "mean_seconds_per_move": 0.011072149995015934,
+        "p95_seconds_per_move": 0.011828524991869926,
+        "mean_nodes_per_move": 161.66666666666666,
+        "mean_simulations_per_move": 0.0,
+        "measurement_machine_only": true
+      }
+    },
+    "AlphaBeta-depth4": {
+      "all": {
+        "positions": 6,
+        "optimal": {
+          "successes": 5,
+          "rate": 0.8333333333333334,
+          "cluster_bootstrap_95": [
+            0.5,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 5,
+          "rate": 0.8333333333333334,
+          "cluster_bootstrap_95": [
+            0.5,
+            1.0
+          ]
+        }
+      },
+      "decision_positions": {
+        "positions": 6,
+        "optimal": {
+          "successes": 5,
+          "rate": 0.8333333333333334,
+          "cluster_bootstrap_95": [
+            0.5,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 5,
+          "rate": 0.8333333333333334,
+          "cluster_bootstrap_95": [
+            0.5,
+            1.0
+          ]
+        }
+      },
+      "theoretical_win": {
+        "positions": 5,
+        "optimal": {
+          "successes": 5,
+          "rate": 1.0,
+          "cluster_bootstrap_95": [
+            1.0,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 5,
+          "rate": 1.0,
+          "cluster_bootstrap_95": [
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "theoretical_draw": {
+        "positions": 1,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": [
+            0.0,
+            0.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": [
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "theoretical_loss": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "stage_opening": {
+        "positions": 6,
+        "optimal": {
+          "successes": 5,
+          "rate": 0.8333333333333334,
+          "cluster_bootstrap_95": [
+            0.5,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 5,
+          "rate": 0.8333333333333334,
+          "cluster_bootstrap_95": [
+            0.5,
+            1.0
+          ]
+        }
+      },
+      "stage_middle": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "stage_endgame": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "local_cost": {
+        "moves": 6,
+        "mean_seconds_per_move": 0.025420616671908647,
+        "p95_seconds_per_move": 0.03806017500755843,
+        "mean_nodes_per_move": 419.5,
+        "mean_simulations_per_move": 0.0,
+        "measurement_machine_only": true
+      }
+    },
+    "AlphaBeta-depth5": {
+      "all": {
+        "positions": 6,
+        "optimal": {
+          "successes": 4,
+          "rate": 0.6666666666666666,
+          "cluster_bootstrap_95": [
+            0.3333333333333333,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 4,
+          "rate": 0.6666666666666666,
+          "cluster_bootstrap_95": [
+            0.3333333333333333,
+            1.0
+          ]
+        }
+      },
+      "decision_positions": {
+        "positions": 6,
+        "optimal": {
+          "successes": 4,
+          "rate": 0.6666666666666666,
+          "cluster_bootstrap_95": [
+            0.3333333333333333,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 4,
+          "rate": 0.6666666666666666,
+          "cluster_bootstrap_95": [
+            0.3291666666666667,
+            1.0
+          ]
+        }
+      },
+      "theoretical_win": {
+        "positions": 5,
+        "optimal": {
+          "successes": 3,
+          "rate": 0.6,
+          "cluster_bootstrap_95": [
+            0.2,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 3,
+          "rate": 0.6,
+          "cluster_bootstrap_95": [
+            0.2,
+            1.0
+          ]
+        }
+      },
+      "theoretical_draw": {
+        "positions": 1,
+        "optimal": {
+          "successes": 1,
+          "rate": 1.0,
+          "cluster_bootstrap_95": [
+            1.0,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 1,
+          "rate": 1.0,
+          "cluster_bootstrap_95": [
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "theoretical_loss": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "stage_opening": {
+        "positions": 6,
+        "optimal": {
+          "successes": 4,
+          "rate": 0.6666666666666666,
+          "cluster_bootstrap_95": [
+            0.3333333333333333,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 4,
+          "rate": 0.6666666666666666,
+          "cluster_bootstrap_95": [
+            0.3333333333333333,
+            1.0
+          ]
+        }
+      },
+      "stage_middle": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "stage_endgame": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "local_cost": {
+        "moves": 6,
+        "mean_seconds_per_move": 0.11129746667575091,
+        "p95_seconds_per_move": 0.1887342000263743,
+        "mean_nodes_per_move": 1711.6666666666667,
+        "mean_simulations_per_move": 0.0,
+        "measurement_machine_only": true
+      }
+    },
+    "AlphaBeta-depth6": {
+      "all": {
+        "positions": 6,
+        "optimal": {
+          "successes": 4,
+          "rate": 0.6666666666666666,
+          "cluster_bootstrap_95": [
+            0.3333333333333333,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 4,
+          "rate": 0.6666666666666666,
+          "cluster_bootstrap_95": [
+            0.3333333333333333,
+            1.0
+          ]
+        }
+      },
+      "decision_positions": {
+        "positions": 6,
+        "optimal": {
+          "successes": 4,
+          "rate": 0.6666666666666666,
+          "cluster_bootstrap_95": [
+            0.3333333333333333,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 4,
+          "rate": 0.6666666666666666,
+          "cluster_bootstrap_95": [
+            0.3333333333333333,
+            1.0
+          ]
+        }
+      },
+      "theoretical_win": {
+        "positions": 5,
+        "optimal": {
+          "successes": 4,
+          "rate": 0.8,
+          "cluster_bootstrap_95": [
+            0.4,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 4,
+          "rate": 0.8,
+          "cluster_bootstrap_95": [
+            0.4,
+            1.0
+          ]
+        }
+      },
+      "theoretical_draw": {
+        "positions": 1,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": [
+            0.0,
+            0.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": [
+            0.0,
+            0.0
+          ]
+        }
+      },
+      "theoretical_loss": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "stage_opening": {
+        "positions": 6,
+        "optimal": {
+          "successes": 4,
+          "rate": 0.6666666666666666,
+          "cluster_bootstrap_95": [
+            0.16666666666666666,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 4,
+          "rate": 0.6666666666666666,
+          "cluster_bootstrap_95": [
+            0.16666666666666666,
+            1.0
+          ]
+        }
+      },
+      "stage_middle": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "stage_endgame": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "local_cost": {
+        "moves": 6,
+        "mean_seconds_per_move": 0.2765880500179871,
+        "p95_seconds_per_move": 0.4832315500243567,
+        "mean_nodes_per_move": 4519.0,
+        "mean_simulations_per_move": 0.0,
+        "measurement_machine_only": true
+      }
+    },
+    "MCTS-500": {
+      "all": {
+        "positions": 6,
+        "optimal": {
+          "successes": 3,
+          "rate": 0.5,
+          "cluster_bootstrap_95": [
+            0.16666666666666666,
+            0.837500000000001
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 4,
+          "rate": 0.6666666666666666,
+          "cluster_bootstrap_95": [
+            0.16666666666666666,
+            1.0
+          ]
+        }
+      },
+      "decision_positions": {
+        "positions": 6,
+        "optimal": {
+          "successes": 3,
+          "rate": 0.5,
+          "cluster_bootstrap_95": [
+            0.16666666666666666,
+            0.8333333333333334
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 4,
+          "rate": 0.6666666666666666,
+          "cluster_bootstrap_95": [
+            0.3333333333333333,
+            1.0
+          ]
+        }
+      },
+      "theoretical_win": {
+        "positions": 5,
+        "optimal": {
+          "successes": 2,
+          "rate": 0.4,
+          "cluster_bootstrap_95": [
+            0.0,
+            0.8050000000000012
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 3,
+          "rate": 0.6,
+          "cluster_bootstrap_95": [
+            0.2,
+            1.0
+          ]
+        }
+      },
+      "theoretical_draw": {
+        "positions": 1,
+        "optimal": {
+          "successes": 1,
+          "rate": 1.0,
+          "cluster_bootstrap_95": [
+            1.0,
+            1.0
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 1,
+          "rate": 1.0,
+          "cluster_bootstrap_95": [
+            1.0,
+            1.0
+          ]
+        }
+      },
+      "theoretical_loss": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "stage_opening": {
+        "positions": 6,
+        "optimal": {
+          "successes": 3,
+          "rate": 0.5,
+          "cluster_bootstrap_95": [
+            0.16666666666666666,
+            0.8333333333333334
+          ]
+        },
+        "wdl_preserving": {
+          "successes": 4,
+          "rate": 0.6666666666666666,
+          "cluster_bootstrap_95": [
+            0.3333333333333333,
+            1.0
+          ]
+        }
+      },
+      "stage_middle": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "stage_endgame": {
+        "positions": 0,
+        "optimal": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        },
+        "wdl_preserving": {
+          "successes": 0,
+          "rate": 0.0,
+          "cluster_bootstrap_95": null
+        }
+      },
+      "local_cost": {
+        "moves": 6,
+        "mean_seconds_per_move": 0.047937183340157695,
+        "p95_seconds_per_move": 0.051443825010210276,
+        "mean_nodes_per_move": 0.0,
+        "mean_simulations_per_move": 500.0,
+        "measurement_machine_only": true
+      }
+    }
+  },
+  "paired_difference_vs_ab3": {
+    "Random": {
+      "optimal": [
+        -0.5,
+        0.0
+      ],
+      "optimal_opening": [
+        -0.5,
+        0.0
+      ],
+      "optimal_middle": null,
+      "optimal_endgame": null,
+      "wdl_preserving": [
+        -0.5,
+        0.0
+      ],
+      "wdl_preserving_opening": [
+        -0.5,
+        0.0
+      ],
+      "wdl_preserving_middle": null,
+      "wdl_preserving_endgame": null
+    },
+    "Heuristic": {
+      "optimal": [
+        0.16666666666666666,
+        1.0
+      ],
+      "optimal_opening": [
+        0.16666666666666666,
+        0.8333333333333334
+      ],
+      "optimal_middle": null,
+      "optimal_endgame": null,
+      "wdl_preserving": [
+        0.0,
+        0.6666666666666666
+      ],
+      "wdl_preserving_opening": [
+        0.0,
+        0.6666666666666666
+      ],
+      "wdl_preserving_middle": null,
+      "wdl_preserving_endgame": null
+    },
+    "AlphaBeta-depth1": {
+      "optimal": [
+        0.16666666666666666,
+        0.8333333333333334
+      ],
+      "optimal_opening": [
+        0.0,
+        0.8333333333333334
+      ],
+      "optimal_middle": null,
+      "optimal_endgame": null,
+      "wdl_preserving": [
+        0.0,
+        0.8333333333333334
+      ],
+      "wdl_preserving_opening": [
+        0.0,
+        0.6666666666666666
+      ],
+      "wdl_preserving_middle": null,
+      "wdl_preserving_endgame": null
+    },
+    "AlphaBeta-depth2": {
+      "optimal": [
+        -0.17083333333333323,
+        0.8333333333333334
+      ],
+      "optimal_opening": [
+        -0.3333333333333333,
+        0.8333333333333334
+      ],
+      "optimal_middle": null,
+      "optimal_endgame": null,
+      "wdl_preserving": [
+        -0.3333333333333333,
+        0.6666666666666666
+      ],
+      "wdl_preserving_opening": [
+        -0.3374999999999999,
+        0.6666666666666666
+      ],
+      "wdl_preserving_middle": null,
+      "wdl_preserving_endgame": null
+    },
+    "AlphaBeta-depth3": {
+      "optimal": [
+        0.0,
+        0.0
+      ],
+      "optimal_opening": [
+        0.0,
+        0.0
+      ],
+      "optimal_middle": null,
+      "optimal_endgame": null,
+      "wdl_preserving": [
+        0.0,
+        0.0
+      ],
+      "wdl_preserving_opening": [
+        0.0,
+        0.0
+      ],
+      "wdl_preserving_middle": null,
+      "wdl_preserving_endgame": null
+    },
+    "AlphaBeta-depth4": {
+      "optimal": [
+        -0.16666666666666666,
+        1.0
+      ],
+      "optimal_opening": [
+        -0.16666666666666666,
+        1.0
+      ],
+      "optimal_middle": null,
+      "optimal_endgame": null,
+      "wdl_preserving": [
+        -0.3333333333333333,
+        0.8333333333333334
+      ],
+      "wdl_preserving_opening": [
+        -0.17083333333333323,
+        0.8333333333333334
+      ],
+      "wdl_preserving_middle": null,
+      "wdl_preserving_endgame": null
+    },
+    "AlphaBeta-depth5": {
+      "optimal": [
+        0.0,
+        0.6666666666666666
+      ],
+      "optimal_opening": [
+        0.0,
+        0.6708333333333343
+      ],
+      "optimal_middle": null,
+      "optimal_endgame": null,
+      "wdl_preserving": [
+        0.0,
+        0.5
+      ],
+      "wdl_preserving_opening": [
+        0.0,
+        0.5
+      ],
+      "wdl_preserving_middle": null,
+      "wdl_preserving_endgame": null
+    },
+    "AlphaBeta-depth6": {
+      "optimal": [
+        -0.3333333333333333,
+        1.0
+      ],
+      "optimal_opening": [
+        -0.3333333333333333,
+        1.0
+      ],
+      "optimal_middle": null,
+      "optimal_endgame": null,
+      "wdl_preserving": [
+        -0.5,
+        0.6666666666666666
+      ],
+      "wdl_preserving_opening": [
+        -0.5,
+        0.8333333333333334
+      ],
+      "wdl_preserving_middle": null,
+      "wdl_preserving_endgame": null
+    },
+    "MCTS-500": {
+      "optimal": [
+        0.0,
+        0.5
+      ],
+      "optimal_opening": [
+        0.0,
+        0.5
+      ],
+      "optimal_middle": null,
+      "optimal_endgame": null,
+      "wdl_preserving": [
+        0.0,
+        0.5
+      ],
+      "wdl_preserving_opening": [
+        0.0,
+        0.5
+      ],
+      "wdl_preserving_middle": null,
+      "wdl_preserving_endgame": null
+    }
+  }
+}

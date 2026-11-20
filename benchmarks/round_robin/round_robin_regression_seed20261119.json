@@ -1,0 +1,452 @@
+[
+  {
+    "first_agent": "Random",
+    "second_agent": "Heuristic",
+    "games": 100,
+    "wins": 0,
+    "draws": 0,
+    "losses": 100,
+    "score": 0.0,
+    "win_rate_wilson_95": [
+      3.469446951953614e-18,
+      0.03699349820698568
+    ],
+    "decisive_win_rate_wilson_95": [
+      3.469446951953614e-18,
+      0.03699349820698568
+    ],
+    "score_bootstrap_95": [
+      0.0,
+      0.0
+    ],
+    "unique_openings": 100,
+    "per_agent": {
+      "Random": {
+        "nodes_total": 0,
+        "simulations_total": 0,
+        "budget_violations": 0,
+        "moves": 315,
+        "average_move_seconds": 3.1285727071383643e-06,
+        "p95_move_seconds": 5.829986184835435e-06,
+        "nodes_per_move": 0.0,
+        "simulations_per_move": 0.0
+      },
+      "Heuristic": {
+        "nodes_total": 0,
+        "simulations_total": 0,
+        "budget_violations": 0,
+        "moves": 365,
+        "average_move_seconds": 0.00027675753545449816,
+        "p95_move_seconds": 0.0005911800195463002,
+        "nodes_per_move": 0.0,
+        "simulations_per_move": 0.0
+      }
+    },
+    "budget_violations": 0
+  },
+  {
+    "first_agent": "Random",
+    "second_agent": "AlphaBeta-depth4",
+    "games": 100,
+    "wins": 2,
+    "draws": 0,
+    "losses": 98,
+    "score": 0.02,
+    "win_rate_wilson_95": [
+      0.00550196755016235,
+      0.07001179072854388
+    ],
+    "decisive_win_rate_wilson_95": [
+      0.00550196755016235,
+      0.07001179072854388
+    ],
+    "score_bootstrap_95": [
+      0.0,
+      0.05
+    ],
+    "unique_openings": 100,
+    "per_agent": {
+      "Random": {
+        "nodes_total": 0,
+        "simulations_total": 0,
+        "budget_violations": 0,
+        "moves": 424,
+        "average_move_seconds": 3.857783290100688e-06,
+        "p95_move_seconds": 6.769993342459206e-06,
+        "nodes_per_move": 0.0,
+        "simulations_per_move": 0.0
+      },
+      "AlphaBeta-depth4": {
+        "nodes_total": 200678,
+        "simulations_total": 0,
+        "budget_violations": 0,
+        "moves": 472,
+        "average_move_seconds": 0.007458997456508815,
+        "p95_move_seconds": 0.015649924986064434,
+        "nodes_per_move": 425.16525423728814,
+        "simulations_per_move": 0.0
+      }
+    },
+    "budget_violations": 0
+  },
+  {
+    "first_agent": "Random",
+    "second_agent": "MCTS-500",
+    "games": 100,
+    "wins": 0,
+    "draws": 0,
+    "losses": 100,
+    "score": 0.0,
+    "win_rate_wilson_95": [
+      3.469446951953614e-18,
+      0.03699349820698568
+    ],
+    "decisive_win_rate_wilson_95": [
+      3.469446951953614e-18,
+      0.03699349820698568
+    ],
+    "score_bootstrap_95": [
+      0.0,
+      0.0
+    ],
+    "unique_openings": 100,
+    "per_agent": {
+      "Random": {
+        "nodes_total": 0,
+        "simulations_total": 0,
+        "budget_violations": 0,
+        "moves": 379,
+        "average_move_seconds": 3.542480769132247e-06,
+        "p95_move_seconds": 4.4200278352946085e-06,
+        "nodes_per_move": 0.0,
+        "simulations_per_move": 0.0
+      },
+      "MCTS-500": {
+        "nodes_total": 0,
+        "simulations_total": 214500,
+        "budget_violations": 0,
+        "moves": 429,
+        "average_move_seconds": 0.025543789044299353,
+        "p95_move_seconds": 0.03626970000332221,
+        "nodes_per_move": 0.0,
+        "simulations_per_move": 500.0
+      }
+    },
+    "budget_violations": 0
+  },
+  {
+    "first_agent": "Random",
+    "second_agent": "CNN-Policy",
+    "games": 100,
+    "wins": 2,
+    "draws": 0,
+    "losses": 98,
+    "score": 0.02,
+    "win_rate_wilson_95": [
+      0.00550196755016235,
+      0.07001179072854388
+    ],
+    "decisive_win_rate_wilson_95": [
+      0.00550196755016235,
+      0.07001179072854388
+    ],
+    "score_bootstrap_95": [
+      0.0,
+      0.05
+    ],
+    "unique_openings": 100,
+    "per_agent": {
+      "Random": {
+        "nodes_total": 0,
+        "simulations_total": 0,
+        "budget_violations": 0,
+        "moves": 418,
+        "average_move_seconds": 3.6334891582986243e-06,
+        "p95_move_seconds": 5.3999916417524215e-06,
+        "nodes_per_move": 0.0,
+        "simulations_per_move": 0.0
+      },
+      "CNN-Policy": {
+        "nodes_total": 0,
+        "simulations_total": 0,
+        "budget_violations": 0,
+        "moves": 466,
+        "average_move_seconds": 0.0005864796111042423,
+        "p95_move_seconds": 0.0010188749874942005,
+        "nodes_per_move": 0.0,
+        "simulations_per_move": 0.0
+      }
+    },
+    "budget_violations": 0
+  },
+  {
+    "first_agent": "Heuristic",
+    "second_agent": "AlphaBeta-depth4",
+    "games": 100,
+    "wins": 25,
+    "draws": 4,
+    "losses": 71,
+    "score": 0.27,
+    "win_rate_wilson_95": [
+      0.17545211362287672,
+      0.34304463548061603
+    ],
+    "decisive_win_rate_wilson_95": [
+      0.18305899970298767,
+      0.35621055281214864
+    ],
+    "score_bootstrap_95": [
+      0.19,
+      0.35
+    ],
+    "unique_openings": 100,
+    "per_agent": {
+      "Heuristic": {
+        "nodes_total": 0,
+        "simulations_total": 0,
+        "budget_violations": 0,
+        "moves": 1042,
+        "average_move_seconds": 0.0002632549911493439,
+        "p95_move_seconds": 0.0004542350245174021,
+        "nodes_per_move": 0.0,
+        "simulations_per_move": 0.0
+      },
+      "AlphaBeta-depth4": {
+        "nodes_total": 361820,
+        "simulations_total": 0,
+        "budget_violations": 0,
+        "moves": 1066,
+        "average_move_seconds": 0.006344740619582839,
+        "p95_move_seconds": 0.015558125014649704,
+        "nodes_per_move": 339.4183864915572,
+        "simulations_per_move": 0.0
+      }
+    },
+    "budget_violations": 0
+  },
+  {
+    "first_agent": "Heuristic",
+    "second_agent": "MCTS-500",
+    "games": 100,
+    "wins": 40,
+    "draws": 5,
+    "losses": 55,
+    "score": 0.425,
+    "win_rate_wilson_95": [
+      0.3094012864324589,
+      0.4979974132089382
+    ],
+    "decisive_win_rate_wilson_95": [
+      0.3267381838783353,
+      0.5215036351015815
+    ],
+    "score_bootstrap_95": [
+      0.335,
+      0.52
+    ],
+    "unique_openings": 100,
+    "per_agent": {
+      "Heuristic": {
+        "nodes_total": 0,
+        "simulations_total": 0,
+        "budget_violations": 0,
+        "moves": 1113,
+        "average_move_seconds": 0.0002750615456065386,
+        "p95_move_seconds": 0.000488639995455742,
+        "nodes_per_move": 0.0,
+        "simulations_per_move": 0.0
+      },
+      "MCTS-500": {
+        "nodes_total": 0,
+        "simulations_total": 561000,
+        "budget_violations": 0,
+        "moves": 1122,
+        "average_move_seconds": 0.023346682530167927,
+        "p95_move_seconds": 0.038593800002126956,
+        "nodes_per_move": 0.0,
+        "simulations_per_move": 500.0
+      }
+    },
+    "budget_violations": 0
+  },
+  {
+    "first_agent": "Heuristic",
+    "second_agent": "CNN-Policy",
+    "games": 100,
+    "wins": 54,
+    "draws": 5,
+    "losses": 41,
+    "score": 0.565,
+    "win_rate_wilson_95": [
+      0.44264860323368227,
+      0.6343919169097589
+    ],
+    "decisive_win_rate_wilson_95": [
+      0.46808208987214145,
+      0.6634416670119307
+    ],
+    "score_bootstrap_95": [
+      0.47,
+      0.66
+    ],
+    "unique_openings": 100,
+    "per_agent": {
+      "Heuristic": {
+        "nodes_total": 0,
+        "simulations_total": 0,
+        "budget_violations": 0,
+        "moves": 1054,
+        "average_move_seconds": 0.00025869364230814027,
+        "p95_move_seconds": 0.0004866150178713725,
+        "nodes_per_move": 0.0,
+        "simulations_per_move": 0.0
+      },
+      "CNN-Policy": {
+        "nodes_total": 0,
+        "simulations_total": 0,
+        "budget_violations": 0,
+        "moves": 1046,
+        "average_move_seconds": 0.0007843989469324653,
+        "p95_move_seconds": 0.001352774997940287,
+        "nodes_per_move": 0.0,
+        "simulations_per_move": 0.0
+      }
+    },
+    "budget_violations": 0
+  },
+  {
+    "first_agent": "AlphaBeta-depth4",
+    "second_agent": "MCTS-500",
+    "games": 100,
+    "wins": 56,
+    "draws": 4,
+    "losses": 40,
+    "score": 0.58,
+    "win_rate_wilson_95": [
+      0.4622810465167699,
+      0.6532797336983921
+    ],
+    "decisive_win_rate_wilson_95": [
+      0.48336967940369446,
+      0.6768843892866933
+    ],
+    "score_bootstrap_95": [
+      0.485,
+      0.675
+    ],
+    "unique_openings": 100,
+    "per_agent": {
+      "AlphaBeta-depth4": {
+        "nodes_total": 396810,
+        "simulations_total": 0,
+        "budget_violations": 0,
+        "moves": 1154,
+        "average_move_seconds": 0.006503713258856462,
+        "p95_move_seconds": 0.01724588498182129,
+        "nodes_per_move": 343.8561525129983,
+        "simulations_per_move": 0.0
+      },
+      "MCTS-500": {
+        "nodes_total": 0,
+        "simulations_total": 572500,
+        "budget_violations": 0,
+        "moves": 1145,
+        "average_move_seconds": 0.023813373974817257,
+        "p95_move_seconds": 0.039167120016645636,
+        "nodes_per_move": 0.0,
+        "simulations_per_move": 500.0
+      }
+    },
+    "budget_violations": 0
+  },
+  {
+    "first_agent": "AlphaBeta-depth4",
+    "second_agent": "CNN-Policy",
+    "games": 100,
+    "wins": 76,
+    "draws": 6,
+    "losses": 18,
+    "score": 0.79,
+    "win_rate_wilson_95": [
+      0.6676766365018553,
+      0.8330867444305122
+    ],
+    "decisive_win_rate_wilson_95": [
+      0.7174971706384233,
+      0.8752985695221128
+    ],
+    "score_bootstrap_95": [
+      0.71,
+      0.865
+    ],
+    "unique_openings": 100,
+    "per_agent": {
+      "AlphaBeta-depth4": {
+        "nodes_total": 351094,
+        "simulations_total": 0,
+        "budget_violations": 0,
+        "moves": 1088,
+        "average_move_seconds": 0.0064090720586725235,
+        "p95_move_seconds": 0.0165091349859722,
+        "nodes_per_move": 322.6966911764706,
+        "simulations_per_move": 0.0
+      },
+      "CNN-Policy": {
+        "nodes_total": 0,
+        "simulations_total": 0,
+        "budget_violations": 0,
+        "moves": 1060,
+        "average_move_seconds": 0.0018854305661011065,
+        "p95_move_seconds": 0.0031340799905592563,
+        "nodes_per_move": 0.0,
+        "simulations_per_move": 0.0
+      }
+    },
+    "budget_violations": 0
+  },
+  {
+    "first_agent": "MCTS-500",
+    "second_agent": "CNN-Policy",
+    "games": 100,
+    "wins": 62,
+    "draws": 6,
+    "losses": 32,
+    "score": 0.65,
+    "win_rate_wilson_95": [
+      0.5220975529551107,
+      0.7090240074752127
+    ],
+    "decisive_win_rate_wilson_95": [
+      0.5592082220071468,
+      0.7474102642827856
+    ],
+    "score_bootstrap_95": [
+      0.56,
+      0.74
+    ],
+    "unique_openings": 100,
+    "per_agent": {
+      "MCTS-500": {
+        "nodes_total": 0,
+        "simulations_total": 574500,
+        "budget_violations": 0,
+        "moves": 1149,
+        "average_move_seconds": 0.023826366666798847,
+        "p95_move_seconds": 0.04112386000342663,
+        "nodes_per_move": 0.0,
+        "simulations_per_move": 500.0
+      },
+      "CNN-Policy": {
+        "nodes_total": 0,
+        "simulations_total": 0,
+        "budget_violations": 0,
+        "moves": 1134,
+        "average_move_seconds": 0.0020317730152091696,
+        "p95_move_seconds": 0.003116394981043413,
+        "nodes_per_move": 0.0,
+        "simulations_per_move": 0.0
+      }
+    },
+    "budget_violations": 0
+  }
+]

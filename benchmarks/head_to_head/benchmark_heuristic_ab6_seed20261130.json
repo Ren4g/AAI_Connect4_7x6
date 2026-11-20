@@ -1,0 +1,48 @@
+[
+  {
+    "first_agent": "Heuristic",
+    "second_agent": "AlphaBeta-depth6",
+    "games": 100,
+    "wins": 15,
+    "draws": 1,
+    "losses": 84,
+    "score": 0.155,
+    "win_rate_wilson_95": [
+      0.0930598528365663,
+      0.23283559590832364
+    ],
+    "decisive_win_rate_wilson_95": [
+      0.09402325244184671,
+      0.2350411074842148
+    ],
+    "score_bootstrap_95": [
+      0.09,
+      0.22
+    ],
+    "score_bootstrap_unit": "paired opening",
+    "unique_openings": 50,
+    "per_agent": {
+      "Heuristic": {
+        "nodes_total": 0,
+        "simulations_total": 0,
+        "budget_violations": 0,
+        "moves": 964,
+        "average_move_seconds": 0.00024602385778830257,
+        "p95_move_seconds": 0.0003395699750399217,
+        "nodes_per_move": 0.0,
+        "simulations_per_move": 0.0
+      },
+      "AlphaBeta-depth6": {
+        "nodes_total": 3927520,
+        "simulations_total": 0,
+        "budget_violations": 0,
+        "moves": 998,
+        "average_move_seconds": 0.06216410060119461,
+        "p95_move_seconds": 0.17467793499235995,
+        "nodes_per_move": 3935.3907815631264,
+        "simulations_per_move": 0.0
+      }
+    },
+    "budget_violations": 0
+  }
+]

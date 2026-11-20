@@ -1,0 +1,48 @@
+[
+  {
+    "first_agent": "AlphaBeta-time0.5s-depth8",
+    "second_agent": "MCTS-time0.5s",
+    "games": 100,
+    "wins": 39,
+    "draws": 9,
+    "losses": 52,
+    "score": 0.435,
+    "win_rate_wilson_95": [
+      0.3001687400639441,
+      0.4879698295415926
+    ],
+    "decisive_win_rate_wilson_95": [
+      0.33182663627211473,
+      0.5311025071462968
+    ],
+    "score_bootstrap_95": [
+      0.345,
+      0.525
+    ],
+    "unique_openings": 50,
+    "per_agent": {
+      "AlphaBeta-time0.5s-depth8": {
+        "nodes_total": 23193306,
+        "simulations_total": 0,
+        "budget_violations": 2,
+        "moves": 1346,
+        "average_move_seconds": 0.2722094471025472,
+        "p95_move_seconds": 0.489399725018302,
+        "nodes_per_move": 17231.2823179792,
+        "simulations_per_move": 0.0
+      },
+      "MCTS-time0.5s": {
+        "nodes_total": 0,
+        "simulations_total": 26555541,
+        "budget_violations": 13,
+        "moves": 1353,
+        "average_move_seconds": 0.4755847348112882,
+        "p95_move_seconds": 0.4750921399798244,
+        "nodes_per_move": 0.0,
+        "simulations_per_move": 19627.155210643017
+      }
+    },
+    "budget_violations": 15,
+    "score_bootstrap_unit": "paired opening cluster"
+  }
+]

@@ -1,0 +1,204 @@
+{
+  "timestamp_local": "2026-11-20T14:17:55.633342+07:00",
+  "game_log": "benchmarks/round_robin/round_robin_full_seed20261119.games.jsonl",
+  "checkpoint": "checkpoints/connect4_cnn_gravityaware_seed20261119.pt",
+  "solver": "solver/connect4/c4solver.exe",
+  "solver_mode": "exact scores; maximize solver score among legal actions",
+  "seed": 20261122,
+  "stage_ply_ranges": {
+    "opening": [
+      7,
+      10
+    ],
+    "middle": [
+      11,
+      24
+    ],
+    "endgame": [
+      25,
+      41
+    ]
+  },
+  "sample": {
+    "opening": {
+      "candidate_prefixes": 3779,
+      "unique_after_mirror_dedup": 2296,
+      "source_games_used": 417,
+      "evaluated": 500
+    },
+    "middle": {
+      "candidate_prefixes": 8073,
+      "unique_after_mirror_dedup": 7758,
+      "source_games_used": 380,
+      "evaluated": 500
+    },
+    "endgame": {
+      "candidate_prefixes": 3589,
+      "unique_after_mirror_dedup": 3589,
+      "source_games_used": 294,
+      "evaluated": 500
+    }
+  },
+  "agents": {
+    "Random": {
+      "overall": {
+        "positions": 1500,
+        "optimal_actions": 525,
+        "optimal_action_rate": 0.35,
+        "value_preserving_actions": 1044,
+        "value_preserving_rate": 0.696
+      },
+      "by_stage": {
+        "opening": {
+          "positions": 500,
+          "optimal_actions": 116,
+          "optimal_action_rate": 0.232,
+          "value_preserving_actions": 301,
+          "value_preserving_rate": 0.602
+        },
+        "middle": {
+          "positions": 500,
+          "optimal_actions": 141,
+          "optimal_action_rate": 0.282,
+          "value_preserving_actions": 354,
+          "value_preserving_rate": 0.708
+        },
+        "endgame": {
+          "positions": 500,
+          "optimal_actions": 268,
+          "optimal_action_rate": 0.536,
+          "value_preserving_actions": 389,
+          "value_preserving_rate": 0.778
+        }
+      }
+    },
+    "Heuristic": {
+      "overall": {
+        "positions": 1500,
+        "optimal_actions": 1103,
+        "optimal_action_rate": 0.7353333333333333,
+        "value_preserving_actions": 1324,
+        "value_preserving_rate": 0.8826666666666667
+      },
+      "by_stage": {
+        "opening": {
+          "positions": 500,
+          "optimal_actions": 329,
+          "optimal_action_rate": 0.658,
+          "value_preserving_actions": 425,
+          "value_preserving_rate": 0.85
+        },
+        "middle": {
+          "positions": 500,
+          "optimal_actions": 351,
+          "optimal_action_rate": 0.702,
+          "value_preserving_actions": 435,
+          "value_preserving_rate": 0.87
+        },
+        "endgame": {
+          "positions": 500,
+          "optimal_actions": 423,
+          "optimal_action_rate": 0.846,
+          "value_preserving_actions": 464,
+          "value_preserving_rate": 0.928
+        }
+      }
+    },
+    "AlphaBeta-depth4": {
+      "overall": {
+        "positions": 1500,
+        "optimal_actions": 1207,
+        "optimal_action_rate": 0.8046666666666666,
+        "value_preserving_actions": 1376,
+        "value_preserving_rate": 0.9173333333333333
+      },
+      "by_stage": {
+        "opening": {
+          "positions": 500,
+          "optimal_actions": 340,
+          "optimal_action_rate": 0.68,
+          "value_preserving_actions": 425,
+          "value_preserving_rate": 0.85
+        },
+        "middle": {
+          "positions": 500,
+          "optimal_actions": 389,
+          "optimal_action_rate": 0.778,
+          "value_preserving_actions": 459,
+          "value_preserving_rate": 0.918
+        },
+        "endgame": {
+          "positions": 500,
+          "optimal_actions": 478,
+          "optimal_action_rate": 0.956,
+          "value_preserving_actions": 492,
+          "value_preserving_rate": 0.984
+        }
+      }
+    },
+    "MCTS-500": {
+      "overall": {
+        "positions": 1500,
+        "optimal_actions": 1136,
+        "optimal_action_rate": 0.7573333333333333,
+        "value_preserving_actions": 1369,
+        "value_preserving_rate": 0.9126666666666666
+      },
+      "by_stage": {
+        "opening": {
+          "positions": 500,
+          "optimal_actions": 308,
+          "optimal_action_rate": 0.616,
+          "value_preserving_actions": 422,
+          "value_preserving_rate": 0.844
+        },
+        "middle": {
+          "positions": 500,
+          "optimal_actions": 374,
+          "optimal_action_rate": 0.748,
+          "value_preserving_actions": 453,
+          "value_preserving_rate": 0.906
+        },
+        "endgame": {
+          "positions": 500,
+          "optimal_actions": 454,
+          "optimal_action_rate": 0.908,
+          "value_preserving_actions": 494,
+          "value_preserving_rate": 0.988
+        }
+      }
+    },
+    "CNN-Policy": {
+      "overall": {
+        "positions": 1500,
+        "optimal_actions": 1056,
+        "optimal_action_rate": 0.704,
+        "value_preserving_actions": 1317,
+        "value_preserving_rate": 0.878
+      },
+      "by_stage": {
+        "opening": {
+          "positions": 500,
+          "optimal_actions": 288,
+          "optimal_action_rate": 0.576,
+          "value_preserving_actions": 403,
+          "value_preserving_rate": 0.806
+        },
+        "middle": {
+          "positions": 500,
+          "optimal_actions": 322,
+          "optimal_action_rate": 0.644,
+          "value_preserving_actions": 431,
+          "value_preserving_rate": 0.862
+        },
+        "endgame": {
+          "positions": 500,
+          "optimal_actions": 446,
+          "optimal_action_rate": 0.892,
+          "value_preserving_actions": 483,
+          "value_preserving_rate": 0.966
+        }
+      }
+    }
+  }
+}
