@@ -41,6 +41,7 @@ Các gói CNN/RL/AZ chỉ được chấp nhận sau khi kiểm checksum, cấu 
 ## Tệp nguồn chính
 
 - [Tiêu chí đóng băng](CRITERIA.md)
+- [Báo cáo tổng kết học thuật sinh từ JSON](report.md)
 - [Nhật ký thực nghiệm](LOG.md)
 - [Kết quả CNN/RL/AlphaZero sinh từ JSON](LEARNING_RESULTS.md)
 - [Đường cong chẩn đoán quá trình huấn luyện](training_process_trace.svg) — không diễn giải như strength test.
