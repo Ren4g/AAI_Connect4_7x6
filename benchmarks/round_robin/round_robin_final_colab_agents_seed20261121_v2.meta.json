@@ -1,0 +1,56 @@
+{
+  "timestamp_local": "2026-11-21T09:36:51.450161+07:00",
+  "seed": 20261121,
+  "games_per_pair": 100,
+  "time_budget_seconds": null,
+  "preset": null,
+  "opening_plies": 6,
+  "paired_openings": true,
+  "opening_filter": "fair",
+  "opening_filter_definition": "reject starts with an immediate win for side to move or no move that avoids an immediate losing reply",
+  "opening_generation": {
+    "attempts": 56,
+    "accepted": 50,
+    "incomplete": 0,
+    "would_reject_immediate_win": 6,
+    "would_reject_no_safe_action": 0,
+    "duplicate_position": 0,
+    "filtered_immediate_win": 6,
+    "filtered_no_safe_action": 0
+  },
+  "engine": "bitboard",
+  "agents": [
+    "Random",
+    "Heuristic",
+    "AlphaBeta-depth4",
+    "MCTS-500",
+    "AlphaBeta-depth6",
+    "CNN-Policy",
+    "RL-Policy",
+    "PUCT"
+  ],
+  "cnn_warmup_runs": 2,
+  "timed_search_agents": [],
+  "time_budget_semantics": "fixed depth/simulation settings",
+  "checkpoint": "results/colab/cnn_seed20261121_colab1/checkpoint_best.pt",
+  "rl_checkpoint": "results/colab/rl_seed20261120_run1/checkpoint_policy.pt",
+  "extra_alpha_beta_depth": 6,
+  "puct_checkpoint": "results/colab/az_seed20261120_run1/checkpoint_policy.pt",
+  "puct_simulations": 500,
+  "source_code_commit": "5423c266894ee910d1b833d95aefe23a85f41613",
+  "source_tree_dirty": true,
+  "source_code_note": "At run time evaluate.py had local additions for the RL checkpoint and a second AlphaBeta depth. Later changes only added provenance fields/bootstrap metadata and report tooling; the match agents and result computation were unchanged.",
+  "bootstrap": {
+    "replicates": 10000,
+    "seed": 20261119,
+    "unit": "paired opening"
+  },
+  "solver_commit": null,
+  "checkpoint_sha256": {
+    "cnn": "ec77885d4b55b77816a0fe2550570ae17e555220ed001df27dd8a97621b8522e",
+    "rl": "f435e164f7b1f413fc54430195fedc5eb97a4ac8fb6f30c1b46973554ec03b2b",
+    "az_puct": "f9de84e35658a2c7db54a795a62866bb778f74e6290d9024b26e60af28113d53"
+  },
+  "results_json_sha256": "48c82a4166934408c6eb239075b83c46178fc1f6a7825404259f28525688d379",
+  "game_log_sha256": "0ef0c27309e1e0505ea65c7896a79fda9523f7f4080ef8dd446f29d884a4147e"
+}

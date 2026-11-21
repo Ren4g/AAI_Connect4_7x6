@@ -212,6 +212,8 @@ def test_round_robin_uses_unique_seeded_openings_and_separates_agent_metrics() -
     assert opening_stats["filtered_no_safe_action"] == opening_stats["would_reject_no_safe_action"]
     assert summary["per_agent"]["left"]["moves"] > 0
     assert summary["score_bootstrap_95"][0] <= summary["score"] <= summary["score_bootstrap_95"][1]
+    assert summary["score_bootstrap_replicates"] == 10000
+    assert summary["score_bootstrap_seed"] == 20261119
 
 
 def test_round_robin_can_pair_each_opening_across_both_seats() -> None:

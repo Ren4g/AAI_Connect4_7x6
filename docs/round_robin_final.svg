@@ -1,0 +1,141 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="936" height="860" viewBox="0 0 936 860">
+<rect width="100%" height="100%" fill="white"/>
+<text x="50%" y="28" text-anchor="middle" font-family="sans-serif" font-size="19">Round-robin score matrix</text>
+<text x="226.0" y="88" text-anchor="middle" font-family="sans-serif" font-size="11">Random</text>
+<text x="318.0" y="88" text-anchor="middle" font-family="sans-serif" font-size="11">Heuristic</text>
+<text x="410.0" y="88" text-anchor="middle" font-family="sans-serif" font-size="11">AlphaBeta-depth4</text>
+<text x="502.0" y="88" text-anchor="middle" font-family="sans-serif" font-size="11">MCTS-500</text>
+<text x="594.0" y="88" text-anchor="middle" font-family="sans-serif" font-size="11">AlphaBeta-depth6</text>
+<text x="686.0" y="88" text-anchor="middle" font-family="sans-serif" font-size="11">CNN-Policy</text>
+<text x="778.0" y="88" text-anchor="middle" font-family="sans-serif" font-size="11">RL-Policy</text>
+<text x="870.0" y="88" text-anchor="middle" font-family="sans-serif" font-size="11">PUCT</text>
+<text x="168" y="150.0" text-anchor="end" font-family="sans-serif" font-size="11">Random</text>
+<rect x="180" y="100" width="92" height="92" fill="#e5e7eb" stroke="white"/>
+<rect x="272" y="100" width="92" height="92" fill="#dc0070" stroke="white"/>
+<text x="318.0" y="151.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.000</text>
+<rect x="364" y="100" width="92" height="92" fill="#dc0070" stroke="white"/>
+<text x="410.0" y="151.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.000</text>
+<rect x="456" y="100" width="92" height="92" fill="#dc0070" stroke="white"/>
+<text x="502.0" y="151.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.000</text>
+<rect x="548" y="100" width="92" height="92" fill="#dc0070" stroke="white"/>
+<text x="594.0" y="151.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.000</text>
+<rect x="640" y="100" width="92" height="92" fill="#dc0070" stroke="white"/>
+<text x="686.0" y="151.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.000</text>
+<rect x="732" y="100" width="92" height="92" fill="#d80470" stroke="white"/>
+<text x="778.0" y="151.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.020</text>
+<rect x="824" y="100" width="92" height="92" fill="#dc0070" stroke="white"/>
+<text x="870.0" y="151.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.000</text>
+<text x="168" y="242.0" text-anchor="end" font-family="sans-serif" font-size="11">Heuristic</text>
+<rect x="180" y="192" width="92" height="92" fill="#00be70" stroke="white"/>
+<text x="226.0" y="243.0" text-anchor="middle" font-family="sans-serif" font-size="14">1.000</text>
+<rect x="272" y="192" width="92" height="92" fill="#e5e7eb" stroke="white"/>
+<rect x="364" y="192" width="92" height="92" fill="#9d3670" stroke="white"/>
+<text x="410.0" y="243.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.285</text>
+<rect x="456" y="192" width="92" height="92" fill="#943e70" stroke="white"/>
+<text x="502.0" y="243.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.325</text>
+<rect x="548" y="192" width="92" height="92" fill="#b02670" stroke="white"/>
+<text x="594.0" y="243.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.200</text>
+<rect x="640" y="192" width="92" height="92" fill="#646870" stroke="white"/>
+<text x="686.0" y="243.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.545</text>
+<rect x="732" y="192" width="92" height="92" fill="#21a270" stroke="white"/>
+<text x="778.0" y="243.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.850</text>
+<rect x="824" y="192" width="92" height="92" fill="#8c4570" stroke="white"/>
+<text x="870.0" y="243.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.365</text>
+<text x="168" y="334.0" text-anchor="end" font-family="sans-serif" font-size="11">AlphaBeta-depth4</text>
+<rect x="180" y="284" width="92" height="92" fill="#00be70" stroke="white"/>
+<text x="226.0" y="335.0" text-anchor="middle" font-family="sans-serif" font-size="14">1.000</text>
+<rect x="272" y="284" width="92" height="92" fill="#3f8870" stroke="white"/>
+<text x="318.0" y="335.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.715</text>
+<rect x="364" y="284" width="92" height="92" fill="#e5e7eb" stroke="white"/>
+<rect x="456" y="284" width="92" height="92" fill="#5a7070" stroke="white"/>
+<text x="502.0" y="335.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.590</text>
+<rect x="548" y="284" width="92" height="92" fill="#9b3870" stroke="white"/>
+<text x="594.0" y="335.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.295</text>
+<rect x="640" y="284" width="92" height="92" fill="#319370" stroke="white"/>
+<text x="686.0" y="335.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.775</text>
+<rect x="732" y="284" width="92" height="92" fill="#08b770" stroke="white"/>
+<text x="778.0" y="335.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.965</text>
+<rect x="824" y="284" width="92" height="92" fill="#6f5e70" stroke="white"/>
+<text x="870.0" y="335.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.495</text>
+<text x="168" y="426.0" text-anchor="end" font-family="sans-serif" font-size="11">MCTS-500</text>
+<rect x="180" y="376" width="92" height="92" fill="#00be70" stroke="white"/>
+<text x="226.0" y="427.0" text-anchor="middle" font-family="sans-serif" font-size="14">1.000</text>
+<rect x="272" y="376" width="92" height="92" fill="#478070" stroke="white"/>
+<text x="318.0" y="427.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.675</text>
+<rect x="364" y="376" width="92" height="92" fill="#824e70" stroke="white"/>
+<text x="410.0" y="427.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.410</text>
+<rect x="456" y="376" width="92" height="92" fill="#e5e7eb" stroke="white"/>
+<rect x="548" y="376" width="92" height="92" fill="#a82d70" stroke="white"/>
+<text x="594.0" y="427.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.235</text>
+<rect x="640" y="376" width="92" height="92" fill="#408770" stroke="white"/>
+<text x="686.0" y="427.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.710</text>
+<rect x="732" y="376" width="92" height="92" fill="#0ab570" stroke="white"/>
+<text x="778.0" y="427.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.955</text>
+<rect x="824" y="376" width="92" height="92" fill="#725b70" stroke="white"/>
+<text x="870.0" y="427.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.480</text>
+<text x="168" y="518.0" text-anchor="end" font-family="sans-serif" font-size="11">AlphaBeta-depth6</text>
+<rect x="180" y="468" width="92" height="92" fill="#00be70" stroke="white"/>
+<text x="226.0" y="519.0" text-anchor="middle" font-family="sans-serif" font-size="14">1.000</text>
+<rect x="272" y="468" width="92" height="92" fill="#2c9870" stroke="white"/>
+<text x="318.0" y="519.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.800</text>
+<rect x="364" y="468" width="92" height="92" fill="#418670" stroke="white"/>
+<text x="410.0" y="519.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.705</text>
+<rect x="456" y="468" width="92" height="92" fill="#349170" stroke="white"/>
+<text x="502.0" y="519.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.765</text>
+<rect x="548" y="468" width="92" height="92" fill="#e5e7eb" stroke="white"/>
+<rect x="640" y="468" width="92" height="92" fill="#259e70" stroke="white"/>
+<text x="686.0" y="519.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.830</text>
+<rect x="732" y="468" width="92" height="92" fill="#06b970" stroke="white"/>
+<text x="778.0" y="519.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.975</text>
+<rect x="824" y="468" width="92" height="92" fill="#587270" stroke="white"/>
+<text x="870.0" y="519.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.600</text>
+<text x="168" y="610.0" text-anchor="end" font-family="sans-serif" font-size="11">CNN-Policy</text>
+<rect x="180" y="560" width="92" height="92" fill="#00be70" stroke="white"/>
+<text x="226.0" y="611.0" text-anchor="middle" font-family="sans-serif" font-size="14">1.000</text>
+<rect x="272" y="560" width="92" height="92" fill="#785670" stroke="white"/>
+<text x="318.0" y="611.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.455</text>
+<rect x="364" y="560" width="92" height="92" fill="#aa2b70" stroke="white"/>
+<text x="410.0" y="611.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.225</text>
+<rect x="456" y="560" width="92" height="92" fill="#9c3770" stroke="white"/>
+<text x="502.0" y="611.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.290</text>
+<rect x="548" y="560" width="92" height="92" fill="#b72070" stroke="white"/>
+<text x="594.0" y="611.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.170</text>
+<rect x="640" y="560" width="92" height="92" fill="#e5e7eb" stroke="white"/>
+<rect x="732" y="560" width="92" height="92" fill="#339270" stroke="white"/>
+<text x="778.0" y="611.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.770</text>
+<rect x="824" y="560" width="92" height="92" fill="#a82d70" stroke="white"/>
+<text x="870.0" y="611.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.235</text>
+<text x="168" y="702.0" text-anchor="end" font-family="sans-serif" font-size="11">RL-Policy</text>
+<rect x="180" y="652" width="92" height="92" fill="#04ba70" stroke="white"/>
+<text x="226.0" y="703.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.980</text>
+<rect x="272" y="652" width="92" height="92" fill="#bb1d70" stroke="white"/>
+<text x="318.0" y="703.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.150</text>
+<rect x="364" y="652" width="92" height="92" fill="#d40770" stroke="white"/>
+<text x="410.0" y="703.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.035</text>
+<rect x="456" y="652" width="92" height="92" fill="#d20970" stroke="white"/>
+<text x="502.0" y="703.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.045</text>
+<rect x="548" y="652" width="92" height="92" fill="#d60570" stroke="white"/>
+<text x="594.0" y="703.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.025</text>
+<rect x="640" y="652" width="92" height="92" fill="#a92c70" stroke="white"/>
+<text x="686.0" y="703.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.230</text>
+<rect x="732" y="652" width="92" height="92" fill="#e5e7eb" stroke="white"/>
+<rect x="824" y="652" width="92" height="92" fill="#cd0d70" stroke="white"/>
+<text x="870.0" y="703.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.070</text>
+<text x="168" y="794.0" text-anchor="end" font-family="sans-serif" font-size="11">PUCT</text>
+<rect x="180" y="744" width="92" height="92" fill="#00be70" stroke="white"/>
+<text x="226.0" y="795.0" text-anchor="middle" font-family="sans-serif" font-size="14">1.000</text>
+<rect x="272" y="744" width="92" height="92" fill="#507970" stroke="white"/>
+<text x="318.0" y="795.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.635</text>
+<rect x="364" y="744" width="92" height="92" fill="#6d6070" stroke="white"/>
+<text x="410.0" y="795.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.505</text>
+<rect x="456" y="744" width="92" height="92" fill="#6a6370" stroke="white"/>
+<text x="502.0" y="795.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.520</text>
+<rect x="548" y="744" width="92" height="92" fill="#844c70" stroke="white"/>
+<text x="594.0" y="795.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.400</text>
+<rect x="640" y="744" width="92" height="92" fill="#349170" stroke="white"/>
+<text x="686.0" y="795.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.765</text>
+<rect x="732" y="744" width="92" height="92" fill="#0fb170" stroke="white"/>
+<text x="778.0" y="795.0" text-anchor="middle" font-family="sans-serif" font-size="14">0.930</text>
+<rect x="824" y="744" width="92" height="92" fill="#e5e7eb" stroke="white"/>
+<text x="468.0" y="856" text-anchor="middle" font-family="sans-serif" font-size="11">Row agent score against column agent; green = higher row score</text>
+</svg>

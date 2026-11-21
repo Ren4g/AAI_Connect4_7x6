@@ -1,41 +1,35 @@
 # Dàn ý slide báo cáo tiến độ
 
-## 1. Bài toán và mục tiêu
+## 1. Bài toán và câu hỏi nghiên cứu
 
-- Connect Four 7×6 là trò chơi đối kháng có luật đơn giản nhưng nhánh tìm kiếm lớn.
-- Mục tiêu: xây dựng lộ trình tám cấp agent, từ baseline ngẫu nhiên đến tìm kiếm có học và tự chơi.
-- Câu hỏi nghiên cứu: học từ solver/self-play cải thiện lựa chọn nước đi thế nào so với tìm kiếm cổ điển?
+Connect Four 7×6 có luật ngắn gọn nhưng không gian trạng thái lớn. Đề tài xây dựng tám cấp tác nhân từ baseline ngẫu nhiên đến học có giám sát, tìm kiếm kết hợp mạng và tự chơi. Câu hỏi trung tâm: khi solver exact được dùng làm thước đo, các phương pháp học có vượt baseline tìm kiếm cổ điển không?
 
-## 2. Kiến trúc và lộ trình agent
+## 2. Kiến trúc và tiến trình agent
 
-- Engine grid/bitboard dùng API chung và bộ luật có test.
-- Cấp 1–5: Random, Heuristic, Alpha-Beta, MCTS, CNN policy/value có giám sát.
-- Cấp 6: policy-gradient/actor-critic thăm dò; cấp 7: PUCT dùng prior/value; cấp 8: batched self-play.
-- Phân biệt rõ agent đã có code, đã smoke, đã đánh giá, và chưa có kết quả huấn luyện Colab.
+Trình bày engine grid/bitboard và API dùng chung. Nối tám cấp thành tiến trình: Random → Heuristic → AlphaBeta → MCTS → supervised CNN → policy-gradient RL → policy/value PUCT → AlphaZero-inspired self-play. Phân biệt trạng thái đã hiện thực, đã chạy và đã đánh giá.
 
-## 3. Phương pháp đánh giá
+## 3. Phương pháp đánh giá có kiểm soát
 
-- Tập test đóng băng 1.500 vị trí; Pons trả điểm exact.
-- Metric: tỷ lệ nước tối ưu, WDL-preserving, score (thắng + 0,5 hòa), CI bootstrap theo ván/opening.
-- Đấu đối kháng dùng opening chung, đổi ghế; thời gian chỉ đo local.
-- Bẫy quy trình đã sửa: ván lặp của agent tất định, số liệu hai phía bị gộp, điểm MCTS, khai cuộc thiên lệch và leakage.
+Mô tả test Pons đóng băng, lấy mẫu theo ván nguồn, cân bằng ba giai đoạn, canonical mirror hashes, score trận đấu và CI bootstrap theo cụm. Round-robin dùng opening chung, đổi ghế và bộ lọc thế khai cuộc đã phân định. Nêu các sai lệch đã phát hiện: ván lặp của agent tất định, thống kê gộp hai bên, điểm MCTS chưa chuẩn hóa, opening có thắng ngay và leakage.
 
-## 4. Kết quả baseline hiện có
+## 4. Từ pipeline đến thí nghiệm Colab
 
-- Dùng biểu đồ `results/solver_depth_curve_frozen_20261120_seed20261125.svg`.
-- AB depth 4: exact 80,5% [78,5; 82,4]; AB depth 5: 83,1% [81,2; 84,9].
-- AB depth 6 thấp hơn depth 5 trên mẫu này; không giả định độ sâu tăng luôn làm exact tăng đơn điệu.
-- CNN hiện tại chưa có đánh giá held-out hợp lệ; không đưa số legacy vào kết quả chính.
+Cho thấy ba loại job CNN, RL, self-play AlphaZero; checkpoint định kỳ, resume, manifest và SHA256; ingest local kiểm checksum, inference CPU và test leakage trước đánh giá. Chỉ tính các run đã ingest là kết quả thực nghiệm.
 
-## 5. Pipeline huấn luyện mới
+Đường cong reward RL và loss/self-play AlphaZero nằm ở `docs/training_process_trace.svg`; đây là diagnostic trong quá trình học, không phải phép đo strength độc lập.
 
-- Solver labels v2: 1.500 vị trí, train/validation theo ván, 0 giao test, solver batch stdin với 8 worker.
-- Colab: CNN supervised, self-play PUCT, RL; checkpoint/resume, hash manifest, ingest local.
-- Local smoke và resume đã qua; đây là bằng chứng kỹ thuật, không phải mức chơi.
+## 5. Kết quả solver: năng lực chọn nước
 
-## 6. Hạn chế và bước tiếp theo
+Dùng bảng trong `docs/LEARNING_RESULTS.md`. Đặt AlphaBeta depth 3–6 cạnh CNN, RL và PUCT-AZ; chỉ rõ cổng CNN đã định trước và kết luận cổng. Dùng số liệu và CI trực tiếp từ JSON, không chép số từ log thăm dò.
 
-- Chưa có artifact huấn luyện Colab được xác minh; chưa có kết luận về CNN mới, PUCT, RL hoặc AlphaZero.
-- Cần chạy ba seed CNN, chọn bằng validation; sau đó self-play/RL theo ngân sách.
-- Ingest local, đánh giá solver, arena 100 opening, round-robin cuối, phân tích ghế và lỗi.
-- Kết luận hiện tại: hạ tầng đánh giá và huấn luyện tiến triển; kết quả baseline ủng hộ Alpha-Beta trung bình, còn các cấp học sâu chờ kiểm định.
+## 6. Round-robin trực tiếp
+
+Dùng `docs/ROUND_ROBIN_FINAL.md` và `docs/round_robin_final.svg`. So sánh W-D-L, score, CI theo opening và chi phí local. Nêu rõ PUCT-500 là suy luận từ checkpoint self-play; RL trong giải đấu dùng PolicyAgent kèm safety filter. Kết thúc bằng arena checkpoint: candidate không vượt cổng promotion.
+
+## 7. Kết luận, giới hạn và hướng tiếp theo
+
+Kết luận theo bằng chứng: CNN solver-label chưa qua cổng tối thiểu; value head chưa cho thấy lợi thế rõ so với baseline; checkpoint AZ/RL mới có một run cho mỗi phương pháp. Nêu giới hạn của một test đóng băng và một seed RL/AZ. Hướng tiếp theo: cải thiện policy/value, tăng seed/self-play, rồi chạy lại giao thức mà không đổi test hay ngưỡng hậu nghiệm.
+
+### Nhịp kể
+
+Đặt vấn đề → xây baseline → phát hiện sai lệch đánh giá → đóng băng giao thức → huấn luyện và ingest → đối chiếu solver/trận đấu → kết luận vừa đủ bằng chứng.

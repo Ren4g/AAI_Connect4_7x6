@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 from datetime import datetime
 from pathlib import Path
 
@@ -20,6 +21,8 @@ def make_agents(
     alpha_beta_depth: int | None = None,
     puct_checkpoint: str | None = None,
     puct_simulations: int = 200,
+    rl_checkpoint: str | None = None,
+    extra_alpha_beta_depth: int | None = None,
 ) -> dict[str, object]:
     if alpha_beta_depth is None:
         if time_budget_seconds is None or time_budget_seconds <= 0.1:
@@ -45,8 +48,16 @@ def make_agents(
             MCTSAgent(simulations=simulations, seed=seed + 3,
                       time_budget_seconds=time_budget_seconds),
     }
+    if extra_alpha_beta_depth is not None:
+        if extra_alpha_beta_depth < 1 or extra_alpha_beta_depth == depth:
+            raise ValueError("extra AlphaBeta depth must be positive and differ from the main depth")
+        agents[f"AlphaBeta-depth{extra_alpha_beta_depth}"] = AlphaBetaAgent(
+            depth=extra_alpha_beta_depth, time_budget_seconds=time_budget_seconds
+        )
     if checkpoint:
         agents["CNN-Policy"] = PolicyAgent.from_checkpoint(checkpoint, device=device)
+    if rl_checkpoint:
+        agents["RL-Policy"] = PolicyAgent.from_checkpoint(rl_checkpoint, device=device)
     if puct_checkpoint:
         agents["PUCT"] = PUCTAgent.from_checkpoint(
             puct_checkpoint, simulations=puct_simulations, device=device
@@ -62,6 +73,8 @@ def main() -> None:
                         help="Fast=100ms/depth4; standard=500ms/depth8")
     parser.add_argument("--ab-depth", type=int, default=None,
                         help="Override the AlphaBeta iterative-deepening ceiling")
+    parser.add_argument("--ab-depth-extra", type=int, default=None,
+                        help="Add a second fixed-depth AlphaBeta agent to the same tournament")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--opening-plies", type=int, default=6,
                         help="Seeded random opening length; set 0 to disable")
@@ -71,25 +84,29 @@ def main() -> None:
                         help="Replay each opening twice, once from each seat")
     parser.add_argument("--engine", choices=("grid", "bitboard"), default="grid")
     parser.add_argument("--checkpoint", default=None, help="Optional trained policy/value checkpoint")
+    parser.add_argument("--rl-checkpoint", default=None,
+                        help="Optional policy-gradient checkpoint; evaluated with PolicyAgent safety rules")
     parser.add_argument("--puct-checkpoint", default=None,
                         help="Optional policy/value checkpoint searched with PUCT")
     parser.add_argument("--puct-simulations", type=int, default=200)
     parser.add_argument("--device", default="cpu", help="PyTorch device used for checkpoint inference")
     parser.add_argument(
-        "--include", nargs="*", choices=("Random", "Heuristic", "AlphaBeta", "MCTS", "CNN-Policy", "PUCT"),
+        "--include", nargs="*", choices=("Random", "Heuristic", "AlphaBeta", "MCTS",
+                                           "CNN-Policy", "RL-Policy", "PUCT"),
         default=None, help="Optional agent subset; e.g. --include AlphaBeta MCTS",
     )
     parser.add_argument("--output", default="benchmarks/round_robin/round_robin.json")
     parser.add_argument("--game-log", default=None, help="JSONL replay log; defaults beside --output")
     args = parser.parse_args()
     if args.preset is not None:
-        if args.budget_ms is not None or args.ab_depth is not None:
-            parser.error("--preset cannot be combined with --budget-ms or --ab-depth")
+        if args.budget_ms is not None or args.ab_depth is not None or args.ab_depth_extra is not None:
+            parser.error("--preset cannot be combined with --budget-ms or explicit AlphaBeta depths")
         args.budget_ms = 100 if args.preset == "fast" else 500
         args.ab_depth = 4 if args.preset == "fast" else 8
     budget_seconds = None if args.budget_ms is None else args.budget_ms / 1000
     agents = make_agents(args.checkpoint, args.device, args.seed, budget_seconds, args.ab_depth,
-                         args.puct_checkpoint, args.puct_simulations)
+                         args.puct_checkpoint, args.puct_simulations, args.rl_checkpoint,
+                         args.ab_depth_extra)
     if args.include is not None:
         agents = {
             name: agent for name, agent in agents.items()
@@ -118,6 +135,12 @@ def main() -> None:
     game_log = args.game_log or str(Path(args.output).with_suffix(".games.jsonl"))
     run_metadata = {
         "timestamp_local": datetime.now().astimezone().isoformat(),
+        "source_code_commit": subprocess.run(
+            ["git", "rev-parse", "HEAD"], capture_output=True, text=True, check=False
+        ).stdout.strip() or None,
+        "source_tree_dirty": bool(subprocess.run(
+            ["git", "status", "--porcelain"], capture_output=True, text=True, check=False
+        ).stdout.strip()),
         "seed": args.seed,
         "games_per_pair": args.games,
         "time_budget_seconds": budget_seconds,
@@ -139,7 +162,11 @@ def main() -> None:
             "maximum per decision; AlphaBeta and MCTS use timed search, other agents run normally"
             if budget_seconds is not None else "fixed depth/simulation settings"
         ),
+        "bootstrap": {"replicates": 10000, "seed": 20261119,
+                      "unit": "paired opening" if args.paired_openings else "seat-stratified game"},
         "checkpoint": args.checkpoint,
+        "rl_checkpoint": args.rl_checkpoint,
+        "extra_alpha_beta_depth": args.ab_depth_extra,
         "puct_checkpoint": args.puct_checkpoint,
         "puct_simulations": args.puct_simulations if args.puct_checkpoint else None,
     }

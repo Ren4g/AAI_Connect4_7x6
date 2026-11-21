@@ -1,0 +1,89 @@
+{
+  "run_id": "arena_20261121_095344_20261121",
+  "phase": "checkpoint_arena",
+  "seed": 20261121,
+  "timestamp_local": "2026-11-21T09:53:44.809996+07:00",
+  "source_code_commit": "5423c266894ee910d1b833d95aefe23a85f41613",
+  "source_code_sha256": "d80d8d8af878e24190f4fd81229898be9d5db1ff535e8681755442b6f0a8ebf5",
+  "python": "3.13.5",
+  "candidate": {
+    "label": "AZ-iteration-100",
+    "path": "results\\colab\\az_seed20261120_run1\\checkpoint_policy.pt",
+    "sha256": "f9de84e35658a2c7db54a795a62866bb778f74e6290d9024b26e60af28113d53"
+  },
+  "incumbent": {
+    "label": "PUCT-CNN-seed20261121",
+    "path": "results\\colab\\cnn_seed20261121_colab1\\checkpoint_best.pt",
+    "sha256": "ec77885d4b55b77816a0fe2550570ae17e555220ed001df27dd8a97621b8522e"
+  },
+  "configuration": {
+    "simulations_per_move": 100,
+    "games": 200,
+    "opening_plies": 6,
+    "minimum_openings": 100,
+    "paired_openings": true,
+    "fair_opening_filter": true,
+    "smoke": false
+  },
+  "opening_filter": {
+    "attempts": 113,
+    "accepted": 100,
+    "incomplete": 0,
+    "would_reject_immediate_win": 11,
+    "would_reject_no_safe_action": 0,
+    "duplicate_position": 2,
+    "filtered_immediate_win": 11,
+    "filtered_no_safe_action": 0
+  },
+  "summary": {
+    "first_agent": "AZ-iteration-100",
+    "second_agent": "PUCT-CNN-seed20261121",
+    "games": 200,
+    "wins": 96,
+    "draws": 22,
+    "losses": 82,
+    "score": 0.535,
+    "win_rate_wilson_95": [
+      0.411791663783233,
+      0.5489621492718576
+    ],
+    "decisive_win_rate_wilson_95": [
+      0.46604267938456023,
+      0.6109474640667458
+    ],
+    "score_bootstrap_95": [
+      0.475,
+      0.5925
+    ],
+    "score_bootstrap_unit": "paired opening",
+    "score_bootstrap_replicates": 10000,
+    "score_bootstrap_seed": 20261119,
+    "unique_openings": 100,
+    "per_agent": {
+      "AZ-iteration-100": {
+        "nodes_total": 0,
+        "simulations_total": 227700,
+        "budget_violations": 0,
+        "moves": 2277,
+        "average_move_seconds": 0.06250700663167783,
+        "p95_move_seconds": 0.11253578000178092,
+        "nodes_per_move": 0.0,
+        "simulations_per_move": 100.0
+      },
+      "PUCT-CNN-seed20261121": {
+        "nodes_total": 0,
+        "simulations_total": 227500,
+        "budget_violations": 0,
+        "moves": 2275,
+        "average_move_seconds": 0.07002588193404045,
+        "p95_move_seconds": 0.1244703499985917,
+        "nodes_per_move": 0.0,
+        "simulations_per_move": 100.0
+      }
+    },
+    "budget_violations": 0
+  },
+  "promotion_gate": "score > 0.50 and paired-opening bootstrap lower 95% CI > 0.50",
+  "promoted": false,
+  "bootstrap_seed": 20261119
+}

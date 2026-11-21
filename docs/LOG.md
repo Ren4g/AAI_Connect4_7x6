@@ -108,3 +108,30 @@ Nhận định kỹ thuật cho Pha 2
 Value Head hiện tại còn yếu và bị overconfident (tự tin thái quá): Ở các bin dự đoán cực trị (~ -0.76 hoặc +0.80), giá trị thực tế trung bình chỉ đạt quanh -0.45 đến +0.71. Độ chính xác phân loại Thắng/Hòa/Thua (WDL accuracy) dao động quanh 50,5% – 53,5% (gần như ngang bằng mức đoán bừa theo lớp đa số 52,1%), và tụt mạnh ở tàn cuộc (42,4% – 45,8%).
 
 Kết luận cho Cấp 7 & Cấp 8: Không thể dùng đơn lẻ Value Head này thay thế hoàn toàn rollout mà thiếu tìm kiếm sâu, nhưng hoàn toàn dùng được làm giá trị khởi tạo (warm-start) cho Cấp 7 (PUCT + rollout ngắn) và Cấp 8 (AlphaZero self-play), nơi vòng lặp tự đấu sẽ tự hiệu chỉnh lại đầu Value qua hàng nghìn ván thực chiến.
+### 2026-11-20 — Colab artifact ingested
+
+- {"date": "2026-11-20", "event": "colab_run_ingested", "run_id": "az_seed20261120_run1", "artifact": "results\\colab\\az_seed20261120_run1", "seed": 20261120, "steps": 20000, "frozen_test_sha256": "3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01", "local_leakage_check": "passed", "inference_check": "passed"}
+
+### 2026-11-21 — Colab artifact ingested
+
+- {"date": "2026-11-21", "event": "colab_run_ingested", "run_id": "rl_seed20261120_run1", "artifact": "results\\colab\\rl_seed20261120_run1", "seed": 20261120, "steps": 10000, "frozen_test_sha256": "3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01", "local_leakage_check": "passed", "inference_check": "passed"}
+
+
+### 2026-11-21 — Đã đánh giá các run Colab và hoàn tất round-robin cuối
+
+- Ingest artifact RL sau khi kiểm checksum/cấu hình, inference CPU và audit leakage với test đóng băng trên local; AlphaZero và ba run CNN đã ingest trước đó. Artifact nằm trong `results/colab/`.
+- Đánh giá RL và checkpoint self-play AlphaZero trên test Pons đóng băng 1.500 vị trí cùng Random, Heuristic, AlphaBeta depth 1–6 và MCTS-500. JSON nguồn: `results/solver_eval_az_rl_20261121_seed20261121.json`; test/solver hashes khớp giao thức đóng băng.
+- Đánh giá value head của CNN được chọn bằng validation trên cùng test. JSON: `results/value_head/value_cnn_seed20261121_20261121.json`. Bảng và CI sinh từ JSON ở `docs/LEARNING_RESULTS.md`.
+- Hoàn tất round-robin local với opening ghép cặp sáu ply, đổi ghế cho Random, Heuristic, AlphaBeta depth 4/6, MCTS-500, CNN chọn bằng validation, RL policy và AlphaZero PUCT. Bộ lọc công bằng loại sáu opening ứng viên có nước thắng ngay trước khi chấp nhận bộ chung 50 opening; JSONL lưu toàn bộ ván.
+- Summary, replay, metadata và checksum: `benchmarks/round_robin/round_robin_final_colab_agents_seed20261121_v2.*`; report/heatmap: `docs/ROUND_ROBIN_FINAL.md` và `docs/round_robin_final.svg`.
+- Chi phí suy luận của round-robin chỉ đo trên local. Tài nguyên Colab là metadata của run, không so sánh throughput giữa các máy/phiên.
+
+### 2026-11-21 — Arena checkpoint AlphaZero
+
+- So sánh checkpoint self-play cuối với PUCT từ CNN seed khởi tạo bằng 100 opening ghép cặp, cả hai ghế, 100 simulation/nước và fair opening filter.
+- Candidate score là 0,535 trên 200 ván; CI bootstrap 95% theo opening [0,475; 0,5925]. Cận dưới không vượt 0,50 nên checkpoint không được promote.
+- JSON và replay: `benchmarks/arena/arena_az_vs_init_100openings_seed20261121.json` và `.games.jsonl`. Đây là một run/seed, không đủ để kết luận xu hướng tổng quát.
+
+### 2026-11-21 — Checkpoint arena
+
+- Result: `benchmarks\arena\arena_az_vs_init_100openings_seed20261121.json`; replayable games: `benchmarks\arena\arena_az_vs_init_100openings_seed20261121.games.jsonl`; score=0.5350, games=200, openings=100, promoted=False.

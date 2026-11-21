@@ -386,6 +386,8 @@ def summarize_pair(
         ),
         "score_bootstrap_95": score_interval,
         "score_bootstrap_unit": "paired opening" if paired else "seat-stratified game",
+        "score_bootstrap_replicates": 10000,
+        "score_bootstrap_seed": 20261119,
         "unique_openings": len(opening_positions),
         "per_agent": per_agent,
         "budget_violations": budget_violations,
