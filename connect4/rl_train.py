@@ -18,6 +18,7 @@ from .encoding import encode_planes
 from .engine import ConnectFour, GameResult
 from .evaluation_data import canonical_state_key, sha256_file
 from .model import ConnectFourCNN
+from .resource_metrics import peak_vram_bytes, reset_peak_vram_stats
 
 
 def _tree_hash(root: Path) -> str:
@@ -98,6 +99,11 @@ def train(args) -> dict:
     output.mkdir(parents=True, exist_ok=True)
     latest_path, policy_path = output / "checkpoint_latest.pt", output / "checkpoint_policy.pt"
     log_path, manifest_path = output / "train_log.jsonl", output / "manifest.json"
+    previous_peak_vram = 0
+    if args.resume and manifest_path.exists():
+        previous_peak_vram = int(json.loads(manifest_path.read_text(encoding="utf-8")).get(
+            "peak_vram_bytes", 0
+        ))
     log_path.touch(exist_ok=True)
     model = ConnectFourCNN().to(device)
     optimizer = torch_module.optim.Adam(model.parameters(), lr=args.learning_rate)
@@ -122,6 +128,7 @@ def train(args) -> dict:
         started_at = checkpoint["started_at"]
         _restore_rng(torch_module, checkpoint["rng"])
 
+    reset_peak_vram_stats(torch_module, device)
     started_clock = time.monotonic()
     deadline = started_clock + args.max_minutes * 60 if args.max_minutes else float("inf")
     last_save = time.monotonic()
@@ -157,6 +164,7 @@ def train(args) -> dict:
             "status": status, "completed_steps": episode, "end_time": datetime.now().astimezone().isoformat(),
             "pause_time": datetime.now().astimezone().isoformat() if status == "paused" else None,
             "local_elapsed_seconds_this_segment": time.monotonic() - started_clock,
+            "peak_vram_bytes": peak_vram_bytes(torch_module, device, previous_peak_vram),
             "files_sha256": files,
         }
         temporary = manifest_path.with_suffix(".json.tmp")

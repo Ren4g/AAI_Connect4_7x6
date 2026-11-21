@@ -21,6 +21,8 @@ Mỗi agent chạy riêng trong một cây tiến trình qua một ván đầy �
 
 RAM là giá trị máy khả dụng ghi trong manifest khi job chạy; VRAM là peak allocated ghi bởi PyTorch khi manifest có trường tương ứng. Thiếu VRAM peak được ghi là chưa được đo, không suy ra từ model size.
 
+Các manifest RL/AZ lịch sử chưa có trường peak VRAM. Pipeline huấn luyện hiện tại đã được cập nhật để ghi `peak_vram_bytes` và giữ cực đại qua các phiên resume; số đo lịch sử vẫn để thiếu vì không thể khôi phục từ checkpoint.
+
 | Run | Nhánh | GPU | RAM máy (MiB) | Peak VRAM allocated (MiB) |
 |---|---|---|---:|---:|
 | `az_seed20261120_run1` | alphazero_selfplay | Tesla T4 | 12976 | không đo/không ghi |

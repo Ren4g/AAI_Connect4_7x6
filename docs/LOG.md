@@ -142,3 +142,10 @@ Kết luận cho Cấp 7 & Cấp 8: Không thể dùng đơn lẻ Value Head nà
 - Kết quả nguồn: `results/resource_profile_20261121_final.json`; bảng: `docs/RESOURCE_PROFILE.md`; công cụ tái tạo: `scripts/measure_agent_resources.py`.
 - CNN/RL/PuCT local có peak process-tree RSS khoảng 483–492 MiB trong phép đo này; các agent cổ điển khoảng 22–23 MiB. Peak Colab CNN manifest là 32.69 MiB allocated trên Tesla T4. Manifest AZ/RL không ghi `peak_vram_bytes`; báo cáo nêu rõ thiếu số liệu, không nội suy.
 - RAM khả dụng Colab ghi trong manifest khoảng 12,976 MiB cho cả năm run. Số này là RAM máy tại môi trường Colab, không phải RSS riêng của tiến trình huấn luyện.
+
+### 2026-11-21 — Ghi peak VRAM tích lũy cho các job có resume
+
+- CNN, RL và AlphaZero nay reset peak counter sau bước nạp model/checkpoint, rồi ghi `peak_vram_bytes` vào manifest khi lưu run.
+- Khi resume, lấy max giữa peak của manifest cũ và peak ở phiên hiện tại để manifest cuối giữ mức cao nhất qua toàn bộ job.
+- Chạy smoke CPU cho cả ba CLI, kiểm tra cả ba manifest có `peak_vram_bytes: 0`; unit test cover trường hợp CUDA tích lũy và CPU. Smoke lưu dưới `artifacts/resource_metrics_smoke/` (được ignore).
+- Hai manifest RL/AZ đã ingest là artifact lịch sử, không có peak VRAM nên không thể bổ sung số thật sau khi job kết thúc. Không thay thế bằng ước lượng.

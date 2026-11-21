@@ -128,6 +128,7 @@ def train(args) -> dict:
     except ImportError as error:
         raise RuntimeError("Install PyTorch and NumPy to train the CNN") from error
     from .model import ConnectFourCNN
+    from .resource_metrics import peak_vram_bytes, reset_peak_vram_stats
 
     random.seed(args.seed)
     np.random.seed(args.seed)
@@ -152,6 +153,11 @@ def train(args) -> dict:
     best_path = output / "checkpoint_best.pt"
     log_path = output / "train_log.jsonl"
     manifest_path = output / "manifest.json"
+    previous_peak_vram = 0
+    if args.resume and manifest_path.exists():
+        previous_peak_vram = int(json.loads(manifest_path.read_text(encoding="utf-8")).get(
+            "peak_vram_bytes", 0
+        ))
 
     config = {
         "epochs": args.epochs, "batch_size": args.batch_size,
@@ -251,6 +257,7 @@ def train(args) -> dict:
                 "value_mse": value_sum / count, "exact_optimal_top1": correct / count,
                 "positions": count}
 
+    reset_peak_vram_stats(torch, device)
     started_clock = time.monotonic()
     deadline = started_clock + args.max_minutes * 60 if args.max_minutes else float("inf")
     last_save = time.monotonic()
@@ -352,9 +359,7 @@ def train(args) -> dict:
     manifest["completed_steps"] = global_step
     manifest["resume_count"] = resume_count
     manifest["local_elapsed_seconds_this_segment"] = time.monotonic() - started_clock
-    manifest["peak_vram_bytes"] = (
-        torch.cuda.max_memory_allocated(device) if device.type == "cuda" else 0
-    )
+    manifest["peak_vram_bytes"] = peak_vram_bytes(torch, device, previous_peak_vram)
     manifest["files_sha256"] = {
         path.name: sha256_file(path) for path in (latest_path, log_path, best_path)
         if path.exists()
