@@ -24,6 +24,7 @@ Ba seed CNN supervised, một run RL và một run AlphaZero đã được inges
 - Đường cong độ sâu AlphaBeta: [docs/solver_depth_curve_learning.svg](docs/solver_depth_curve_learning.svg)
 - Round-robin cuối: [docs/ROUND_ROBIN_FINAL.md](docs/ROUND_ROBIN_FINAL.md)
 - Heatmap: [docs/round_robin_final.svg](docs/round_robin_final.svg)
+- Tài nguyên local/Colab: [docs/RESOURCE_PROFILE.md](docs/RESOURCE_PROFILE.md)
 - Tiêu chí: [docs/CRITERIA.md](docs/CRITERIA.md)
 - Nhật ký: [docs/LOG.md](docs/LOG.md)
 - Colab: [docs/COLAB.md](docs/COLAB.md)

@@ -34,9 +34,9 @@ Các gói CNN/RL/AZ chỉ được chấp nhận sau khi kiểm checksum, cấu 
 
 ## Việc còn lại
 
-1. Đo mức RAM đỉnh khi chạy agent local và ghi VRAM huấn luyện từ manifest Colab thành bảng tài nguyên riêng; số đo này chưa nằm trong round-robin hiện tại.
-2. Hoàn thiện phần trình bày cuối theo yêu cầu định dạng môn học nếu cần thêm mẫu/độ dài cụ thể; hiện đã có báo cáo tiến độ, kết quả chi tiết, dàn ý slide và kịch bản demo.
-3. Có thể mở rộng thêm seed cho RL/AZ và giải đấu nếu cần kết luận tổng quát hơn; hiện mỗi nhánh RL/AZ chỉ có một run/checkpoint nên kết luận chỉ áp dụng cho cấu hình đã đo.
+1. Các phép đo RAM local và phần VRAM có trong manifest đã được tổng hợp ở [RESOURCE_PROFILE.md](RESOURCE_PROFILE.md). Manifest AZ/RL không ghi peak VRAM, nên trường này còn thiếu cho hai run đó.
+2. Hoàn thiện hình thức báo cáo theo yêu cầu cụ thể của môn học nếu có mẫu/độ dài bắt buộc; hiện đã có báo cáo tiến độ, kết quả chi tiết, dàn ý slide và kịch bản demo.
+3. Có thể mở rộng thêm seed cho RL/AZ và giải đấu nếu cần kết luận tổng quát hơn; mỗi nhánh RL/AZ hiện chỉ có một run/checkpoint nên kết luận giới hạn ở cấu hình đã đo.
 
 ## Tệp nguồn chính
 
@@ -46,6 +46,7 @@ Các gói CNN/RL/AZ chỉ được chấp nhận sau khi kiểm checksum, cấu 
 - [Đường cong chẩn đoán quá trình huấn luyện](training_process_trace.svg) — không diễn giải như strength test.
 - [Đường cong AlphaBeta depth theo solver](solver_depth_curve_learning.svg)
 - [Round-robin cuối và heatmap](ROUND_ROBIN_FINAL.md), [SVG](round_robin_final.svg)
+- [Đo RAM local và VRAM Colab](RESOURCE_PROFILE.md)
 - Solver JSON: `results/solver_eval_cnn_v2_3seeds.json`, `results/solver_eval_az_rl_20261121_seed20261121.json`
 - Round-robin JSON/JSONL/meta: `benchmarks/round_robin/round_robin_final_colab_agents_seed20261121_v2.*`
 - Value-head JSON: `results/value_head/value_cnn_seed20261121_20261121.json`

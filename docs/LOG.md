@@ -135,3 +135,10 @@ Kết luận cho Cấp 7 & Cấp 8: Không thể dùng đơn lẻ Value Head nà
 ### 2026-11-21 — Checkpoint arena
 
 - Result: `benchmarks\arena\arena_az_vs_init_100openings_seed20261121.json`; replayable games: `benchmarks\arena\arena_az_vs_init_100openings_seed20261121.games.jsonl`; score=0.5350, games=200, openings=100, promoted=False.
+
+### 2026-11-21 — Đo tài nguyên local và tổng hợp VRAM Colab
+
+- Đo tám agent trong tiến trình/cây tiến trình riêng, mỗi agent chạy một ván bitboard đầy đủ với Heuristic. Working Set được lấy mẫu mỗi 100 ms; riêng PyTorch chạy trong tiến trình con của Python launcher nên phép đo cộng cả descendants. Đây là số mô tả từ một ván, không phải phân bố peak theo nhiều trận; tổng Working Set có thể tính trùng trang chia sẻ.
+- Kết quả nguồn: `results/resource_profile_20261121_final.json`; bảng: `docs/RESOURCE_PROFILE.md`; công cụ tái tạo: `scripts/measure_agent_resources.py`.
+- CNN/RL/PuCT local có peak process-tree RSS khoảng 483–492 MiB trong phép đo này; các agent cổ điển khoảng 22–23 MiB. Peak Colab CNN manifest là 32.69 MiB allocated trên Tesla T4. Manifest AZ/RL không ghi `peak_vram_bytes`; báo cáo nêu rõ thiếu số liệu, không nội suy.
+- RAM khả dụng Colab ghi trong manifest khoảng 12,976 MiB cho cả năm run. Số này là RAM máy tại môi trường Colab, không phải RSS riêng của tiến trình huấn luyện.
