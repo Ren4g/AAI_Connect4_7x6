@@ -34,9 +34,9 @@ Các gói CNN/RL/AZ chỉ được chấp nhận sau khi kiểm checksum, cấu 
 
 ## Việc còn lại
 
-1. Đối chiếu solver evaluation và round-robin: mọi agent trong giải đấu đều đã có thước đo exact trên cùng frozen test, trực tiếp hoặc trong JSON kết quả CNN cùng checkpoint.
-2. Hoàn thiện báo cáo môn học, slide và demo từ kết quả đã xác nhận; nêu rõ cổng CNN chưa đạt và giới hạn một run RL/AZ.
-3. Chạy lại toàn bộ test, `git diff --check`, kiểm tra nguồn file của mọi con số; sau đó commit và push các cập nhật.
+1. Đo mức RAM đỉnh khi chạy agent local và ghi VRAM huấn luyện từ manifest Colab thành bảng tài nguyên riêng; số đo này chưa nằm trong round-robin hiện tại.
+2. Hoàn thiện phần trình bày cuối theo yêu cầu định dạng môn học nếu cần thêm mẫu/độ dài cụ thể; hiện đã có báo cáo tiến độ, kết quả chi tiết, dàn ý slide và kịch bản demo.
+3. Có thể mở rộng thêm seed cho RL/AZ và giải đấu nếu cần kết luận tổng quát hơn; hiện mỗi nhánh RL/AZ chỉ có một run/checkpoint nên kết luận chỉ áp dụng cho cấu hình đã đo.
 
 ## Tệp nguồn chính
 
