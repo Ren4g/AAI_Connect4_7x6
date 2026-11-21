@@ -149,3 +149,4 @@ Kết luận cho Cấp 7 & Cấp 8: Không thể dùng đơn lẻ Value Head nà
 - Khi resume, lấy max giữa peak của manifest cũ và peak ở phiên hiện tại để manifest cuối giữ mức cao nhất qua toàn bộ job.
 - Chạy smoke CPU cho cả ba CLI, kiểm tra cả ba manifest có `peak_vram_bytes: 0`; unit test cover trường hợp CUDA tích lũy và CPU. Smoke lưu dưới `artifacts/resource_metrics_smoke/` (được ignore).
 - Hai manifest RL/AZ đã ingest là artifact lịch sử, không có peak VRAM nên không thể bổ sung số thật sau khi job kết thúc. Không thay thế bằng ước lượng.
+- Tái chạy ba smoke checkpoint CPU với peak cũ giả lập 123,456 bytes; mỗi manifest sau resume giữ nguyên 123,456 và tăng `resume_count` lên 1. Đây chỉ là kiểm tra aggregation của metadata, không phải phép đo VRAM.
