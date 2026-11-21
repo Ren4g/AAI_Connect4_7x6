@@ -156,3 +156,9 @@ Kết luận cho Cấp 7 & Cấp 8: Không thể dùng đơn lẻ Value Head nà
 - Thêm `docs/report.md`, báo cáo tổng kết các phương pháp tám cấp, giao thức solver/round-robin, kết quả có CI, cổng CNN, value head, phân tích nước sai đầu tiên, giới hạn và khả năng tái lập.
 - Các bảng solver, stage, hiệu ghép cặp, score đối đầu, arena và counts lỗi đầu tiên được kết xuất trực tiếp từ JSON. Script tái tạo: `scripts/render_final_report.py`.
 - Xác nhận bằng test tạo report trong thư mục tạm và so khớp các mốc 80.5% (AB4) và 181/194 ván CNN có sai điểm exact.
+
+### 2026-11-21 — Cập nhật Colab source bundle và kiểm tra cell notebook
+
+- Cập nhật ba notebook huấn luyện để dùng source bundle `20261121_v6`, chứa manifest peak VRAM; cập nhật lệnh đóng gói mặc định và hướng dẫn tải bundle lên Drive.
+- Kiểm tra AST từng cell Python và sửa các dòng bị nối liền trong notebook CNN (SOURCE_ZIP/SOURCE_MANIFEST và `print`/`def tree_hash`) cùng khai báo manifest trong AZ/RL.
+- `nbformat` validate cả ba notebook và `tests/test_colab_pipeline.py` chạy qua. Gói v6 cần được tạo sau commit cuối; run lịch sử đã complete không thể dùng resume để khôi phục VRAM training cũ.

@@ -6,7 +6,7 @@ Các notebook chỉ điều phối CLI trong package `connect4`; dữ liệu chu
 
 1. Tạo thư mục `MyDrive/connect4/artifacts` và `MyDrive/connect4/data`.
 2. Tải lên gói dữ liệu solver sạch tại `colab/data/solverlabels_20261120_seed20261120_v2/` sau khi được tạo: toàn bộ `train_validation.npz`, `hashes.json`, `frozen_test_hashes.json`, `manifest.json`.
-3. Chạy `python scripts/package_colab_source.py --output colab/source_bundle_20261120_v5.zip`. Tải cả `colab/source_bundle_20261120_v5.zip` và `colab/source_bundle_20261120_v5.manifest.json` lên `MyDrive/connect4/`, giữ nguyên tên. Script loại môi trường ảo/cache, ghi commit, SHA256 ZIP và source tree hash; notebook tự kiểm tra cả hai hash.
+3. Sau khi checkout commit mới nhất, chạy `python scripts/package_colab_source.py` để tạo `colab/source_bundle_20261121_v6.zip` cùng manifest. Tải cả hai file lên `MyDrive/connect4/`, giữ nguyên tên. Script loại môi trường ảo/cache, ghi commit, SHA256 ZIP và source tree hash; notebook kiểm tra hash trước khi chạy.
 4. Mở `colab/02_train_cnn.ipynb` bằng Colab, chọn Runtime → Change runtime type → T4 GPU, sửa khối tham số đầu notebook rồi chạy toàn bộ. Chạy ba lượt tuần tự với seed `20261120`, `20261121`, `20261122` và `RUN_ID` riêng; mỗi lượt là một run độc lập.
 
 Notebook in `nvidia-smi`, `nproc`, `free -h`, phiên bản Python/PyTorch/CUDA trước khi chạy. Tham số mặc định chạy tối đa 60 phút mỗi phiên; checkpoint mới nhất được ghi trên Drive sau mỗi epoch và có thể resume bằng cách chạy lại notebook. `--max-minutes` dừng CLI gọn; nếu runtime bị ngắt đột ngột, lần sau dùng `--resume`.
@@ -54,3 +54,5 @@ python scripts/arena_checkpoints.py --candidate results/colab/<candidate_run>/ch
 ```
 
 Promotion yêu cầu score > 0,50 và cận dưới bootstrap 95% theo opening > 0,50 trên ít nhất 100 opening hợp lệ, mỗi opening đánh hai ghế. Kết quả và replay được lưu riêng trong `benchmarks/arena/`; smoke không được promote. Với người đi từ scratch/agent khác, hãy dùng một checkpoint làm incumbent cố định cho cả lần so sánh.
+
+Các notebook hiện trỏ đến source bundle v6, có ghi `peak_vram_bytes` vào manifest và giữ cực đại qua resume. Hai manifest RL/AZ lịch sử chưa có trường này. Muốn đo peak training VRAM cho các run đó phải huấn luyện lại từ đầu; resume checkpoint đã hoàn tất không khôi phục mức peak của phiên cũ.

@@ -68,7 +68,7 @@ def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--root", type=Path, default=Path.cwd())
     parser.add_argument("--output", type=Path,
-                        default=Path("colab/source_bundle_20261120_v2.zip"))
+                        default=Path("colab/source_bundle_20261121_v6.zip"))
     args = parser.parse_args()
     package(args.root, args.output)
 

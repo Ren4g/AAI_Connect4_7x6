@@ -1,4 +1,5 @@
 import json
+import ast
 from pathlib import Path
 
 import pytest
@@ -31,6 +32,22 @@ def test_colab_notebook_is_valid_nbformat():
         nbformat.validate(notebook)
         assert len(notebook.cells) == 8
         assert all(cell.id for cell in notebook.cells)
+        code_cells = [cell.source for cell in notebook.cells if cell.cell_type == "code"]
+        parameter_cell = next(source for source in code_cells if "SOURCE_ZIP" in source)
+        assert "source_bundle_20261121_v6.zip'" in parameter_cell
+        assert "SOURCE_MANIFEST =" in parameter_cell
+        assert "zip'SOURCE_MANIFEST" not in parameter_cell
+        assert "NoneSOURCE_MANIFEST" not in parameter_cell
+        syntax_errors = []
+        for source in code_cells:
+            python_lines = [line for line in source.splitlines()
+                            if not line.lstrip().startswith(("%", "!"))]
+            if python_lines:
+                try:
+                    ast.parse("\n".join(python_lines), filename=f"{path.name} code cell")
+                except SyntaxError as error:
+                    syntax_errors.append((error.lineno, error.msg, python_lines))
+        assert not syntax_errors, f"invalid Python in {path.name}: {syntax_errors}"
 
 
 def test_ingest_rejects_manifest_with_missing_required_metadata(tmp_path):
