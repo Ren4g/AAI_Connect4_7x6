@@ -1,0 +1,47 @@
+{
+  "timestamp_local": "2026-11-23T14:08:41.589982+07:00",
+  "source_code_commit": "d90ecfa1e3c9a37367b59f5e010b0de247d09390",
+  "source_tree_dirty": true,
+  "seed": 20261123,
+  "games_per_pair": 100,
+  "time_budget_seconds": null,
+  "preset": null,
+  "opening_plies": 6,
+  "paired_openings": true,
+  "opening_filter": "fair",
+  "opening_filter_definition": "reject starts with an immediate win for side to move or no move that avoids an immediate losing reply",
+  "opening_generation": {
+    "attempts": 61,
+    "accepted": 50,
+    "incomplete": 0,
+    "would_reject_immediate_win": 10,
+    "would_reject_no_safe_action": 0,
+    "duplicate_position": 1,
+    "filtered_immediate_win": 10,
+    "filtered_no_safe_action": 0
+  },
+  "engine": "bitboard",
+  "agents": [
+    "Random",
+    "Heuristic",
+    "AlphaBeta-depth4",
+    "MCTS-500",
+    "AlphaBeta-depth6",
+    "CNN-Policy",
+    "RL-Policy",
+    "PUCT"
+  ],
+  "cnn_warmup_runs": 2,
+  "timed_search_agents": [],
+  "time_budget_semantics": "fixed depth/simulation settings",
+  "bootstrap": {
+    "replicates": 10000,
+    "seed": 20261119,
+    "unit": "paired opening"
+  },
+  "checkpoint": "checkpoints/cnn_v3_30k_best.pt",
+  "rl_checkpoint": "results/colab/rl_seed20261120_run1/checkpoint_policy.pt",
+  "extra_alpha_beta_depth": 6,
+  "puct_checkpoint": "results/phase_c_local/az_v2_warm_seed20261121/checkpoints/checkpoint_iteration_0000.pt",
+  "puct_simulations": 400
+}
