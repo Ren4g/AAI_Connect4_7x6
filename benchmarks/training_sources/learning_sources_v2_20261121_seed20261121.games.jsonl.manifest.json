@@ -1,0 +1,43 @@
+{
+  "run_id": "learning_sources_v2_20261121_seed20261121.games",
+  "phase": "training_source_games",
+  "created_at": "2026-11-21T11:10:16.233445+07:00",
+  "source_code_commit": "d90ecfa1e3c9a37367b59f5e010b0de247d09390",
+  "generator_sha256": "7e8bf6723706d263ba49071976877483e8bf532b32f61f0978d0bbe30163b563",
+  "seed": 20261121,
+  "games_per_source": 3000,
+  "generated_games": 15000,
+  "az_games_imported": 3264,
+  "source_pairs": [
+    [
+      "Random",
+      "Random"
+    ],
+    [
+      "Heuristic",
+      "Random"
+    ],
+    [
+      "AlphaBeta-depth2",
+      "Random"
+    ],
+    [
+      "MCTS-50",
+      "Random"
+    ],
+    [
+      "CNN-policy",
+      "Random"
+    ]
+  ],
+  "cnn_checkpoint_path": "results\\colab\\cnn_seed20261121_colab1\\checkpoint_best.pt",
+  "cnn_checkpoint_sha256": "ec77885d4b55b77816a0fe2550570ae17e555220ed001df27dd8a97621b8522e",
+  "az_log_path": "results\\colab\\az_seed20261120_run1\\train_log.jsonl",
+  "az_log_sha256": "f41b7cf5b8eba79c6a04186ac1c96c4171012f9c8de2b5f9b882335d025069bc",
+  "output_path": "benchmarks\\training_sources\\learning_sources_v2_20261121_seed20261121.games.jsonl",
+  "output_sha256": "c18b5db2eaebf86470933bc0276149887b4fdbc8179d6185accca3da2e6eefeb",
+  "started_at": "2026-11-21T11:07:14.838748+07:00",
+  "ended_at": "2026-11-21T11:10:16.233445+07:00",
+  "elapsed_seconds": 181.4587429000021,
+  "smoke": false
+}

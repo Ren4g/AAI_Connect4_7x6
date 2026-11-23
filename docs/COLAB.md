@@ -31,11 +31,9 @@ python scripts/evaluate_value_head.py --run results/colab/<cnn_run> --checkpoint
 
 ## Cấp 8: AlphaZero-inspired self-play
 
-Sau khi có checkpoint CNN được chọn bằng validation, tải nó lên Drive và gán đường dẫn vào `INIT_CHECKPOINT` trong `colab/03_selfplay_az.ipynb`. Nếu chưa có checkpoint hợp lệ, để `None` để bắt đầu từ trọng số ngẫu nhiên; ghi rõ nhánh khởi tạo khi báo cáo. Notebook dùng PUCT với prior policy, value của mạng, nhiễu Dirichlet ở gốc, nhiệt độ theo ply, replay buffer và cập nhật policy/value. Nhiều ván tự chơi chạy đồng thời để gom suy luận leaf thành batch. Mặc định mỗi lát chạy tối đa 60 phút, 100 iteration, 32 ván/iteration, 16 ván song song, 100 simulation/nước, 200 bước cập nhật/iteration; lần chạy lại cùng `RUN_ID` tự resume.
+Cấu hình mặc định lịch sử bên dưới không phải cấu hình Phase C hiện hành. Phase C dùng `colab/03_selfplay_az.ipynb` với source bundle v12; xem mục “Phase C V2” ở cuối tài liệu để biết checkpoint, run ID, ngân sách và cách resume. Không dùng notebook `colab/06_selfplay_az_v2.(outdated).ipynb`.
 
-Ước lượng tài nguyên hiện còn độ bất định cao: smoke local trên RTX 3050 hoàn tất 2 ván, 2 simulation/nước, 2 cập nhật trong khoảng 1,04 giây tính thuần; cấu hình mặc định lớn hơn nhiều và chưa có benchmark đủ dài để ngoại suy chắc chắn. Dành ít nhất 60 phút cho lát Colab đầu để lấy throughput thật của runtime đó; checkpoint lưu trên Drive định kỳ mỗi 120 giây và tại điểm dừng. Đây là ước lượng vận hành, không phải số đo so sánh agent.
-
-Đưa artifact cấp 8 về cùng thư mục inbox và ingest bằng cùng lệnh. Ingest kiểm tra các khóa trạng thái trong replay và ván đang dang dở đối chiếu với test đóng băng. Artifact `--smoke` bị từ chối để tránh nhầm với checkpoint thí nghiệm.
+Notebook chạy PUCT với prior policy, value của mạng, nhiễu Dirichlet ở gốc, nhiệt độ theo ply, replay buffer và cập nhật policy/value. Việc đánh giá checkpoint thực hiện local sau khi ingest; runtime Colab chỉ dùng cho huấn luyện và số bước/mô phỏng đã định trước.
 
 ## Cấp 6: REINFORCE/actor-critic
 
@@ -55,4 +53,48 @@ python scripts/arena_checkpoints.py --candidate results/colab/<candidate_run>/ch
 
 Promotion yêu cầu score > 0,50 và cận dưới bootstrap 95% theo opening > 0,50 trên ít nhất 100 opening hợp lệ, mỗi opening đánh hai ghế. Kết quả và replay được lưu riêng trong `benchmarks/arena/`; smoke không được promote. Với người đi từ scratch/agent khác, hãy dùng một checkpoint làm incumbent cố định cho cả lần so sánh.
 
-Các notebook hiện trỏ đến source bundle v6, có ghi `peak_vram_bytes` vào manifest và giữ cực đại qua resume. Hai manifest RL/AZ lịch sử chưa có trường này. Muốn đo peak training VRAM cho các run đó phải huấn luyện lại từ đầu; resume checkpoint đã hoàn tất không khôi phục mức peak của phiên cũ.
+Notebook theo mốc thí nghiệm dùng source snapshot khác nhau và không thay thế chéo: baseline CNN/RL dùng v6; Phase B CNN v3 dùng v11; Phase C AlphaZero V2 dùng v12. Mỗi notebook kiểm tra hash source bundle đã được ghim trong chính notebook. Các manifest RL/AZ lịch sử chưa có trường peak VRAM đầy đủ; muốn đo peak training VRAM cho các run đó phải huấn luyện lại từ đầu, vì resume checkpoint hoàn tất không khôi phục mức peak phiên cũ.
+
+## Phase B V2: solver-supervised CNN
+
+Upload `colab/data/solverlabels_20261121_seed20261121_v3_30k/` to `MyDrive/connect4/data/`. This package contains 30,000 exact-Pons positions, balanced across three stages, split by source game, and checked against the frozen test set and its mirrors. Upload the separate AlphaBeta-3 teacher package only when running that ablation.
+
+Build the current source bundle and upload the ZIP and its JSON sidecar to Drive:
+
+```powershell
+python -m scripts.package_colab_source --output colab/source_bundle_20261121_v11.zip
+```
+
+Open `colab/05_train_cnn_v3_30k.ipynb`, set `SMOKE=False`, and run one configuration per artifact. The preregistered maximum is 15 runs: 0.1, 0.3, and 1.0 nested source-game fractions with three seeds each; three full-data hard-policy runs; and three full-data AlphaBeta-3 teacher runs. Seeds are 20261121, 20261122, and 20261123. Keep `DATA_FRACTION_SEED=20261121`. The notebook derives `_frac10`, `_frac30`, and `_hard` suffixes; add `_ab3` to the run ID for the teacher dataset. Resume only with the same run ID and configuration.
+
+Each notebook segment is capped at 10 minutes. Phase B has a 60-minute total GPU allocation; stop at that cap even if not all runs completed. Existing small-run timing suggests roughly 1-3 minutes per full-data CNN run, but this estimate has high uncertainty and excludes Drive overhead. Report actual elapsed time and completed runs from manifests. Do not use the frozen test to choose an architecture, target, or checkpoint.
+
+After a run, download the complete ZIP from `deliveries/` and place it in `results/colab_inbox/`. Phase B v3 artifacts were trained with source bundle v11; because the current checkout can advance after packaging, ingest those archives against the exact source snapshot instead of weakening the source hash check:
+
+```powershell
+.venv-gpu\Scripts\python.exe scripts/ingest_colab_archives.py --source-bundle colab/source_bundle_20261121_v11.zip --artifact-dir results/colab_inbox --pattern 'cnn_v3_30k*.zip'
+```
+
+The helper verifies the source bundle sidecar and Python tree, dataset and artifact hashes, model inference, and local frozen-test leakage before copying artifacts into `results/colab/<run_id>/`. It can be rerun safely; it refuses to overwrite a different run. For older individual run directories, `scripts/ingest_colab_run.py` remains available when invoked from the exact source snapshot and with the dataset package used by that run. Evaluate only ingested checkpoints. Keep every run and negative result.
+
+## Phase C V2: controlled AlphaZero initialization comparison
+
+Use `colab/03_selfplay_az.ipynb` with source bundle v12 and the unchanged v3 dataset package. The validation-only comparison selected `checkpoints/cnn_v3_30k_best.pt`, from run `cnn_v3_30k_seed20261122` (Pons soft targets, full data; SHA and validation table are in `docs/CNN_V3_SELECTION.md`). Upload this file to `MyDrive/connect4/checkpoints/cnn_v3_30k_best.pt` for the warm-start run. The notebook defaults to `RUN_MODE='warm'`; run it first. Then change only `RUN_MODE='scratch'` and run the second job. The notebook derives the required run IDs and seeds: `az_v2_warm_seed20261121` / 20261121 and `az_v2_scratch_seed20261122` / 20261122. Scratch sets `INIT_CHECKPOINT=None` and starts from random weights.
+
+Both runs use 40 iterations, 32 games per iteration, 16 parallel games, 400 simulations per move, 200 training updates per iteration, batch size 128, and snapshots at iterations 0, 5, 10, 15, 20, 25, 30, 35, and 40. Each segment is capped at 30 minutes; each run at 60 GPU minutes; the shared Phase C budget at 120 GPU minutes. Run jobs sequentially. The notebook writes `artifacts/az_v2_phase_c_budget.json` on Drive before launching each segment. It reserves time before execution, reconciles actual elapsed process time on normal completion, and leaves an interrupted reservation charged conservatively. Do not delete or reset this ledger. Resume with the same run ID and config.
+
+Create the bundle locally after the notebook update and upload both ZIP and manifest sidecar:
+
+```powershell
+python -m scripts.package_colab_source --output colab/source_bundle_20261121_v12.zip
+```
+
+The run ZIP includes the full snapshot directory recursively and a copy of the budget ledger. Download both run ZIPs to `results/colab_inbox/<run_id>/` and ingest them locally. Compare snapshots with their iteration-0 model on validation at 400-simulation PUCT; exclude source games occurring in that checkpoint's replay. After the validation curve is finalized, evaluate the fixed iteration-40 checkpoints on the frozen test once. Since there is only one seed per initialization, treat warm-start versus scratch as a controlled case comparison, not a seed-generalized claim. Stop at the 120-minute total even if either curve is incomplete.
+
+## Phase D: RL
+
+Do not spend the current GPU allocation on another RL run. The validation diagnostic found a clear safety-filter contribution but did not distinguish the trained policy from reconstructed episode 0 under the filter. Reopen RL only after preregistering a new controlled experiment and its criteria.
+
+## UTF-8 note
+
+Keep Markdown documentation encoded as UTF-8. When editing from PowerShell, use an explicit UTF-8 writer or Python `Path.read_text(encoding='utf-8')` and `write_text(encoding='utf-8')`; verify added text for literal replacement or question-mark corruption before committing.

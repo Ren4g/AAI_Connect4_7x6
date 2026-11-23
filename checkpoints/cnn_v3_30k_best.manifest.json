@@ -1,0 +1,166 @@
+{
+  "created_local": "2026-11-22T11:18:50.933591+07:00",
+  "selection_data": "validation only; frozen solver test not read",
+  "selection_rule": "choose configuration with highest mean validation exact_optimal_top1 over its three seeds; each checkpoint is selected by that run's minimum validation loss",
+  "configuration_summaries": [
+    {
+      "configuration": "Pons soft \u00b7 100%",
+      "family": "pons_soft",
+      "data_fraction": 1.0,
+      "dataset_id": "solverlabels_20261121_seed20261121_v3_30k",
+      "seeds": [
+        20261121,
+        20261122,
+        20261123
+      ],
+      "validation_positions_per_seed": [
+        4530,
+        4530,
+        4530
+      ],
+      "exact_optimal_top1_by_seed": [
+        0.798233995584989,
+        0.8039735099337748,
+        0.8004415011037528
+      ],
+      "exact_optimal_top1_mean": 0.8008830022075055,
+      "exact_optimal_top1_sd": 0.002895116346270178,
+      "best_validation_loss_by_seed": [
+        1.4703376763703808,
+        1.4616523284785794,
+        1.4713022735208339
+      ],
+      "mean_validation_loss": 1.4677640927899314
+    },
+    {
+      "configuration": "Pons hard \u00b7 100%",
+      "family": "hard_policy",
+      "data_fraction": 1.0,
+      "dataset_id": "solverlabels_20261121_seed20261121_v3_30k",
+      "seeds": [
+        20261121,
+        20261122,
+        20261123
+      ],
+      "validation_positions_per_seed": [
+        4530,
+        4530,
+        4530
+      ],
+      "exact_optimal_top1_by_seed": [
+        0.7551876379690949,
+        0.7794701986754967,
+        0.773289183222958
+      ],
+      "exact_optimal_top1_mean": 0.7693156732891833,
+      "exact_optimal_top1_sd": 0.012619519583184503,
+      "best_validation_loss_by_seed": [
+        1.0132207384698964,
+        0.9932433118883348,
+        1.006357224071789
+      ],
+      "mean_validation_loss": 1.00427375814334
+    },
+    {
+      "configuration": "AB3 teacher \u00b7 100%",
+      "family": "ab3_teacher",
+      "data_fraction": 1.0,
+      "dataset_id": "solverlabels_20261121_seed20261121_ab3_30k",
+      "seeds": [
+        20261121,
+        20261122,
+        20261123
+      ],
+      "validation_positions_per_seed": [
+        4530,
+        4530,
+        4530
+      ],
+      "exact_optimal_top1_by_seed": [
+        0.730242825607064,
+        0.7326710816777042,
+        0.734878587196468
+      ],
+      "exact_optimal_top1_mean": 0.7325974981604121,
+      "exact_optimal_top1_sd": 0.002318756623486235,
+      "best_validation_loss_by_seed": [
+        1.0792012001768116,
+        1.0635478135502627,
+        1.0879895463158227
+      ],
+      "mean_validation_loss": 1.0769128533476324
+    },
+    {
+      "configuration": "Pons soft \u00b7 30%",
+      "family": "pons_soft",
+      "data_fraction": 0.3,
+      "dataset_id": "solverlabels_20261121_seed20261121_v3_30k",
+      "seeds": [
+        20261121,
+        20261122,
+        20261123
+      ],
+      "validation_positions_per_seed": [
+        4530,
+        4530,
+        4530
+      ],
+      "exact_optimal_top1_by_seed": [
+        0.7242825607064017,
+        0.7293598233995585,
+        0.7229580573951435
+      ],
+      "exact_optimal_top1_mean": 0.7255334805003679,
+      "exact_optimal_top1_sd": 0.0033792384115393817,
+      "best_validation_loss_by_seed": [
+        1.6341812245366851,
+        1.6287595366800067,
+        1.627274291246932
+      ],
+      "mean_validation_loss": 1.6300716841545413
+    },
+    {
+      "configuration": "Pons soft \u00b7 10%",
+      "family": "pons_soft",
+      "data_fraction": 0.1,
+      "dataset_id": "solverlabels_20261121_seed20261121_v3_30k",
+      "seeds": [
+        20261121,
+        20261122,
+        20261123
+      ],
+      "validation_positions_per_seed": [
+        4530,
+        4530,
+        4530
+      ],
+      "exact_optimal_top1_by_seed": [
+        0.6339955849889625,
+        0.6346578366445916,
+        0.6315673289183223
+      ],
+      "exact_optimal_top1_mean": 0.6334069168506254,
+      "exact_optimal_top1_sd": 0.0016271776591240397,
+      "best_validation_loss_by_seed": [
+        1.8231488306790788,
+        1.796002174792174,
+        1.8035500224326093
+      ],
+      "mean_validation_loss": 1.8075670093012874
+    }
+  ],
+  "selected_configuration": "Pons soft \u00b7 100%",
+  "selected_run_id": "cnn_v3_30k_seed20261122",
+  "selected_seed": 20261122,
+  "selected_best_epoch": 30,
+  "selected_validation_loss": 1.4616523284785794,
+  "selected_validation_exact_optimal_top1": 0.8039735099337748,
+  "selected_validation_positions": 4530,
+  "checkpoint_path": "checkpoints/cnn_v3_30k_best.pt",
+  "checkpoint_sha256": "3d86468ab7586ef502e8b1a894909b722506192b88fcc8a9937b814fb96ff35b",
+  "dataset_manifest_sha256": "bcee85a27ed0c34291d7427d9d8fea801454425713a55275a14bbe93e82f6da0",
+  "source_code_sha256": "e2593baa124953f975cd9afbf2fb29a199699f928de646ece414f7df6600e83d",
+  "source_code_commit": null,
+  "frozen_test_sha256": "3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01",
+  "run_manifest_path": "results/colab/cnn_v3_30k_seed20261122/manifest.json"
+}

@@ -1,0 +1,12 @@
+# Ghi chú giao thức đánh giá Phase C V2 local
+
+**Ngày:** 2026-11-23. Đây là ghi chú giải thích dữ liệu có sẵn và cách thực thi Phase C local; không thay đổi seed, checkpoint, số mô phỏng, số vòng, hay cổng thăng hạng.
+
+Ghi chú được lập khi đường cong validation đang chạy; các mốc warm 0 và 5 đã được xem, còn các mốc sau cùng kết quả frozen-test và round-robin chưa được xem. Vì vậy đây không phải tiêu chí định trước mới và không được dùng để diễn giải hai mốc đã thấy như thể đã preregister; nó công khai giới hạn dữ liệu/đơn vị overlap trước khi hoàn tất phần phân tích còn lại.
+
+1. **Ngân sách/môi trường:** thay giới hạn Colab bằng hai run local RTX 3050 Laptop, PyTorch CUDA, 12 luồng intra-op CPU, checkpoint segment 15 phút. Lý do và cách tính ledger được ghi tại `docs/CRITERIA_V2_LOCAL_PHASE_C_20261122.md`. Đây là thay đổi thực thi cho hai run chưa hoàn tất, không làm thay đổi kết quả Colab cũ.
+2. **Tập đánh giá đường cong:** dùng 4.530 vị trí validation trong package solver v3, chia theo ván nguồn. Package lưu `optimal_mask` và nhãn value của vị trí, nhưng không lưu điểm Pons/WDL cho từng nước hợp lệ. Vì thế có thể tính tỷ lệ nước tối ưu exact, nhưng không thể tính đúng metric “giữ nguyên WDL” cho từng nước mà không gọi solver lại cho toàn bộ nước con. Đường cong Phase C báo exact-optimal là metric chính; không thay WDL bằng proxy. Frozen test vẫn được đánh giá cuối theo JSON Pons đã khóa và có metric WDL đầy đủ.
+3. **Loại overlap:** replay của self-play có game identity mới, nên source-game ID của dữ liệu supervised không phải đơn vị overlap tương ứng. Giao thức local loại mọi validation state (chuẩn hóa mirror) từng xuất hiện trong `training_state_hashes` đến hết iteration 40 của run, rồi dùng cùng tập con sạch cho tất cả snapshot của run. Đây là phép loại trạng thái bảo thủ hơn việc chỉ loại replay hiện tại ở mỗi snapshot. CI và hiệu ghép cặp vẫn bootstrap theo cụm `source_game` của validation; n và số state bị loại được báo cho từng run.
+4. **Cách đọc:** run chỉ có một seed mỗi initialization; warm-vs-scratch là so sánh hai ca đã đăng ký, không phải ước lượng tổng quát giữa phương pháp. Bootstrap CI phản ánh cụm ván nguồn validation, không thay thế nhiều seed độc lập.
+
+Thứ tự thực thi giữ nguyên: đường cong validation cho các snapshot; sau khi khóa phân tích validation, test iteration 40 một lần; sau đó round-robin local mới. Không dùng frozen test để chọn checkpoint hoặc vòng.

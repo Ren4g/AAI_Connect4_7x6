@@ -1,0 +1,81 @@
+{
+  "schema_version": 1,
+  "run_id": "solverlabels_20261121_seed20261121_v3_30k",
+  "phase": "solver_labelled_cnn_data",
+  "created_at_local": "2026-11-21T11:49:23.082946+07:00",
+  "seed": 20261121,
+  "source_code_commit": "d90ecfa1e3c9a37367b59f5e010b0de247d09390",
+  "source_code_sha256": "bb56a4e584b4028b5fadb5ecb32ec2a87e1aaec2e936f6a419e7e43d00259bde",
+  "solver_commit": "d6ba50d8aaf2308c769d9bf2abd42d90f34baf41",
+  "solver_binary_sha256": "13903490c56862be0eb02bad67087bd77035392786978b04cc5455e4ab5a45fe",
+  "frozen_test_dataset_id": "solver_eval_seed20261122_frozen",
+  "frozen_test_sha256": "3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01",
+  "frozen_state_overlap_count": 0,
+  "blocked_frozen_source_games": true,
+  "configuration": {
+    "input_logs": {
+      "benchmarks\\round_robin\\round_robin_full_seed20261119.games.jsonl": "86b7603151e43b93e3e7e6e3b22a397fa634d3fa67af782c85b1ef401e58de0c",
+      "benchmarks\\round_robin\\round_robin_filtered_paired_seed20261124.games.jsonl": "7b68600ec935d235b51e3cda85e0c1291d674ac35309c2f1f89246077af80638",
+      "benchmarks\\round_robin\\round_robin_unfiltered_paired_seed20261124.games.jsonl": "996c58c3db0bd487600e55a001d1711e94c01af280eaabb9b10fd3fd4bdf7d93",
+      "benchmarks\\head_to_head\\benchmark_ab_mcts_standard_100_paired_seed20261126.games.jsonl": "7c4d4f3233e2118a64416b8d00d8400295371e6c19cf6c558a55b478bf0927a2",
+      "benchmarks\\head_to_head\\benchmark_heuristic_ab6_seed20261130.games.jsonl": "9e3850446a4d5a4c94029ebd416264cadbfec0df4ce1e50f28430fa645799c01",
+      "benchmarks\\training_sources\\learning_sources_v2_20261121_seed20261121.games.jsonl": "c18b5db2eaebf86470933bc0276149887b4fdbc8179d6185accca3da2e6eefeb",
+      "benchmarks\\training_sources\\late_game_sources_v2_20261121_seed20261121.games.jsonl": "ec2ee8fabfb7af2f64386d77b876c054991fa9e8bd2b9f8217036a426cdaffb1"
+    },
+    "positions_per_stage": 10000,
+    "validation_fraction": 0.15,
+    "policy_temperature": 2.0,
+    "solver_workers": 12,
+    "smoke": false
+  },
+  "selection": {
+    "opening": {
+      "candidates": 30693,
+      "selected": 10000,
+      "frozen_state_rejections": 79,
+      "mirror_duplicate_rejections": 2772
+    },
+    "middle": {
+      "candidates": 25283,
+      "selected": 10000,
+      "frozen_state_rejections": 0,
+      "mirror_duplicate_rejections": 266
+    },
+    "endgame": {
+      "candidates": 15612,
+      "selected": 10000,
+      "frozen_state_rejections": 0,
+      "mirror_duplicate_rejections": 156
+    }
+  },
+  "splits": {
+    "train": {
+      "positions": 25470,
+      "source_games": 17439,
+      "by_stage": {
+        "opening": 8499,
+        "middle": 8488,
+        "endgame": 8483
+      }
+    },
+    "validation": {
+      "positions": 4530,
+      "source_games": 3078,
+      "by_stage": {
+        "opening": 1501,
+        "middle": 1512,
+        "endgame": 1517
+      }
+    }
+  },
+  "files_sha256": {
+    "train_validation.npz": "f2af7136aa383f6849f93b7a3e3e09412b1c8a725f0fb6592a1df6fd26fb4812",
+    "hashes.json": "2e91e5b10c7df255905f98653c79722988af52a818821ef7fd972bcf0187cc5a",
+    "frozen_test_hashes.json": "c3621785eb96e9504e5331ddc2aa8cd3f0e6a3b1a4cd43f4dd9c388a8193e7eb"
+  },
+  "local_label_seconds": 2172.4519284999988,
+  "producer_environment": {
+    "python": "3.13.5",
+    "platform": "Windows-11-10.0.26300-SP0"
+  }
+}
