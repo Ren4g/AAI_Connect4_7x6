@@ -452,7 +452,7 @@ class PUCTAgent(Agent):
 
     def __init__(self, policy_value: Callable[[GameState], tuple[Sequence[float], float]],
                  simulations: int = 200, c_puct: float = 1.5,
-                 seed: Optional[int] = None) -> None:
+                 seed: Optional[int] = None, safety_filter: bool = False) -> None:
         if simulations < 1 or c_puct <= 0:
             raise ValueError("simulations and c_puct must be positive")
         self.policy_value = policy_value
@@ -460,10 +460,12 @@ class PUCTAgent(Agent):
         self.c_puct = c_puct
         self.random = random.Random(seed)
         self.simulations_run = 0
+        self.safety_filter = safety_filter
 
     @classmethod
     def from_checkpoint(cls, path: str | Path, simulations: int = 200,
-                        c_puct: float = 1.5, device: str = "cpu") -> "PUCTAgent":
+                        c_puct: float = 1.5, device: str = "cpu",
+                        safety_filter: bool = False) -> "PUCTAgent":
         try:
             import torch
         except ImportError as error:
@@ -483,7 +485,7 @@ class PUCTAgent(Agent):
                 logits, value = model(inputs)
             return logits[0].detach().cpu().tolist(), float(value[0].detach().cpu())
 
-        return cls(policy_value, simulations, c_puct)
+        return cls(policy_value, simulations, c_puct, safety_filter=safety_filter)
 
     def choose_action(self, state: GameState) -> int:
         legal = state.legal_actions()
@@ -510,7 +512,21 @@ class PUCTAgent(Agent):
                 node.visits += 1
                 node.value_sum += value
             self.simulations_run += 1
-        return max(root.children.values(), key=lambda child: child.visits).action
+        if not self.safety_filter:
+            return max(root.children.values(), key=lambda child: child.visits).action
+        winning = HeuristicAgent._winning_actions(state, state.current_player)
+        if winning:
+            return min(winning, key=CENTER_ORDER.index)
+        safe = []
+        for action in legal:
+            child = state.clone()
+            child.step(action)
+            if child.is_terminal():
+                continue
+            if not HeuristicAgent._winning_actions(child, state.current_player.opponent):
+                safe.append(action)
+        candidates = safe or legal
+        return max(candidates, key=lambda action: root.children[action].visits)
 
     def _expand(self, node: _PUCTNode) -> float:
         if node.state.is_terminal():

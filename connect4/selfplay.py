@@ -88,10 +88,12 @@ class BatchedPUCT:
     """Synchronous PUCT over independent roots, batching leaf inference."""
 
     def __init__(self, model, device, simulations: int, c_puct: float,
-                 dirichlet_alpha: float, dirichlet_epsilon: float):
+                 dirichlet_alpha: float, dirichlet_epsilon: float,
+                 safety_filter: bool = False):
         self.model, self.device = model, device
         self.simulations, self.c_puct = simulations, c_puct
         self.dirichlet_alpha, self.dirichlet_epsilon = dirichlet_alpha, dirichlet_epsilon
+        self.safety_filter = safety_filter
 
     def _infer(self, states: list[ConnectFour]):
         import torch
@@ -195,12 +197,28 @@ class BatchedPUCT:
             visits = np.asarray([root.children[a].visits for a in legal], dtype=np.float64)
             if visits.sum() == 0:
                 visits = np.ones_like(visits)
+            candidates = legal
+            if self.safety_filter:
+                winning = [action for action in legal
+                           if self._is_terminal_win(root.state, action)]
+                if winning:
+                    candidates = winning
+                else:
+                    safe = [action for action in legal
+                            if self._does_not_allow_immediate_loss(root.state, action)]
+                    if safe:
+                        candidates = safe
             if root_temperature <= 1e-6:
                 probs = np.zeros_like(visits)
-                probs[int(np.argmax(visits))] = 1.0
+                allowed = [legal.index(action) for action in candidates]
+                probs[allowed[int(np.argmax(visits[allowed]))]] = 1.0
             else:
                 powered = visits ** (1.0 / root_temperature)
                 probs = powered / powered.sum()
+                if self.safety_filter and len(candidates) < len(legal):
+                    allowed = np.asarray([legal.index(action) for action in candidates])
+                    probs[~np.isin(np.arange(len(legal)), allowed)] = 0.0
+                    probs /= probs.sum()
             policy = [0.0] * 7
             for action, probability in zip(legal, probs):
                 policy[action] = float(probability)
@@ -209,11 +227,31 @@ class BatchedPUCT:
             actions.append(selected)
         return policies, actions
 
+    @staticmethod
+    def _is_terminal_win(state: ConnectFour, action: int) -> bool:
+        child = state.clone()
+        child.step(int(action))
+        return child.result() is GameResult(int(state.current_player))
+
+    @staticmethod
+    def _does_not_allow_immediate_loss(state: ConnectFour, action: int) -> bool:
+        from .agents import HeuristicAgent
+        child = state.clone()
+        child.step(int(action))
+        if child.is_terminal():
+            return False
+        return not HeuristicAgent._winning_actions(child, state.current_player.opponent)
+
 
 def train(args) -> dict:
     import torch
     from torch.nn import functional as F
 
+    cpu_threads = int(getattr(args, "cpu_threads", 1))
+    if cpu_threads < 1:
+        raise ValueError("cpu_threads must be positive")
+    torch.set_num_threads(cpu_threads)
+    args.config["cpu_threads"] = cpu_threads
     random.seed(args.seed); np.random.seed(args.seed); torch.manual_seed(args.seed)
     if torch.cuda.is_available(): torch.cuda.manual_seed_all(args.seed)
     device = torch.device(args.device)
@@ -236,6 +274,8 @@ def train(args) -> dict:
     if output.exists() and not args.resume:
         raise FileExistsError(f"Refusing to overwrite {output}")
     output.mkdir(parents=True, exist_ok=True)
+    snapshots_dir = output / "checkpoints"
+    snapshots_dir.mkdir(parents=True, exist_ok=True)
     latest_path, policy_path = output / "checkpoint_latest.pt", output / "checkpoint_policy.pt"
     log_path, manifest_path = output / "train_log.jsonl", output / "manifest.json"
     previous_peak_vram = 0
@@ -263,6 +303,12 @@ def train(args) -> dict:
     if args.init_checkpoint:
         initial = torch.load(args.init_checkpoint, map_location="cpu", weights_only=True)
         model.load_state_dict(initial.get("model_state_dict", initial))
+    if not args.resume:
+        _atomic_save(torch, {
+            "model_state_dict": model.state_dict(), "run_id": run_id,
+            "iteration": 0, "seed": args.seed,
+            "frozen_test_sha256": data_manifest["frozen_test_sha256"],
+        }, snapshots_dir / "checkpoint_iteration_0000.pt")
     if args.resume:
         state = torch.load(args.resume, map_location="cpu", weights_only=False)
         if state["dataset_manifest_sha256"] != sha256_file(dataset_dir / "manifest.json"):
@@ -330,7 +376,8 @@ def train(args) -> dict:
                                "max_minutes_per_segment": args.max_minutes},
             "python": platform.python_version(), "torch": torch.__version__, "cuda": torch.version.cuda,
             "gpu_name": torch.cuda.get_device_name(0) if device.type == "cuda" else None,
-            "cpu_count": os.cpu_count(), "ram_bytes": _total_ram_bytes(), "resume_count": resume_count,
+            "cpu_count": os.cpu_count(), "torch_intraop_threads": torch.get_num_threads(),
+            "ram_bytes": _total_ram_bytes(), "resume_count": resume_count,
             "resumed": bool(args.resume), "start_time": started_at,
             "status": status_value, "completed_steps": train_steps_done,
             "local_elapsed_seconds_this_segment": time.monotonic() - started_clock,
@@ -338,7 +385,12 @@ def train(args) -> dict:
             "iteration": iteration, "games_completed": games_completed,
             "end_time": datetime.now().astimezone().isoformat(),
             "pause_time": datetime.now().astimezone().isoformat() if status_value == "paused" else None,
-            "files_sha256": {p.name: sha256_file(p) for p in (latest_path, policy_path, log_path) if p.exists()},
+            "files_sha256": {
+                p.relative_to(output).as_posix(): sha256_file(p)
+                for p in (latest_path, policy_path, log_path,
+                          *sorted(snapshots_dir.glob("checkpoint_iteration_*.pt")))
+                if p.exists()
+            },
         }
         temp = manifest_path.with_suffix(".json.tmp")
         temp.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
@@ -433,6 +485,14 @@ def train(args) -> dict:
                "timestamp_local": datetime.now().astimezone().isoformat()}
         with log_path.open("a", encoding="utf-8") as log:
             log.write(json.dumps(row) + "\n"); log.flush(); os.fsync(log.fileno())
+        if iteration % config["snapshot_interval"] == 0 or iteration == target_iterations:
+            snapshot = snapshots_dir / f"checkpoint_iteration_{iteration:04d}.pt"
+            _atomic_save(torch, {
+                "model_state_dict": model.state_dict(), "run_id": run_id,
+                "iteration": iteration, "seed": args.seed,
+                "games_completed": games_completed, "training_steps": train_steps_done,
+                "frozen_test_sha256": data_manifest["frozen_test_sha256"],
+            }, snapshot)
         print(json.dumps(row), flush=True)
         games_started = games_completed
         pending_train_losses = []
@@ -453,6 +513,8 @@ def main() -> None:
     parser.add_argument("--run-id")
     parser.add_argument("--seed", type=int, default=1)
     parser.add_argument("--device", default="cuda")
+    parser.add_argument("--cpu-threads", type=int, default=os.cpu_count() or 1,
+                        help="PyTorch CPU intra-op threads, even when CUDA is used")
     parser.add_argument("--init-checkpoint")
     parser.add_argument("--resume", nargs="?", const="latest")
     parser.add_argument("--max-minutes", type=float, default=0)
@@ -466,13 +528,15 @@ def main() -> None:
     parser.add_argument("--replay-capacity", type=int, default=100000)
     parser.add_argument("--learning-rate", type=float, default=1e-3)
     parser.add_argument("--checkpoint-interval-seconds", type=float, default=120)
+    parser.add_argument("--snapshot-interval", type=int, default=10)
     args = parser.parse_args()
     if args.smoke:
         args.iterations, args.games_per_iteration = 1, 2
         args.parallel_games, args.simulations = 2, 2
         args.training_steps, args.batch_size, args.replay_capacity = 2, 4, 128
     if args.max_minutes < 0 or min(args.iterations, args.games_per_iteration, args.parallel_games,
-                                    args.simulations, args.training_steps, args.batch_size) < 1:
+                                    args.simulations, args.training_steps, args.batch_size,
+                                    args.snapshot_interval) < 1:
         parser.error("all work limits must be positive")
     args.config = {"iterations": args.iterations, "games_per_iteration": args.games_per_iteration,
                    "parallel_games": args.parallel_games, "simulations": args.simulations,
@@ -480,6 +544,7 @@ def main() -> None:
                    "replay_capacity": args.replay_capacity, "learning_rate": args.learning_rate,
                    "value_weight": 0.5, "c_puct": 1.5, "dirichlet_alpha": 0.3,
                    "dirichlet_epsilon": 0.25, "temperature_moves": 12,
+                   "snapshot_interval": args.snapshot_interval,
                    "checkpoint_interval_seconds": args.checkpoint_interval_seconds,
                    "smoke": args.smoke,
                    "init_checkpoint_sha256": sha256_file(Path(args.init_checkpoint)) if args.init_checkpoint else None}

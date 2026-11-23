@@ -9,3 +9,7 @@ colab/source_bundle.zip
 colab/source_bundle.manifest.json
 colab/source_bundle_*.zip
 colab/source_bundle_*.manifest.json
+colab/06_selfplay_az_v2.(outdated).ipynb
+colab/data/solverlabels_20261120_seed20261120_v1/
+checkpoints/connect4_cnn_solver_seed20261201.pt
+results/phase_c_local/validation_curve_20261123.progress.json

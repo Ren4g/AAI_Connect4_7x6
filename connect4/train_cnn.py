@@ -12,6 +12,9 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from .encoding import encode_planes
+from .engine import ConnectFour
+
 
 def sha256_file(path: Path) -> str:
     digest = hashlib.sha256()
@@ -117,7 +120,79 @@ def verify_dataset(dataset_dir: Path, frozen_sha256: str | None = None):
     for name in ("features", "policy", "value", "optimal_mask", "stage"):
         if len(arrays[name]) != len(split):
             raise ValueError(f"Array length mismatch: {name}")
+    if len(hashes) != len(split):
+        raise ValueError("Data array and state hash manifest lengths differ")
+    seen_states: set[str] = set()
+    feature_array = arrays["features"]
+    stage_array = arrays["stage"]
+    optimal_array = arrays["optimal_mask"]
+    policy_array = arrays["policy"]
+    legal_array = arrays["legal_mask"] if "legal_mask" in arrays.files else None
+    for index, row in enumerate(hashes):
+        moves = [int(action) for action in row["moves"]]
+        if split[index] != row["split"] or str(stage_array[index]) != row["stage"]:
+            raise ValueError(f"Position metadata differs from array row {index}")
+        state = ConnectFour()
+        for action in moves:
+            state.step(action)
+        board = tuple(tuple(row_values) for row_values in state.board)
+        mirror = tuple(tuple(reversed(row_values)) for row_values in board)
+        payload = json.dumps([min(board, mirror), int(state.current_player)], separators=(",", ":"))
+        actual_key = hashlib.sha256(payload.encode("utf-8")).hexdigest()
+        if actual_key != row["state_sha256_mirror_canonical"]:
+            raise ValueError(f"Reconstructed position hash mismatch at row {index}")
+        if actual_key in seen_states:
+            raise ValueError(f"Duplicate or mirrored position at row {index}")
+        seen_states.add(actual_key)
+        if actual_key in frozen_keys:
+            raise ValueError(f"Reconstructed position overlaps frozen test at row {index}")
+        encoded = np.asarray(encode_planes(state.board, int(state.current_player)),
+                             dtype=np.float32)
+        if not np.array_equal(encoded, feature_array[index]):
+            raise ValueError(f"Position encoding differs from move history at row {index}")
+        legal = np.zeros(7, dtype=bool)
+        legal[state.legal_actions()] = True
+        if legal_array is not None and not np.array_equal(legal, legal_array[index]):
+            raise ValueError(f"Legal-action mask differs from engine at row {index}")
+        if not np.any(optimal_array[index]) or np.any(optimal_array[index] & ~legal):
+            raise ValueError(f"Optimal-action mask is invalid at row {index}")
+        policy = policy_array[index]
+        if (np.any(policy < 0) or np.any(policy[~legal] > 1e-7)
+                or not np.isclose(float(policy.sum()), 1.0, atol=1e-5)):
+            raise ValueError(f"Policy target is invalid at row {index}")
     return manifest, arrays, hashes
+
+
+def select_train_indices(hash_rows: list[dict], fraction: float, seed: int) -> tuple[list[int], int]:
+    """Select nested training subsets by whole source games; validation is untouched."""
+    if not 0.0 < fraction <= 1.0:
+        raise ValueError("data fraction must be in (0, 1]")
+    train_rows = [(index, row) for index, row in enumerate(hash_rows)
+                  if row["split"] == "train"]
+    games = sorted({row["source_game"] for _, row in train_rows},
+                   key=lambda game: hashlib.sha256(f"{seed}:{game}".encode("utf-8")).digest())
+    count = len(games) if fraction == 1.0 else max(1, round(len(games) * fraction))
+    selected = set(games[:count])
+    indices = [index for index, row in train_rows if row["source_game"] in selected]
+    return indices, len(selected)
+
+
+def policy_targets(policy, optimal_mask, target_type: str):
+    """Build the requested target without changing positions or value labels."""
+    import numpy as np
+
+    if target_type == "dataset":
+        return np.asarray(policy, dtype=np.float32).copy()
+    if target_type != "hard_best":
+        raise ValueError("policy target must be 'dataset' or 'hard_best'")
+    optimal = np.asarray(optimal_mask, dtype=bool)
+    if optimal.ndim != 2 or optimal.shape[1] != 7 or np.any(~optimal.any(axis=1)):
+        raise ValueError("each position must have at least one optimal legal action")
+    targets = np.zeros(optimal.shape, dtype=np.float32)
+    center_order = (3, 2, 4, 1, 5, 0, 6)
+    for row_index, row in enumerate(optimal):
+        targets[row_index, next(action for action in center_order if row[action])] = 1.0
+    return targets
 
 
 def train(args) -> dict:
@@ -163,6 +238,9 @@ def train(args) -> dict:
         "epochs": args.epochs, "batch_size": args.batch_size,
         "learning_rate": args.learning_rate, "patience": args.patience,
         "value_weight": args.value_weight, "mirror_augmentation": True,
+        "data_fraction": args.data_fraction,
+        "data_fraction_seed": args.data_fraction_seed,
+        "policy_target": args.policy_target,
         "checkpoint_interval_seconds": args.checkpoint_interval_seconds,
         "smoke": args.smoke,
     }
@@ -171,13 +249,19 @@ def train(args) -> dict:
 
     model = ConnectFourCNN().to(device)
     optimizer = torch.optim.Adam(model.parameters(), lr=config["learning_rate"])
-    train_idx = np.flatnonzero(arrays["split"].astype(str) == "train")
+    train_idx, selected_source_games = select_train_indices(
+        hash_rows, args.data_fraction, args.data_fraction_seed
+    )
+    train_idx = np.asarray(train_idx, dtype=np.int64)
+    full_train_positions = int(np.count_nonzero(arrays["split"].astype(str) == "train"))
     val_idx = np.flatnonzero(arrays["split"].astype(str) == "validation")
     if args.smoke:
         train_idx = train_idx[:min(32, len(train_idx))]
         val_idx = val_idx[:min(16, len(val_idx))]
     x = torch.as_tensor(arrays["features"], dtype=torch.float32, device=device)
-    p = torch.as_tensor(arrays["policy"], dtype=torch.float32, device=device)
+    target_array = policy_targets(arrays["policy"], arrays["optimal_mask"],
+                                  args.policy_target)
+    p = torch.as_tensor(target_array, dtype=torch.float32, device=device)
     v = torch.as_tensor(arrays["value"], dtype=torch.float32, device=device)
     optimal = torch.as_tensor(arrays["optimal_mask"], dtype=torch.bool, device=device)
     # Gravity makes a legal column exactly one whose top cell is empty.
@@ -223,6 +307,13 @@ def train(args) -> dict:
             "dataset_npz_sha256": dataset_manifest["files_sha256"]["train_validation.npz"],
             "dataset_id": dataset_manifest["run_id"], "max_minutes_per_segment": args.max_minutes,
         }, "device": str(device),
+        "training_data_selection": {
+            "train_positions_selected": len(train_idx),
+            "train_positions_available": full_train_positions,
+            "train_source_games_selected": selected_source_games,
+            "validation_positions": len(val_idx),
+            "selection_unit": "complete source games",
+        },
         "python": platform.python_version(), "torch": torch.__version__,
         "cuda": torch.version.cuda,
         "ram_bytes": _total_ram_bytes(),
@@ -379,6 +470,9 @@ def main() -> None:
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--learning-rate", type=float, default=1e-3)
     parser.add_argument("--value-weight", type=float, default=0.5)
+    parser.add_argument("--data-fraction", type=float, default=1.0)
+    parser.add_argument("--data-fraction-seed", type=int, default=20261121)
+    parser.add_argument("--policy-target", choices=("dataset", "hard_best"), default="dataset")
     parser.add_argument("--patience", type=int, default=6)
     parser.add_argument("--checkpoint-interval-seconds", type=float, default=60)
     parser.add_argument("--max-minutes", type=float, default=0)
@@ -390,7 +484,8 @@ def main() -> None:
     if args.resume == "latest":
         run_id = args.run_id or f"cnn_{datetime.now().strftime('%Y%m%d')}_seed{args.seed}"
         args.resume = str(Path(args.output_root) / run_id / "checkpoint_latest.pt")
-    if args.epochs < 1 or args.batch_size < 1 or args.max_minutes < 0:
+    if (args.epochs < 1 or args.batch_size < 1 or args.max_minutes < 0
+            or not 0.0 < args.data_fraction <= 1.0):
         parser.error("epochs/batch-size must be positive; max-minutes cannot be negative")
     result = train(args)
     print(json.dumps(result, indent=2), flush=True)

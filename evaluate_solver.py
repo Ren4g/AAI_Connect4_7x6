@@ -125,8 +125,13 @@ def make_agents(checkpoints: list[str], puct_checkpoints: list[str], device: str
         if not label or label in agents:
             raise ValueError(f"Invalid or duplicate PUCT label {label!r}")
         filename_path = Path(filename)
-        agents[f"PUCT-{label}"] = PUCTAgent.from_checkpoint(
-            filename_path, simulations=puct_simulations, device=device
+        agents[f"PUCT-{label}-raw"] = PUCTAgent.from_checkpoint(
+            filename_path, simulations=puct_simulations, device=device,
+            safety_filter=False,
+        )
+        agents[f"PUCT-{label}-filtered"] = PUCTAgent.from_checkpoint(
+            filename_path, simulations=puct_simulations, device=device,
+            safety_filter=True,
         )
         checkpoint_hashes[f"PUCT-{label}"] = {
             "path": str(filename_path), "sha256": sha256_file(filename_path),

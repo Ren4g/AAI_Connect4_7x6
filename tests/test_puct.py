@@ -31,3 +31,16 @@ def test_puct_rejects_terminal_position():
         assert "No legal" in str(error)
     else:
         raise AssertionError("terminal position should not return a move")
+
+
+def test_puct_safety_filter_avoids_an_immediate_losing_reply():
+    state = ConnectFour()
+    for action in (2, 1, 3, 5, 0, 0, 6, 4, 0, 2, 4, 0, 4, 1):
+        state.step(action)
+    logits = [10.0, 9.0, 8.0, 0.0, 7.0, 6.0, 5.0]
+    raw = PUCTAgent(lambda _state: (logits, 0.0), simulations=1, seed=1)
+    filtered = PUCTAgent(lambda _state: (logits, 0.0), simulations=1,
+                         seed=1, safety_filter=True)
+
+    assert raw.choose_action(state) in {0, 1, 2, 4, 5, 6}
+    assert filtered.choose_action(state) == 3
