@@ -162,3 +162,120 @@ Kết luận cho Cấp 7 & Cấp 8: Không thể dùng đơn lẻ Value Head nà
 - Cập nhật ba notebook huấn luyện để dùng source bundle `20261121_v6`, chứa manifest peak VRAM; cập nhật lệnh đóng gói mặc định và hướng dẫn tải bundle lên Drive.
 - Kiểm tra AST từng cell Python và sửa các dòng bị nối liền trong notebook CNN (SOURCE_ZIP/SOURCE_MANIFEST và `print`/`def tree_hash`) cùng khai báo manifest trong AZ/RL.
 - `nbformat` validate cả ba notebook và `tests/test_colab_pipeline.py` chạy qua. Gói v6 cần được tạo sau commit cuối; run lịch sử đã complete không thể dùng resume để khôi phục VRAM training cũ.
+
+
+### 2026-11-21 ? ??ng k? tr??c ti?u ch? V2
+
+- ?? kh?a `docs/CRITERIA_V2.md` tr??c c?c ph?p ?o/th? nghi?m V2; h?n m?t ng?y ??n 2026-11-22 10:37 Asia/Ho_Chi_Minh, tr?n Colab 3 gi? GPU.
+- M?y local ghi nh?n `os.cpu_count() = 12`; c?c benchmark th?i gian s? ch? ch?y tr?n m?y n?y.
+- C?c k?t qu? l?ch s? ti?p t?c ???c gi? nguy?n; vi?c ??c manifest v? log l?ch s? ???c xem l? ki?m to?n provenance.
+
+
+### 2026-11-21 documentation encoding correction
+
+- The preceding appended V2 log block was written with damaged Vietnamese characters by a shell encoding mismatch. The UTF-8 files `docs/CRITERIA_V2.md` and `docs/CRITERIA_V2_ADDENDUM_20261121.md` are the authoritative preregistration; the damaged block must not be used as a source of criteria.
+- New Markdown additions are written explicitly as UTF-8. `docs/COLAB.md` V2 instructions were rewritten and verified as UTF-8.
+- No Colab training results have been received in this phase; no CNN v3 or AZ v2 quality claim is made.
+
+
+### 2026-11-21 V2 local diagnostics and Colab preparation
+
+- Pha A audited the existing CNN, AZ, and RL manifests and logs. Existing CNN v2 used 1,284 training and 216 validation positions; batch size 64 explains 21 steps per epoch. Existing AZ artifacts have no intermediate checkpoints, so the historic 0/25/50/100 learning curve cannot be reconstructed.
+- Clean, source-game-grouped validation diagnostics exclude states found in the relevant replay buffers: CNN raw policy 55.3% exact-optimal versus 73.5% with the tactical filter (paired gain +18.1 percentage points, 95% CI +13.0 to +23.3); CNN PUCT-100 76.7%; historic AZ PUCT-100 66.5% (paired AZ minus initial CNN: -10.2 points, CI -16.5 to -4.0). These are validation diagnostics, not frozen-test results.
+- The RL filter improved exact-optimal selection, but trained-filter versus reconstructed episode-0-filter was +2.8 points (95% CI -3.3 to +8.9); the episode-0 weights were reconstructed under a different local Torch version. This is exploratory and insufficient to justify another RL GPU run.
+- Generated 30,000 Pons-exact training labels (10,000 per stage), with 25,470 training and 4,530 validation positions. Frozen-test and mirror overlap is zero. The 12-process labeling run took 2,172.45 seconds. Generated a matched 30,000-position AlphaBeta-3 policy-target set in 54.89 seconds; Pons exact values are retained.
+- The 30,000-position CNN smoke completed locally on RTX 3050 in 0.508 seconds for two epochs and eight updates; it validates the pipeline only and is not a quality result. Added nested source-game data fractions, hard-policy target, grouped dataset verification, PUCT safety-filter variants, and AZ iteration snapshots.
+- Full local test suite: 67 passed. Notebook format validation: five notebooks valid. `git diff --check` passed. The source bundle v9 ZIP SHA256 is recorded in its sidecar; no Colab result has been received or claimed.
+- Next action for the user: run `colab/05_train_cnn_v3_30k.ipynb` within the preregistered 60-minute Phase B GPU cap. Return each run ZIP and manifest. Run Phase C only if time remains within the 180-minute total budget, using `colab/06_selfplay_az_v2.ipynb`.
+
+
+### 2026-11-21 Phase C protocol amendment, prospective
+
+- Revised the new Phase C protocol after the Phase A diagnosis showed historical AZ PUCT-100 at 66.5% exact-optimal on clean validation versus 76.7% for initial CNN PUCT-100; paired difference -10.2 percentage points, 95% CI [-16.5, -4.0]. This does not alter old outcomes.
+- Registered two 400-simulation runs: warm start from validation-selected CNN v3 (`az_v2_warm_seed20261121`) and random initialization (`az_v2_scratch_seed20261122`). Each has 40 iterations, 32 games/iteration, 16 parallel games, 200 updates/iteration, batch 128, and snapshots every 5 iterations including 0 and 40.
+- Added hard budget accounting to the Colab notebook: maximum 30 minutes per resumable segment, 60 per run, 120 total across the two sequential runs. The Drive ledger reserves before launch; an unclean disconnect leaves the reservation conservatively charged. Artifact zips include snapshot files recursively and the ledger.
+- This is a prospective protocol amendment for the new Phase C, not a reinterpretation of the earlier locked V2 criteria or V1 results. One seed per initialization supports only a case comparison, not a method-level superiority claim under the three-seed rule.
+- Phase B notebooks and datasets were not modified. Notebook changes are restricted to `colab/03_selfplay_az.ipynb`; package the updated source as bundle v12.
+
+### 2026-11-22 — Colab artifact ingested
+
+- {"date": "2026-11-22", "event": "colab_run_ingested", "run_id": "cnn_v3_30k_seed20261121", "artifact": "D:\\Workspace\\A_MLE\\labFinal - Connect4_7x6\\results\\colab\\cnn_v3_30k_seed20261121", "seed": 20261121, "steps": 11940, "frozen_test_sha256": "3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01", "local_leakage_check": "passed", "inference_check": "passed"}
+
+### 2026-11-22 — Colab artifact ingested
+
+- {"date": "2026-11-22", "event": "colab_run_ingested", "run_id": "cnn_v3_30k_seed20261121_ab3", "artifact": "D:\\Workspace\\A_MLE\\labFinal - Connect4_7x6\\results\\colab\\cnn_v3_30k_seed20261121_ab3", "seed": 20261121, "steps": 10348, "frozen_test_sha256": "3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01", "local_leakage_check": "passed", "inference_check": "passed"}
+
+### 2026-11-22 — Colab artifact ingested
+
+- {"date": "2026-11-22", "event": "colab_run_ingested", "run_id": "cnn_v3_30k_seed20261121_frac10", "artifact": "D:\\Workspace\\A_MLE\\labFinal - Connect4_7x6\\results\\colab\\cnn_v3_30k_seed20261121_frac10", "seed": 20261121, "steps": 1160, "frozen_test_sha256": "3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01", "local_leakage_check": "passed", "inference_check": "passed"}
+
+### 2026-11-22 — Colab artifact ingested
+
+- {"date": "2026-11-22", "event": "colab_run_ingested", "run_id": "cnn_v3_30k_seed20261121_frac30", "artifact": "D:\\Workspace\\A_MLE\\labFinal - Connect4_7x6\\results\\colab\\cnn_v3_30k_seed20261121_frac30", "seed": 20261121, "steps": 3630, "frozen_test_sha256": "3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01", "local_leakage_check": "passed", "inference_check": "passed"}
+
+### 2026-11-22 — Colab artifact ingested
+
+- {"date": "2026-11-22", "event": "colab_run_ingested", "run_id": "cnn_v3_30k_seed20261121_hard", "artifact": "D:\\Workspace\\A_MLE\\labFinal - Connect4_7x6\\results\\colab\\cnn_v3_30k_seed20261121_hard", "seed": 20261121, "steps": 9950, "frozen_test_sha256": "3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01", "local_leakage_check": "passed", "inference_check": "passed"}
+
+### 2026-11-22 — Colab artifact ingested
+
+- {"date": "2026-11-22", "event": "colab_run_ingested", "run_id": "cnn_v3_30k_seed20261122", "artifact": "D:\\Workspace\\A_MLE\\labFinal - Connect4_7x6\\results\\colab\\cnn_v3_30k_seed20261122", "seed": 20261122, "steps": 11940, "frozen_test_sha256": "3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01", "local_leakage_check": "passed", "inference_check": "passed"}
+
+### 2026-11-22 — Colab artifact ingested
+
+- {"date": "2026-11-22", "event": "colab_run_ingested", "run_id": "cnn_v3_30k_seed20261122_ab3", "artifact": "D:\\Workspace\\A_MLE\\labFinal - Connect4_7x6\\results\\colab\\cnn_v3_30k_seed20261122_ab3", "seed": 20261122, "steps": 9552, "frozen_test_sha256": "3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01", "local_leakage_check": "passed", "inference_check": "passed"}
+
+### 2026-11-22 — Colab artifact ingested
+
+- {"date": "2026-11-22", "event": "colab_run_ingested", "run_id": "cnn_v3_30k_seed20261122_frac10", "artifact": "D:\\Workspace\\A_MLE\\labFinal - Connect4_7x6\\results\\colab\\cnn_v3_30k_seed20261122_frac10", "seed": 20261122, "steps": 1040, "frozen_test_sha256": "3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01", "local_leakage_check": "passed", "inference_check": "passed"}
+
+### 2026-11-22 — Colab artifact ingested
+
+- {"date": "2026-11-22", "event": "colab_run_ingested", "run_id": "cnn_v3_30k_seed20261122_frac30", "artifact": "D:\\Workspace\\A_MLE\\labFinal - Connect4_7x6\\results\\colab\\cnn_v3_30k_seed20261122_frac30", "seed": 20261122, "steps": 3630, "frozen_test_sha256": "3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01", "local_leakage_check": "passed", "inference_check": "passed"}
+
+### 2026-11-22 — Colab artifact ingested
+
+- {"date": "2026-11-22", "event": "colab_run_ingested", "run_id": "cnn_v3_30k_seed20261122_hard", "artifact": "D:\\Workspace\\A_MLE\\labFinal - Connect4_7x6\\results\\colab\\cnn_v3_30k_seed20261122_hard", "seed": 20261122, "steps": 11144, "frozen_test_sha256": "3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01", "local_leakage_check": "passed", "inference_check": "passed"}
+
+### 2026-11-22 — Colab artifact ingested
+
+- {"date": "2026-11-22", "event": "colab_run_ingested", "run_id": "cnn_v3_30k_seed20261123", "artifact": "D:\\Workspace\\A_MLE\\labFinal - Connect4_7x6\\results\\colab\\cnn_v3_30k_seed20261123", "seed": 20261123, "steps": 11940, "frozen_test_sha256": "3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01", "local_leakage_check": "passed", "inference_check": "passed"}
+
+### 2026-11-22 — Colab artifact ingested
+
+- {"date": "2026-11-22", "event": "colab_run_ingested", "run_id": "cnn_v3_30k_seed20261123_ab3", "artifact": "D:\\Workspace\\A_MLE\\labFinal - Connect4_7x6\\results\\colab\\cnn_v3_30k_seed20261123_ab3", "seed": 20261123, "steps": 11144, "frozen_test_sha256": "3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01", "local_leakage_check": "passed", "inference_check": "passed"}
+
+### 2026-11-22 — Colab artifact ingested
+
+- {"date": "2026-11-22", "event": "colab_run_ingested", "run_id": "cnn_v3_30k_seed20261123_frac10", "artifact": "D:\\Workspace\\A_MLE\\labFinal - Connect4_7x6\\results\\colab\\cnn_v3_30k_seed20261123_frac10", "seed": 20261123, "steps": 1120, "frozen_test_sha256": "3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01", "local_leakage_check": "passed", "inference_check": "passed"}
+
+### 2026-11-22 — Colab artifact ingested
+
+- {"date": "2026-11-22", "event": "colab_run_ingested", "run_id": "cnn_v3_30k_seed20261123_frac30", "artifact": "D:\\Workspace\\A_MLE\\labFinal - Connect4_7x6\\results\\colab\\cnn_v3_30k_seed20261123_frac30", "seed": 20261123, "steps": 3630, "frozen_test_sha256": "3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01", "local_leakage_check": "passed", "inference_check": "passed"}
+
+### 2026-11-22 — Colab artifact ingested
+
+- {"date": "2026-11-22", "event": "colab_run_ingested", "run_id": "cnn_v3_30k_seed20261123_hard", "artifact": "D:\\Workspace\\A_MLE\\labFinal - Connect4_7x6\\results\\colab\\cnn_v3_30k_seed20261123_hard", "seed": 20261123, "steps": 11144, "frozen_test_sha256": "3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01", "local_leakage_check": "passed", "inference_check": "passed"}
+
+### 2026-11-22 — Ingest CNN v3 và khóa checkpoint Phase C theo validation
+
+- 15 archive CNN v3 được kiểm tra và ingest bằng source bundle v11 đúng source-tree SHA; artifact checksum, dataset checksum, inference CPU và leakage test local đều đạt. Hash của Colab run không khớp working tree mới vì mã nguồn đã thay đổi sau bundle; không bỏ qua kiểm tra, thay vào đó chạy ingester từ snapshot v11.
+- So sánh cấu hình bằng validation exact-optimal top-1, ba seed/cấu hình: chọn Pons soft · 100% (80.09% ± 0.29 điểm phần trăm).
+- Checkpoint warm-start chọn theo validation loss trong cấu hình đã khóa: cnn_v3_30k_seed20261122, epoch 30, loss 1.4617, SHA256 `3d86468ab7586ef502e8b1a894909b722506192b88fcc8a9937b814fb96ff35b`. Frozen test chưa được dùng để chọn.
+
+### 2026-11-22 — Đánh giá CNN v3 và cấu hình Phase C được chốt
+
+- Đánh giá một lần ba checkpoint Pons-soft 100% trên 1.500 vị trí test đóng băng; Pons commit `d6ba50d8aaf2308c769d9bf2abd42d90f34baf41`, SHA test `3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01`, 10.000 bootstrap theo source game.
+- CNN thuần đạt exact 65,5–68,6%; có safety filter đạt 75,7–76,7%. Hiệu exact ghép cặp CNN-filter trừ AlphaBeta depth 3 có CI lần lượt [-3,4; 1,6], [-3,0; 2,1], [-4,0; 1,1] điểm phần trăm; cả ba chưa phân biệt được với mốc và chưa đạt cổng tối thiểu đã đăng ký.
+- Lựa chọn khởi tạo vẫn là Pons-soft 100% theo validation (80,09% ± 0,29 pp); frozen test không được dùng để chọn. Checkpoint seed 20261122, hash `3d86468ab7586ef502e8b1a894909b722506192b88fcc8a9937b814fb96ff35b`.
+- Phase C tiếp tục là thí nghiệm tự chơi có kiểm soát warm-start so với scratch; kết quả này không hàm ý CNN đã vượt giáo viên và không dự báo trước kết quả AlphaZero. Dùng `colab/03_selfplay_az.ipynb`, bundle v12, 400 mô phỏng/nước, 40 iteration, 32 ván/iteration, 16 song song, 200 cập nhật/iteration, batch 128; hai run tối đa 60 phút, toàn pha 120 phút.
+- Nguồn kết quả: `results/solver_eval_cnn_v3_soft_3seeds_20261122.json`, `results/cnn_v3_validation_selection_20261122.json`; báo cáo tự sinh: `docs/CNN_V3_RESULTS.md`.
+
+### 2026-11-23 — Hoàn tất Phase C v2 local và đánh giá cuối
+
+- Hai run Phase C hoàn tất 40 vòng, mỗi run 1.280 ván/8.000 cập nhật; warm-start resume 8 lần, scratch 7 lần; cấu hình 400 simulations/nước, 32 ván/vòng, 16 song song, 200 cập nhật/vòng, batch 128. RTX 3050 Laptop, 12 CPU threads. Manifest và checksum ở `results/phase_c_local/az_v2_warm_seed20261121/` và `az_v2_scratch_seed20261122/`.
+- Đường cong validation có 18 snapshot (0,5,...,40), 4.490 vị trí warm và 4.497 scratch sau khi loại replay overlap; bootstrap 10.000 lần theo cụm ván nguồn. Warm PUCT-filter giảm từ 89,53% xuống 85,90% exact; scratch tăng từ 81,48% lên 82,48%, hiệu ghép cặp +1,00 pp, CI [−0,16; +2,14] pp nên chưa phân biệt được.
+- Chọn warm iteration 0 và scratch iteration 40 theo validation, không dùng test để chọn. Test đóng băng 1.500 vị trí: PUCT-400 warm có filter đạt 82,13% exact [80,14; 84,03] và 94,00% WDL [92,70; 95,20]; scratch có filter đạt 76,80% exact [74,66; 78,97] và 91,87% WDL [90,46; 93,23]. Hiệu warm so với AB3: exact +4,93 pp, CI paired [+2,66; +7,21]; WDL +3,47 pp, CI [+1,99; +4,95]. Nguồn: `results/solver_eval_phase_c_local_20261123.json`.
+- Round-robin mới: 8 agent, 28 cặp, 100 ván/cặp, 50 khai cuộc 6 ply dùng chung đổi ghế, bitboard, fair filter; 61 lần thử, giữ 50, loại 10 khai cuộc có immediate win và 1 trùng trạng thái. Seed 20261123; PUCT checkpoint warm iteration 0, 400 simulations. JSON, metadata và JSONL replay: `results/round_robin_phase_c_20261123.{json,meta.json,games.jsonl}`.
+- Chẩn đoán train: replay capacity 100.000, đạt 45.385 warm/37.303 scratch; optimizer Adam LR 1e-3 cố định, value loss weight 0,5, không scheduler/weight decay tường minh. Train log không có policy/value loss riêng hay target entropy; chưa chạy PUCT 100/1600, MCTS-rollout đối chứng hay LR/update ablation. Không quy nguyên nhân suy giảm cho một giả thuyết đơn lẻ.
+- Tạo tài liệu kết quả từ JSON bằng `python scripts/build_phase_c_docs.py`; báo cáo tổng hợp và file xuất được tái tạo bằng `python scripts/build_report_assets.py`. Các file mới: `docs/PHASE_C_V2_RESULTS.md`, `docs/ROUND_ROBIN_PHASE_C_20261123.md`; log được ghi UTF-8.

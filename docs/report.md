@@ -1,5 +1,7 @@
 # AI cho Connect Four 7×6: hiện thực, huấn luyện và đánh giá có kiểm soát
 
+> **Bản này đã được thay thế.** Báo cáo cập nhật, sinh từ kết quả chính thức Phase C v2, nằm tại [docs/report/report.md](report/report.md); bản xuất là [Word](report/report.docx) và [PDF](report/report.pdf). Giữ nội dung bên dưới làm snapshot lịch sử, không dùng làm báo cáo cuối.
+
 > Báo cáo chính được sinh từ kết quả JSON đã kiểm tra. Tái tạo bằng `python scripts/render_final_report.py`; các bảng dẫn xuất được sinh lại từ JSON nguồn, không nhập tay.
 
 ## Tóm tắt
