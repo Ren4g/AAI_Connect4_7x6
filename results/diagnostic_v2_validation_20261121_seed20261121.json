@@ -1,0 +1,121 @@
+{
+  "run_id": "diagnostic_v2_validation_20261121_seed20261121",
+  "created_at_local": "2026-11-21T10:47:21+0700",
+  "purpose": "preregistered diagnostic on validation split only; not used to select checkpoint/hyperparameters",
+  "dataset_manifest_sha256": "bb118db0d6bfd68d6a7e964d64df6f75ba63422eaa12c4c2558ef3e3c5f4abed",
+  "validation_positions": 216,
+  "source_game_clusters": 181,
+  "frozen_test_sha256": "3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01",
+  "frozen_test_overlap_count": 0,
+  "device": "NVIDIA GeForce RTX 3050 Laptop GPU",
+  "puct_simulations": 100,
+  "metrics": {
+    "cnn_policy_raw": {
+      "optimal_count": 119,
+      "positions": 216,
+      "exact_optimal_rate": 0.5509259259259259,
+      "cluster_bootstrap_95": [
+        0.4835680751173709,
+        0.618839419175742
+      ],
+      "seconds": 0.23721220000152243
+    },
+    "cnn_policy_safety_filter": {
+      "optimal_count": 158,
+      "positions": 216,
+      "exact_optimal_rate": 0.7314814814814815,
+      "cluster_bootstrap_95": [
+        0.6712947108066971,
+        0.7887388551492439
+      ],
+      "seconds": 0.16959549999592127
+    },
+    "cnn_puct_100": {
+      "optimal_count": 165,
+      "positions": 216,
+      "exact_optimal_rate": 0.7638888888888888,
+      "cluster_bootstrap_95": [
+        0.7058823529411765,
+        0.8195198857393978
+      ],
+      "seconds": 5.629976500000339
+    },
+    "az_puct_100": {
+      "optimal_count": 143,
+      "positions": 216,
+      "exact_optimal_rate": 0.6620370370370371,
+      "cluster_bootstrap_95": [
+        0.5972850678733032,
+        0.7246410051854806
+      ],
+      "seconds": 6.4283885000040755
+    }
+  },
+  "paired_differences_vs_cnn_policy_raw": {
+    "cnn_policy_raw": {
+      "mean_delta_vs_cnn_raw": 0.0,
+      "cluster_bootstrap_95": [
+        0.0,
+        0.0
+      ]
+    },
+    "cnn_policy_safety_filter": {
+      "mean_delta_vs_cnn_raw": 0.18055555555555555,
+      "cluster_bootstrap_95": [
+        0.13003891428078648,
+        0.2336448598130841
+      ]
+    },
+    "cnn_puct_100": {
+      "mean_delta_vs_cnn_raw": 0.21296296296296297,
+      "cluster_bootstrap_95": [
+        0.14953271028037382,
+        0.27699530516431925
+      ]
+    },
+    "az_puct_100": {
+      "mean_delta_vs_cnn_raw": 0.1111111111111111,
+      "cluster_bootstrap_95": [
+        0.04672897196261682,
+        0.17647058823529413
+      ]
+    }
+  },
+  "value_head": {
+    "cnn_init": {
+      "wdl_accuracy": 0.7037037037037037,
+      "wdl_accuracy_cluster_bootstrap_95": [
+        0.6425043212338785,
+        0.7655502392344498
+      ],
+      "mse": 0.644959040550871,
+      "mse_cluster_bootstrap_95": [
+        0.532891863343602,
+        0.7611543995833866
+      ],
+      "predicted_value_mean": 0.12396952509880066
+    },
+    "az_final": {
+      "wdl_accuracy": 0.6990740740740741,
+      "wdl_accuracy_cluster_bootstrap_95": [
+        0.6363636363636364,
+        0.7625629181267919
+      ],
+      "mse": 0.8134511717974665,
+      "mse_cluster_bootstrap_95": [
+        0.6466010959019709,
+        0.9863002284208207
+      ],
+      "predicted_value_mean": 0.1136581227183342
+    },
+    "baseline_majority": {
+      "wdl_accuracy": 0.5740740740740741,
+      "majority_value": 1,
+      "mse": 1.5509259259259258
+    },
+    "baseline_zero": {
+      "wdl_accuracy": 0.05092592592592592,
+      "mse": 0.9490740740740741
+    }
+  }
+}
