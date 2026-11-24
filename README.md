@@ -1,7 +1,7 @@
 # Connect Four 7×6
 
-Báo cáo tiến độ và kết quả mới nhất: [docs/PROGRESS_REPORT.md](docs/PROGRESS_REPORT.md).
-Báo cáo tổng kết theo văn phong học thuật: [docs/report.md](docs/report.md) (tái tạo bằng `python scripts/render_final_report.py`).
+Báo cáo tiến độ: [docs/PROGRESS_REPORT.md](docs/PROGRESS_REPORT.md).
+Báo cáo tổng kết: [docs/report.md](docs/report.md) (tái tạo bằng `python scripts/render_final_report.py`).
 
 Repo hiện có đủ mã cho tám cấp agent, benchmark local và pipeline huấn luyện CNN/RL/AlphaZero qua Google Colab. Mọi checkpoint Colab phải ingest local trước khi được đưa vào đánh giá.
 
