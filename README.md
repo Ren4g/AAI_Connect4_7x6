@@ -117,4 +117,16 @@ Chỉ sử dụng checkpoint từ `results/colab/<run_id>/` sau khi ingest thàn
 
 ## Demo
 
-Kịch bản trình bày: [docs/DEMO.md](docs/DEMO.md). Không chạy benchmark dài trong buổi demo; dùng các report/JSONL đã lưu để trình bày và phát lại ván.
+Chạy giao diện chơi thử từ thư mục gốc repo:
+
+```powershell
+python -m connect4.gui
+```
+
+Giao diện hỗ trợ người chơi-với-AI và AI-với-AI, chọn các cấp agent đang có checkpoint, điều chỉnh depth/số mô phỏng và làm nổi bật bốn quân thắng. Mặc định, giao diện tự tìm các checkpoint đã có trong `results/`; có thể truyền đường dẫn riêng bằng `--checkpoint`, `--rl-checkpoint`, `--puct-checkpoint` hoặc `--az-checkpoint`. Ví dụ chọn GPU cho các agent mạng:
+
+```powershell
+python -m connect4.gui --device cuda --az-simulations 400
+```
+
+Kịch bản trình bày kết quả: [docs/DEMO.md](docs/DEMO.md). Không chạy benchmark dài trong buổi demo; dùng các report/JSONL đã lưu để trình bày và phát lại ván.

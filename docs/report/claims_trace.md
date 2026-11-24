@@ -1,26 +1,46 @@
-# Truy vết số liệu trong báo cáo
+# Bảng Truy xuất Nguồn gốc Số liệu (Claims Traceability Matrix)
 
-File này được ghi cùng mỗi lần chạy `python scripts/build_report_assets.py`. Số và bảng trong báo cáo được đối chiếu với các nguồn sau:
+Tài liệu này ánh xạ chi tiết các khẳng định định lượng và con số thực nghiệm xuất hiện trong Báo cáo cuối kỳ (`docs/report/AAI.tex`) tới tệp JSON nguồn và đường dẫn khóa tương ứng.
 
-| Nội dung được nêu | Nguồn chính |
-|---|---|
-| Bảng exact/WDL, AlphaBeta depth 1–6, ba CNN và CI | `results/solver_eval_cnn_v2_3seeds.json` → `metrics.*.all`; CNN dùng các entry `CNN-CNN_v2_s*-policy`. |
-| RL, PUCT-AZ, MCTS lượt đánh giá tương ứng | `results/solver_eval_az_rl_20261121_seed20261121.json` → `metrics.*`. |
-| PUCT-CNN cấp 7 | `results/solver_eval_level7_puct500.json` → `metrics.PUCT-PUCT_CNN_s20261121`. |
-| Giai đoạn khai/mid/endgame | Ba file solver trên → `metrics.*.stage_opening/stage_middle/stage_endgame`. |
-| Round-robin, W-D-L, score, CI, node/time theo bên | `benchmarks/round_robin/round_robin_final_colab_agents_seed20261121_v2.json`. |
-| 56/50/6 opening | `benchmarks/round_robin/round_robin_final_colab_agents_seed20261121_v2.meta.json` → `opening_generation`. |
-| Benchmark thời gian 0,5 giây/nước | `benchmarks/head_to_head/benchmark_ab_mcts_standard_100_paired_seed20261126.json`. |
-| Ablation node/nước | `benchmarks/ablation/ablation_vs_heuristic_3seeds_paired.json`. |
-| CNN error diagnosis | `results/cnn_first_errors_seed20261122.json`. |
-| Value accuracy, baseline và CI | `results/value_head/value_cnn_seed20261121_20261121.json` → `metrics.all`. |
-| Value accuracy/MSE theo giai đoạn | Cùng JSON → `metrics.all/opening/middle/endgame`. |
-| Peak RSS trên máy local | `results/resource_profile_20261121_v2.json` → `local_agents`; một ván/agent, sampling interval ghi trong JSON. |
-| Run parameters, Colab environment | `results/colab/cnn_seed20261120_colab1/manifest.json`, `results/colab/rl_seed20261120_run1/manifest.json`, `results/colab/az_seed20261120_run1/manifest.json`. |
-| Hash tập test và phiên bản solver | Các JSON solver và manifests; frozen SHA `3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01`, solver commit `d6ba50d8aaf2308c769d9bf2abd42d90f34baf41`. |
+## 1. Kết quả tự kiểm tra ngẫu nhiên 15 số liệu (Spot-check 15 random claims)
 
-Các nguồn chính thức/thăm dò và lý do loại trừ được liệt kê ở `docs/report_sources.md`.
+| STT | Khẳng định trong Báo cáo | Giá trị số | Tệp JSON nguồn | Đường dẫn khóa (Key path) | Kết quả đối soát |
+|---|---|---|---|---|---|
+| 1 | AlphaBeta-depth5 đạt 83,07% exact trên tập solver | `83.07%` | `results/solver_eval_phase_c_local_20261123.json` | `metrics.AlphaBeta-depth5.all.optimal.rate` | **Khớp 100% (PASS)** |
+| 2 | Random đạt 37,27% exact trên tập solver 1.500 vị trí | `37.27%` | `results/solver_eval_phase_c_local_20261123.json` | `metrics.Random.all.optimal.rate` | **Khớp 100% (PASS)** |
+| 3 | PUCT warm0 (có lọc) đạt 94,00% WDL trên tập solver | `94.00%` | `results/solver_eval_phase_c_local_20261123.json` | `metrics.PUCT-PUCTwarm_iter00-filtered.all.wdl_preserving.rate` | **Khớp 100% (PASS)** |
+| 4 | Tại vòng 40 warm-start, PUCT thô suy giảm còn 78,26% exact trên validation | `78.26%` | `results/phase_c_local/validation_curve_20261123.json` | `completed.warm_iter40.metrics.puct_raw.exact_optimal_rate` | **Khớp 100% (PASS)** |
+| 5 | Trong round-robin chính thức, AlphaBeta-depth4 vs MCTS-500 có score 0,580 | `0.5800` | `results/round_robin_phase_c_20261123.json` | `[first_agent=AlphaBeta-depth4, second_agent=MCTS-500].score` | **Khớp 100% (PASS)** |
+| 6 | AlphaBeta-depth4 đạt 80,47% exact trên tập solver | `80.47%` | `results/solver_eval_phase_c_local_20261123.json` | `metrics.AlphaBeta-depth4.all.optimal.rate` | **Khớp 100% (PASS)** |
+| 7 | CNN v1 AB3 teacher 100% đạt 73,26% exact trung bình trên validation | `73.26%` | `results/cnn_v3_validation_selection_20261122.json` | `configuration_summaries[2].exact_optimal_top1_mean` | **Khớp 100% (PASS)** |
+| 8 | Heuristic đạt 73,53% exact trên tập solver | `73.53%` | `results/solver_eval_phase_c_local_20261123.json` | `metrics.Heuristic.all.optimal.rate` | **Khớp 100% (PASS)** |
+| 9 | Trong 2.800 ván round-robin chính thức, P1 đạt score 0,5325 | `0.5325` | `results/round_robin_phase_c_20261123.games.jsonl` | `sum(result==1 + 0.5*result==0)/2800` | **Khớp 100% (PASS)** |
+| 10 | CNN v1 Pons-hard 100% đạt 76,93% exact trung bình trên validation | `76.93%` | `results/cnn_v3_validation_selection_20261122.json` | `configuration_summaries[1].exact_optimal_top1_mean` | **Khớp 100% (PASS)** |
+| 11 | CNN v1 policy (có lọc) đạt 76,73% exact trên tập solver | `76.73%` | `results/solver_eval_phase_c_local_20261123.json` | `metrics.CNN-CNNv3-policy.all.optimal.rate` | **Khớp 100% (PASS)** |
+| 12 | Tại vòng 0 warm-start, PUCT thô đạt 88,46% exact trên validation | `88.46%` | `results/phase_c_local/validation_curve_20261123.json` | `completed.warm_iter00.metrics.puct_raw.exact_optimal_rate` | **Khớp 100% (PASS)** |
+| 13 | PUCT warm0 (có lọc) đạt 82,13% exact trên tập solver | `82.13%` | `results/solver_eval_phase_c_local_20261123.json` | `metrics.PUCT-PUCTwarm_iter00-filtered.all.optimal.rate` | **Khớp 100% (PASS)** |
+| 14 | CNN v1 raw đạt 68,60% exact trên tập solver | `68.60%` | `results/solver_eval_phase_c_local_20261123.json` | `metrics.CNN-CNNv3-raw.all.optimal.rate` | **Khớp 100% (PASS)** |
+| 15 | CNN v1 Pons-soft 100% đạt 80,09% exact trung bình trên validation | `80.09%` | `results/cnn_v3_validation_selection_20261122.json` | `configuration_summaries[0].exact_optimal_top1_mean` | **Khớp 100% (PASS)** |
 
-| Phase C validation curve and paired deltas | `results/phase_c_local/validation_curve_20261123.json` → `completed.*.metrics`, `paired_delta_vs_iteration_0`. |
-| Phase C frozen-test exact/WDL and paired AB3 deltas | `results/solver_eval_phase_c_local_20261123.json` → `metrics.*`, `paired_difference_vs_ab3`. |
-| Phase C round-robin W-D-L, score and CI | `results/round_robin_phase_c_20261123.json`; configuration/opening diagnostics from matching `.meta.json`. |
+## 2. Toàn bộ danh mục ánh xạ số liệu (Full Traceability Catalog)
+
+| Thành phần | Đại lượng | Giá trị báo cáo | File nguồn | Khóa truy xuất |
+|---|---|---|---|---|
+| Random đạt 37,27% exact trên tập solver 1.500 vị trí | `0.37266666666666665` | `results/solver_eval_phase_c_local_20261123.json` | `metrics.Random.all.optimal.rate` | Khớp chính xác |
+| Heuristic đạt 73,53% exact trên tập solver | `0.7353333333333333` | `results/solver_eval_phase_c_local_20261123.json` | `metrics.Heuristic.all.optimal.rate` | Khớp chính xác |
+| AlphaBeta-depth4 đạt 80,47% exact trên tập solver | `0.8046666666666666` | `results/solver_eval_phase_c_local_20261123.json` | `metrics.AlphaBeta-depth4.all.optimal.rate` | Khớp chính xác |
+| AlphaBeta-depth5 đạt 83,07% exact trên tập solver | `0.8306666666666667` | `results/solver_eval_phase_c_local_20261123.json` | `metrics.AlphaBeta-depth5.all.optimal.rate` | Khớp chính xác |
+| MCTS-500 đạt 75,40% exact trên tập solver | `0.754` | `results/solver_eval_phase_c_local_20261123.json` | `metrics.MCTS-500.all.optimal.rate` | Khớp chính xác |
+| CNN v1 raw đạt 68,60% exact trên tập solver | `0.686` | `results/solver_eval_phase_c_local_20261123.json` | `metrics.CNN-CNNv3-raw.all.optimal.rate` | Khớp chính xác |
+| CNN v1 policy (có lọc) đạt 76,73% exact trên tập solver | `0.7673333333333333` | `results/solver_eval_phase_c_local_20261123.json` | `metrics.CNN-CNNv3-policy.all.optimal.rate` | Khớp chính xác |
+| PUCT warm0 (có lọc) đạt 82,13% exact trên tập solver | `0.8213333333333334` | `results/solver_eval_phase_c_local_20261123.json` | `metrics.PUCT-PUCTwarm_iter00-filtered.all.optimal.rate` | Khớp chính xác |
+| PUCT warm0 (có lọc) đạt 94,00% WDL trên tập solver | `0.94` | `results/solver_eval_phase_c_local_20261123.json` | `metrics.PUCT-PUCTwarm_iter00-filtered.all.wdl_preserving.rate` | Khớp chính xác |
+| CNN v1 Pons-soft 100% đạt 80,09% exact trung bình trên validation | `0.8008830022075055` | `results/cnn_v3_validation_selection_20261122.json` | `configuration_summaries[0].exact_optimal_top1_mean` | Khớp chính xác |
+| CNN v1 Pons-hard 100% đạt 76,93% exact trung bình trên validation | `0.7693156732891833` | `results/cnn_v3_validation_selection_20261122.json` | `configuration_summaries[1].exact_optimal_top1_mean` | Khớp chính xác |
+| CNN v1 AB3 teacher 100% đạt 73,26% exact trung bình trên validation | `0.7325974981604121` | `results/cnn_v3_validation_selection_20261122.json` | `configuration_summaries[2].exact_optimal_top1_mean` | Khớp chính xác |
+| Trong round-robin chính thức, AlphaBeta-depth4 vs PUCT có score 0,415 | `0.415` | `results/round_robin_phase_c_20261123.json` | `[first_agent=AlphaBeta-depth4, second_agent=PUCT].score` | Khớp chính xác |
+| Trong round-robin chính thức, AlphaBeta-depth6 vs PUCT có score 0,500 | `0.5` | `results/round_robin_phase_c_20261123.json` | `[first_agent=AlphaBeta-depth6, second_agent=PUCT].score` | Khớp chính xác |
+| Trong round-robin chính thức, AlphaBeta-depth4 vs MCTS-500 có score 0,580 | `0.58` | `results/round_robin_phase_c_20261123.json` | `[first_agent=AlphaBeta-depth4, second_agent=MCTS-500].score` | Khớp chính xác |
+| Trong 2.800 ván round-robin chính thức, P1 đạt score 0,5325 | `0.5325` | `results/round_robin_phase_c_20261123.games.jsonl` | `sum(result==1 + 0.5*result==0)/2800` | Khớp chính xác |
+| Tại vòng 0 warm-start, PUCT thô đạt 88,46% exact trên validation | `0.8846325167037862` | `results/phase_c_local/validation_curve_20261123.json` | `completed.warm_iter00.metrics.puct_raw.exact_optimal_rate` | Khớp chính xác |
+| Tại vòng 40 warm-start, PUCT thô suy giảm còn 78,26% exact trên validation | `0.7826280623608018` | `results/phase_c_local/validation_curve_20261123.json` | `completed.warm_iter40.metrics.puct_raw.exact_optimal_rate` | Khớp chính xác |
