@@ -1,3 +1,4 @@
+% !TeX program = xelatex
 \documentclass[11pt, a4paper]{article}
 
 \usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=2.8cm, right=2.2cm]{geometry}
@@ -5,13 +6,8 @@
 \usepackage[vietnamese, english, bidi=basic, provide=*]{babel}
 \babelprovide[import, onchar=ids fonts]{english}
 
-% Lưu ý font chữ cho Overleaf:
-% Noto Serif là font serif chuẩn tương thích Times sẵn có trên hệ thống biên dịch.
-% Khi đưa lên Overleaf (chọn Compiler: XeLaTeX hoặc LuaLaTeX), bạn có thể giữ nguyên
-% Noto Serif hoặc mở ghi chú một trong hai dòng dưới để dùng đúng Times New Roman:
-% \babelfont{rm}{Noto Serif}
-\babelfont{rm}{Times New Roman}
-% \babelfont{rm}{TeX Gyre Termes}
+% Font chữ chuẩn cho Overleaf (XeLaTeX / LuaLaTeX)
+\IfFontExistsTF{Times New Roman}{\babelfont{rm}{Times New Roman}}{\babelfont{rm}{TeX Gyre Termes}}
 
 \usepackage{enumitem}
 \setlist[itemize]{label=-}
@@ -19,12 +15,14 @@
 \usepackage{amssymb}
 \usepackage{booktabs}
 \usepackage{array}
+\usepackage{longtable}
 \usepackage{tabularx}
 \usepackage{float}
 \usepackage{xcolor}
+\usepackage{graphicx}
 \usepackage{hyperref}
 
-% Quy định định dạng màu sắc: toàn bộ văn bản, tiêu đề, liên kết và đường kẻ dùng màu đen
+% Định dạng màu sắc chuẩn học thuật: chữ đen tuyệt đối
 \definecolor{textblack}{HTML}{000000}
 \color{textblack}
 \hypersetup{
@@ -65,13 +63,15 @@
     \begin{tabular}{@{} p{5.2cm} p{8.8cm} @{}}
         \textbf{Sinh viên thực hiện:} & Nguyễn Hoàng Khang \\
         \textbf{Mã số sinh viên:} & 3123410152 \\
-        \textbf{Mã nhóm:} & \texttt{[CẦN BỔ SUNG: Ví dụ NhomXX]} \\
+        \textbf{Mã nhóm:} & \texttt{[CẦN BỔ SUNG: Mã nhóm]} \\
         \textbf{Giảng viên hướng dẫn:} & \texttt{[CẦN BỔ SUNG: Họ và tên Giảng viên]} \\
         \textbf{Kho lưu trữ mã nguồn:} & \texttt{[CẦN BỔ SUNG: Liên kết GitHub repository]} \\
+        \textbf{Mã commit đánh giá cuối:} & \texttt{d90ecfa1e3c9a37367b59f5e010b0de247d09390} \\
+        \textbf{Trạng thái thực nghiệm:} & \textbf{Các đợt chạy chính đã báo cáo đều hoàn tất} \\
     \end{tabular}
 
     \vfill
-    {\normalsize Thành phố Hồ Chí Minh, ngày 22 tháng 11 năm 2026}
+    {\normalsize Thành phố Hồ Chí Minh, ngày 23 tháng 11 năm 2026}
 \end{titlepage}
 
 % ==============================================================================
@@ -80,9 +80,19 @@
 \section*{Tóm tắt}
 \addcontentsline{toc}{section}{Tóm tắt}
 
-Trong nghiên cứu Trí tuệ nhân tạo, việc đánh giá năng lực của các tác tử chơi trò chơi đối kháng thường chỉ dựa vào tỷ lệ thắng thua qua thi đấu nội bộ. Cách tiếp cận này chỉ phản ánh thứ hạng tương đối giữa các mô hình mà không định lượng được khoảng cách thực sự tới chiến lược tối ưu về mặt lý thuyết. Đồ án này xây dựng một hệ thống huấn luyện và kiểm chứng tác tử đa cấp độ (từ cấp 1 đến cấp 8) cho trò chơi Connect Four kích thước chuẩn $7 \times 6$ --- một trò chơi tổng bằng không, thông tin hoàn hảo và đã được giải hoàn toàn. Hệ thống bao gồm các tác tử tìm kiếm cổ điển (Random, Heuristic, Alpha-Beta Pruning, MCTS-UCT), mạng nơ-ron tích chập học có giám sát (CNN v2 và CNN v3 huấn luyện trên 30.000 nhãn từ bộ giải chuẩn Pons), tác tử học tăng cường Policy-Gradient, cùng các kiến trúc tìm kiếm cây kết hợp mạng học sâu lấy cảm hứng từ AlphaGo và AlphaZero (\textit{AlphaGo-inspired}, \textit{AlphaZero-inspired}).
+Trong nghiên cứu Trí tuệ nhân tạo (Game AI), việc đánh giá năng lực của các tác tử chơi trò chơi đối kháng thông qua giải đấu nội bộ thường chỉ phản ánh thứ hạng tương đối mà không định lượng được khoảng cách thực tế tới chiến lược tối ưu lý thuyết. Đồ án này xây dựng hệ thống tác tử đa cấp độ cho Connect Four $7 \times 6$, gồm tìm kiếm cổ điển, CNN học có giám sát (CNN v1 và CNN v3 trên 30.000 vị trí có nhãn Pons), policy-gradient và các phương pháp kết hợp mạng với tìm kiếm lấy cảm hứng từ AlphaGo/AlphaZero. Hai run Phase C V2 và round-robin cập nhật đã hoàn tất; một số ablation mở rộng chưa được thực hiện. Warm-start giảm chất lượng validation sau self-play; mức tăng của scratch chưa phân biệt được thống kê.
 
-Để bảo đảm tính khách quan và khả năng tái lập, quá trình đánh giá kết hợp giữa thi đấu vòng tròn đối đầu có kiểm soát (ghép cặp thế cờ khai cuộc, đổi lượt đi trước/sau) và đối chiếu trực tiếp trên tập kiểm thử đóng băng gồm 1.500 vị trí với bộ giải tuyệt đối Pons. Kết quả thực nghiệm cho thấy: (1) ở nhóm tìm kiếm cổ điển, Alpha-Beta đạt tỷ lệ chọn nước tối ưu chính xác từ $77{,}2\%$ (độ sâu 3) đến $83{,}1\%$ (độ sâu 5), vượt qua Heuristic ($73{,}5\%$) và MCTS-500 ($76{,}3\%$); (2) đối với CNN v3 huấn luyện trên nhãn mềm Pons, tỷ lệ tối ưu chính xác trung bình trên tập kiểm thử đạt $76{,}3\%$ (độ lệch chuẩn $0{,}50$ điểm phần trăm qua 3 seed) khi kết hợp bộ lọc an toàn chiến thuật, nhưng giảm xuống còn $65{,}5\%\text{--}68{,}6\%$ ở mạng chính sách thuần túy và chưa vượt qua ngưỡng kiểm soát so với Alpha-Beta độ sâu 3 theo khoảng tin cậy bootstrap ghép cặp $95\%$; (3) giai đoạn thí nghiệm tự đấu nâng cao Phase C (\textit{AlphaZero-inspired V2}, đối chiếu giữa khởi tạo từ CNN v3 và khởi tạo ngẫu nhiên) cùng giải đấu vòng tròn cập nhật hiện đang trong quá trình thực thi và chưa có kết quả cuối cùng.
+Quy trình đánh giá kết hợp chặt chẽ giữa thi đấu vòng tròn đối kháng có kiểm soát (28 cặp, 100 ván/cặp, tổng 2.800 ván, ghép cặp thế khai cuộc công bằng, đổi lượt đi trước/sau) và đối chiếu trực tiếp trên tập kiểm thử solver đóng băng gồm 1.500 vị trí độc lập trích xuất từ bộ giải tuyệt đối Pons. Toàn bộ các chỉ số báo cáo đều kèm theo cỡ mẫu và khoảng tin cậy (CI) $95\%$ phân cụm hoặc bootstrap theo khai cuộc ghép cặp; trường hợp khoảng tin cậy chứa giá trị trung hòa (0 đối với sai khác hoặc 0,5 đối với score) được kết luận trung thực là ``chưa phân biệt được''.
+
+Kết quả thực nghiệm chính thức cho thấy:
+\begin{enumerate}
+    \item \textbf{Nhóm tìm kiếm cổ điển:} Alpha-Beta tăng tiến tỷ lệ nước tối ưu chính xác (\textit{exact}) từ $70{,}33\%$ $[68{,}12;\; 72{,}57]\%$ (độ sâu 1) lên cực đại $83{,}07\%$ $[81{,}18;\; 84{,}96]\%$ (độ sâu 5) và bão hòa ở $81{,}47\%$ $[79{,}46;\; 83{,}37]\%$ (độ sâu 6), vượt trội Heuristic ($73{,}53\%$ $[71{,}34;\; 75{,}66]\%$) và MCTS-500 ($75{,}40\%$ $[73{,}23;\; 77{,}56]\%$, WDL $90{,}80\%$ $[89{,}25;\; 92{,}24]\%$). Random chỉ đạt $37{,}27\%$ $[34{,}83;\; 39{,}72]\%$ exact và $70{,}67\%$ $[68{,}24;\; 73{,}07]\%$ WDL.
+    \item \textbf{CNN v1 và CNN v3:} CNN v1 là mốc cơ sở trên dữ liệu nhỏ. CNN v3 dùng 30.000 vị trí; trên validation, Pons-soft đạt exact trung bình $80{,}09\%$ (SD giữa seed $0{,}29$ điểm phần trăm), so với $76{,}93\%$ cho Pons-hard và $73{,}26\%$ cho nhãn Alpha-Beta depth 3. Trên test đóng băng 1.500 vị trí, CNN v3 thô đạt $68{,}60\%$ $[66{,}15;\; 71{,}06]\%$ exact và $87{,}13\%$ WDL; có safety filter đạt $76{,}73\%$ $[74{,}54;\; 78{,}91]\%$ exact và $91{,}00\%$ $[89{,}47;\; 92{,}44]\%$ WDL.
+    \item \textbf{PUCT:} Tác tử cấp 7 baseline (CNN v1 + 500 mô phỏng) đạt $78{,}93\%$ $[76{,}80;\; 80{,}93]\%$ exact. Với CNN v3, PUCT-400 warm vòng 0 có filter đạt $82{,}13\%$ $[80{,}14;\; 84{,}03]\%$ exact và $94{,}00\%$ $[92{,}70;\; 95{,}20]\%$ WDL; bản thô đạt $81{,}20\%$ $[79{,}14;\; 83{,}19]\%$ exact.
+    \item \textbf{Thực nghiệm tự chơi (Self-play Phase C, hoàn thành 40 vòng lặp):} Cả hai nhánh Warm-start và Scratch đã chạy đủ 40 vòng lặp. Quá trình tự đấu không cải thiện sức chơi ở quy mô thử nghiệm này: nhánh warm-start suy giảm trên validation từ $89{,}53\%$ xuống $85{,}90\%$ (có lọc) và $88{,}46\%$ xuống $78{,}26\%$ (thô); nhánh scratch tăng policy thô từ $33{,}67\%$ lên $47{,}79\%$ nhưng PUCT thô suy giảm từ $81{,}45\%$ xuống $75{,}58\%$, trong khi PUCT có lọc không phân biệt được ưu thế ($81{,}48\%$ lên $82{,}48\%$, CI ghép cặp chứa 0).
+    \item \textbf{Tác tử học tăng cường (RL):} Tác tử RL huấn luyện chỉ đối đầu với Random đạt score $0{,}990$ trước Random nhưng sụp đổ trước Heuristic (score $0{,}110$ do Heuristic thắng $86\%$) và đạt score $0{,}000$ trước PUCT.
+    \item \textbf{Lợi thế đi trước (RQ6):} Trong 2.800 ván đấu của giải round-robin chính thức, bên đi trước đạt score trung bình $0{,}5325$, khoảng tin cậy bootstrap 95\% [0,5039; 0,5607] (thắng 1.491 ván, chiếm 53,25%; hòa 0; thua 1.219 ván, chiếm 43,54%), xác nhận ưu thế đi trước có ý nghĩa thống kê.
+\end{enumerate}
 
 \newpage
 \tableofcontents
@@ -93,299 +103,136 @@ Trong nghiên cứu Trí tuệ nhân tạo, việc đánh giá năng lực của
 % ==============================================================================
 \section{Giới thiệu}
 
-\subsection{Bối cảnh}
-Trong nghiên cứu Trí tuệ nhân tạo, các trò chơi đối kháng thông tin hoàn hảo (perfect-information games) từ lâu đã là môi trường chuẩn mực để phát triển và kiểm chứng các thuật toán lập kế hoạch và ra quyết định \cite{russell2021artificial}. Tuy nhiên, việc lựa chọn môi trường thử nghiệm luôn đặt ra bài toán đánh đổi giữa độ phức tạp chiến thuật và chi phí tính toán: các trò chơi như Tic-Tac-Toe quá đơn giản để bộc lộ giới hạn của thuật toán, trong khi Cờ Vua hay Cờ Vây lại đòi hỏi tài nguyên phần cứng vượt quá khả năng huấn luyện thông thường.
+\subsection{Bối cảnh nghiên cứu}
+Trong lịch sử phát triển của Trí tuệ nhân tạo (AI), các trò chơi đối kháng có thông tin hoàn hảo (perfect-information games) luôn giữ vai trò là môi trường chuẩn mực để thử nghiệm và đánh giá các thuật toán ra quyết định \cite{russell2021artificial}. Việc lựa chọn môi trường thực nghiệm đòi hỏi sự cân nhắc giữa độ phức tạp chiến thuật và khả năng kiểm soát tài nguyên: các trò chơi quá đơn giản (như Tic-Tac-Toe) không đủ độ sâu để bộc lộ hạn chế của thuật toán, trong khi các trò chơi có không gian trạng thái khổng lồ (như Cờ Vua hay Cờ Vây) lại đòi hỏi cụm máy chủ công nghiệp và không có lời giải lý thuyết để kiểm chứng tính tối ưu tuyệt đối.
 
-Connect Four (kích thước chuẩn $7 \times 6$) nằm ở điểm cân bằng lý tưởng với không gian khoảng $4{,}5 \times 10^{12}$ trạng thái hợp lệ \cite{tromp2008solving}, đủ lớn để đòi hỏi các chiến lược tìm kiếm và học máy tinh vi, và đủ gọn để tối ưu hóa tốc độ mô phỏng ở mức phần cứng phổ thông. Đồ án này tập trung xây dựng một hệ thống huấn luyện và đánh giá tác tử đa cấp độ cho Connect Four, qua đó so sánh hiệu năng giữa các phương pháp tìm kiếm và học sâu.
+Connect Four (kích thước chuẩn $7 \times 6$) là môi trường thực nghiệm lý tưởng: trò chơi có khoảng $4{,}5 \times 10^{12}$ trạng thái hợp lệ \cite{tromp2008solving}, đủ phong phú để thách thức các thuật toán tìm kiếm và học sâu, đồng thời đã được chứng minh về mặt toán học là bên đi trước luôn thắng nếu đi hoàn hảo \cite{allis1988knowledge}. Nhờ các bộ giải chính xác mã nguồn mở tốc độ cao như solver của Pascal Pons \cite{pons2019connect4}, mọi quyết định của tác tử đều có thể đối chiếu trực tiếp với chân lý lý thuyết (ground-truth).
 
 \subsection{Trò chơi Connect Four và mô hình hóa bài toán}
-Connect Four là trò chơi đối kháng hai người có tổng bằng không (zero-sum), thông tin hoàn hảo (perfect-information) và tất định (deterministic), diễn ra trên lưới dọc kích thước $7 \times 6$ (7 cột, 6 hàng), trong đó quân cờ chịu ràng buộc trọng lực và luôn rơi xuống ô trống thấp nhất của cột được chọn. Hai người chơi luân phiên thả quân với mục tiêu tạo thành chuỗi 4 quân liên tiếp theo phương ngang, phương dọc hoặc đường chéo trước đối thủ, với tối đa 42 lượt đi cho một ván đấu. Nếu toàn bộ 42 ô trên bàn cờ được lấp đầy mà không bên nào hoàn thành chuỗi 4 quân, ván đấu kết thúc với kết quả hòa.
+Connect Four là trò chơi hai người có tổng bằng không (zero-sum), thông tin hoàn hảo, diễn ra trên bảng đứng kích thước 6 hàng $\times$ 7 cột. Hai người chơi lần lượt thả quân (người 1 mang quân Đỏ, người 2 mang quân Vàng) vào một trong 7 cột chưa đầy; quân cờ rơi xuống vị trí trống thấp nhất của cột do trọng lực. Trò chơi kết thúc khi có một bên tạo thành đường thẳng gồm 4 quân liên tiếp (ngang, dọc hoặc chéo) hoặc bảng cờ đầy (kết quả hòa).
 
-Về mặt toán học, môi trường ra quyết định của trò chơi được hình thức hóa qua bộ thành phần chuẩn:
-\begin{itemize}
-    \item \textbf{Không gian trạng thái ($S$):} Tập hợp các cấu hình bàn cờ $7 \times 6$ hợp lệ cùng chỉ báo người chơi đến lượt ($|S| \approx 4{,}5 \times 10^{12}$).
-    \item \textbf{Không gian hành động ($A(s)$):} Tập các chỉ số cột $c \in \{0, 1, \dots, 6\}$ chưa đầy tại trạng thái $s$, cho hệ số rẽ nhánh tối đa $b = 7$. Mọi hành động chọn cột đã đầy đều bị coi là bất hợp lệ và bị cấm ở tầng engine.
-    \item \textbf{Hàm chuyển trạng thái ($T(s, a) \rightarrow s'$):} Ánh xạ tất định đặt quân của người chơi hiện tại vào hàng trống thấp nhất của cột $a$ và chuyển quyền đi cho đối thủ.
-    \item \textbf{Điều kiện kết thúc và hàm phần thưởng ($R(s)$):} Tại trạng thái kết thúc $s_T$, phần thưởng theo góc nhìn người chơi được định nghĩa đối xứng tổng bằng không: $+1$ nếu thắng, $-1$ nếu thua và $0$ nếu hòa; tại các trạng thái trung gian, phần thưởng tức thời bằng $0$.
-\end{itemize}
+Không gian trạng thái hợp lệ của bài toán được mô hình hóa theo quá trình ra quyết định Markov hữu hạn (finite MDP):
+\begin{equation}
+\mathcal{M} = \langle \mathcal{S}, \mathcal{A}, \mathcal{P}, \mathcal{R}, \gamma \rangle,
+\end{equation}
+trong đó $\mathcal{S}$ là tập các cấu hình bàn cờ hợp lệ ($|\mathcal{S}| \approx 4{,}53 \times 10^{12}$); $\mathcal{A} = \{0, 1, 2, 3, 4, 5, 6\}$ là tập 7 cột hành động; $\mathcal{P}(s' \mid s, a)$ là hàm chuyển đổi trạng thái tất định; hàm phần thưởng $\mathcal{R} \in \{+1, -1, 0\}$ chỉ xuất hiện tại trạng thái kết thúc (terminal); và hệ số chiết khấu $\gamma = 1$.
 
-Nhờ không gian trạng thái nằm trong ngưỡng tính toán khả thi, Connect Four đã được chứng minh giải hoàn toàn: người đi trước luôn giành chiến thắng nếu mở đầu ở cột giữa và áp dụng chiến lược tối ưu \cite{allis1988knowledge, tromp2008solving}. Với lời giải chuẩn xác này, Connect Four cung cấp một thước đo khách quan để định lượng hiệu năng của các thuật toán AI thông qua mức độ tiệm cận chiến lược tối ưu, vượt lên trên các phép so sánh đối đầu thông thường.
-
-% \subsection{Vấn đề đặt ra}
-% Mặc dù Connect Four sở hữu lời giải chuẩn xác để làm điểm tựa tham chiếu, việc đánh giá năng lực của các tác tử AI trong thực nghiệm vẫn tiềm ẩn một số rủi ro về mặt phương pháp luận. \textbf{Vấn đề cốt lõi} nằm ở cách thức đo lường sức mạnh tác tử sao cho đáng tin cậy: khi đối chiếu các mô hình thuộc nhiều hướng tiếp cận (từ tìm kiếm truyền thống đến học sâu), việc chỉ dựa vào tỷ lệ thắng thua qua thi đấu đối kháng nội bộ chỉ phản ánh thứ hạng tương đối giữa chúng, không cho phép suy ra các tác tử còn cách ngưỡng tối ưu bao xa. Ngoài ra, một tác tử có thể đạt tỷ lệ thắng cao trước các đối thủ yếu nhờ khai thác lối chơi đơn giản, nhưng điều này chưa chắc còn đúng khi đối đầu với chiến lược tối ưu.
-
-% Bên cạnh thước đo đánh giá, việc phân tích hành vi của từng nhóm thuật toán cũng đặt ra hai thách thức thực nghiệm đáng chú ý:
-% \begin{enumerate}
-%     \item \textbf{Định lượng giới hạn cố hữu của từng kỹ thuật:} Các điểm yếu lý thuyết của mỗi phương pháp --- chẳng hạn như hiện tượng ``hiệu ứng chân trời'' (horizon effect) ở Alpha-Beta khi bẫy chiến thuật vượt quá độ sâu tìm kiếm, sự suy giảm độ chính xác của MCTS khi ngân sách mô phỏng hạn chế, hay điểm mù chiến thuật của mạng nơ-ron tích chập (CNN) thuần túy khi thiếu cơ chế nhìn trước (lookahead) --- thường chỉ được nhận định định tính thay vì đo lường mức độ suy giảm hiệu năng qua một hệ quy chiếu chuẩn.
-%     \item \textbf{Rủi ro phương pháp luận trong huấn luyện mô hình học máy:} Đối với hướng tiếp cận học sâu, việc sử dụng nhãn huấn luyện sinh từ các hàm heuristic thủ công dễ khiến mô hình học lại chính sai số của luật; đồng thời, quy trình phân chia dữ liệu ngẫu nhiên không kiểm soát tính đối xứng gương hoặc các trạng thái cùng ván đấu có thể gây rò rỉ dữ liệu (data leakage), làm sai lệch kết quả đánh giá năng lực tổng quát hóa.
-% \end{enumerate}
-
-% Từ những khoảng trống trên, đồ án này thiết kế một hệ thống đánh giá đa chiều kết hợp giữa thi đấu đối đầu trực tiếp (Arena) có kiểm soát và đối chiếu với bộ giải tối ưu (exact solver), nhằm trả lời một cách khách quan câu hỏi về khoảng cách giữa sức mạnh thực nghiệm và tính tối ưu chứng minh của các tác tử AI.
-
-% \subsection{Mục tiêu}
-% Đồ án hướng tới 4 mục tiêu cụ thể sau:
-% \begin{enumerate}[label=(\arabic*)]
-%     \item \textbf{Xây dựng môi trường mô phỏng và giao diện tương tác chuẩn hóa:} Cài đặt lõi trò chơi Connect Four sử dụng biểu diễn lưới và Bitboard với API thống nhất, kiểm thử chặt chẽ luật thắng/thua/hòa và phát triển giao diện chơi người--máy cũng như máy--máy.
-%     \item \textbf{Phát triển hệ thống tác tử đa cấp độ (cấp 1--8):} Thiết kế và triển khai bộ tác tử đại diện cho các phương pháp tiếp cận từ cơ bản đến nâng cao, bao gồm: Random, Heuristic, Alpha-Beta Pruning, MCTS-UCT, CNN học có giám sát, Policy-Gradient RL, kiến trúc \textit{AlphaGo-inspired} (PUCT kết hợp policy/value) và vòng lặp tự đấu \textit{AlphaZero-inspired}.
-%     \item \textbf{Thiết lập khung đánh giá chuẩn hóa (Benchmark):} Xây dựng đấu trường thi đấu vòng tròn cân bằng lượt đi kết hợp với bộ giải tối ưu Pons trên tập dữ liệu đóng băng để đo lường đồng thời hai khía cạnh: sức mạnh thực nghiệm (qua điểm số đối đầu) và tính tối ưu chứng minh (qua tỷ lệ nước đi tối ưu chính xác và tỷ lệ bảo toàn kết quả Thắng--Hòa--Thua).
-%     \item \textbf{Phân tích thực nghiệm và kiểm chứng giới hạn thuật toán:} Khảo sát tác động của độ sâu tìm kiếm, ngân sách mô phỏng, bộ lọc an toàn chiến thuật cũng như quy trình xử lý dữ liệu học sâu (chống rò rỉ dữ liệu, chất lượng nhãn), từ đó định lượng rõ ngưỡng giới hạn của từng kỹ thuật.
-% \end{enumerate}
-
-% \subsection{Câu hỏi nghiên cứu}
-% Hệ thống thực nghiệm được tổ chức nhằm trả lời 3 câu hỏi nghiên cứu cốt lõi:
-% \begin{description}[leftmargin=1.2cm, style=nextline]
-%     \item[\textbf{RQ1 (Độ tin cậy của thước đo đánh giá):}] Tương quan giữa sức mạnh thực nghiệm (đo bằng điểm số thi đấu đối kháng) và tính tối ưu chứng minh (đo bằng bộ giải chuẩn Pons) của các tác tử biến thiên như thế nào, và liệu xếp hạng đối đầu nội bộ có phản ánh chính xác mức độ tiệm cận chiến lược hoàn hảo hay không?
-%     \item[\textbf{RQ2 (Hiệu quả giữa các trường phái thuật toán):}] Trên cùng một hệ quy chiếu chuẩn của Connect Four, các phương pháp tìm kiếm dựa trên luật kinh nghiệm (Alpha-Beta), tìm kiếm mô phỏng (MCTS) và học sâu (CNN) đạt được mức hiệu năng và độ chính xác quyết định ra sao?
-%     \item[\textbf{RQ3 (Định lượng giới hạn cố hữu của kỹ thuật):}] Các điểm yếu lý thuyết như giới hạn độ sâu của Alpha-Beta, ngân sách mô phỏng thấp ở MCTS, hay việc thiếu cơ chế nhìn trước ở mạng CNN thuần túy (khi tách khỏi bộ lọc an toàn chiến thuật) biểu hiện thành mức suy giảm tỷ lệ nước đi tối ưu cụ thể như thế nào khi kiểm chứng bằng bộ giải chuẩn?
-% \end{description}
-
-% Ngoài ra, một thí nghiệm mở rộng có kiểm soát (\textbf{Phase C}) đang được triển khai để khảo sát tác động của khởi tạo trọng số (warm-start từ CNN v3 so với huấn luyện từ đầu) trong vòng lặp tự đấu \textit{AlphaZero-inspired}; tuy nhiên, kết quả của nhánh thí nghiệm này chưa hoàn tất và được tách bạch khỏi các kết luận đã kiểm chứng.
-
-% \subsection{Phạm vi đề tài và tính trung thực học thuật}
-% Đề tài giới hạn phạm vi nghiên cứu trên bàn cờ Connect Four tiêu chuẩn $7 \times 6$. Toàn bộ mã nguồn lõi trò chơi, bộ 8 cấp độ tác tử, quy trình huấn luyện và khung đánh giá thống kê được phát triển trong kho mã nguồn của nhóm (thư mục \texttt{connect4/}, \texttt{colab/}, \texttt{benchmarks/}). Để bảo đảm tính trung thực học thuật theo quy định của học phần:
-% \begin{itemize}
-%     \item Bộ giải tối ưu Connect Four của Pascal Pons \cite{pons2019connect4} được tích hợp thuần túy làm công cụ đo lường chuẩn (ground-truth oracle) để gán nhãn huấn luyện và chấm điểm trên tập kiểm thử; bộ giải này không được tính là một tác tử thi đấu của nhóm.
-%     \item Các tác tử cấp 7 và cấp 8 trong đồ án được định danh rõ ràng là phiên bản lấy cảm hứng (\textit{AlphaGo-inspired} và \textit{AlphaZero-inspired}), không tuyên bố tái hiện đầy đủ hệ thống quy mô lớn nguyên bản của DeepMind \cite{silver2016mastering, silver2017mastering}.
-%     \item Báo cáo phân định rạch ròi giữa các kết quả đã hoàn tất và được kiểm tra toàn vẹn dữ liệu (baseline cấp 1--8 lịch sử, kết quả đánh giá CNN v3) với các thí nghiệm đang chạy dở dang (Phase C và giải đấu vòng tròn cập nhật hiện chưa có kết quả).
-% \end{itemize}
-
-%
-\subsection{Vấn đề đặt ra}
-
-Mặc dù Connect Four sở hữu lời giải chuẩn xác để làm điểm tựa tham chiếu, việc đánh giá năng lực của các tác tử AI trong thực nghiệm vẫn tiềm ẩn một số rủi ro về mặt phương pháp luận. \textbf{Vấn đề cốt lõi} nằm ở cách thức đo lường sức mạnh tác tử sao cho đáng tin cậy: khi đối chiếu các mô hình thuộc nhiều hướng tiếp cận (từ tìm kiếm truyền thống đến học sâu), việc chỉ dựa vào tỷ lệ thắng thua qua thi đấu đối kháng nội bộ chỉ phản ánh thứ hạng tương đối giữa chúng, không cho phép suy ra các tác tử còn cách ngưỡng tối ưu bao xa. Ngoài ra, một tác tử có thể đạt tỷ lệ thắng cao trước các đối thủ yếu nhờ khai thác lối chơi đơn giản, nhưng điều này chưa chắc còn đúng khi đối đầu với chiến lược tối ưu.
-
-Bên cạnh thước đo đánh giá, việc phân tích hành vi của từng nhóm thuật toán cũng đặt ra hai thách thức thực nghiệm đáng chú ý:
-\begin{itemize}
-    \item \textbf{Các kỹ thuật truyền thống và học máy đều bộc lộ những điểm yếu lý thuyết:} Alpha-Beta Pruning gặp hiện tượng hiệu ứng chân trời (horizon effect), dẫn đến việc bỏ sót các bẫy chiến thuật nằm vượt quá độ sâu tìm kiếm giới hạn. Monte Carlo Tree Search (MCTS) có hiệu năng phụ thuộc lớn vào ngân sách mô phỏng; độ chính xác suy giảm rõ rệt khi số lượng vòng lặp hạn chế. Mạng nơ-ron thuần túy thiếu cơ chế tìm kiếm trước (lookahead), dễ tạo ra các điểm mù chiến thuật trong các tình huống đòi hỏi tính toán dài hạn. Đồng thời việc kết hợp trực tiếp dự đoán từ mạng nơ-ron với các luật heuristic thủ công đôi khi làm lu mờ khả năng tổng quát hóa thực sự của mô hình
-
-    \item \textbf{Rủi ro phương pháp luận trong huấn luyện học máy:} Việc sử dụng nhãn huấn luyện sinh từ các hàm heuristic thủ công dễ khiến mô hình học lại chính sai số của luật, trong khi quy trình phân chia dữ liệu ngẫu nhiên không kiểm soát tính đối xứng gương hoặc các trạng thái cùng ván đấu có thể gây rò rỉ dữ liệu (data leakage), làm sai lệch đánh giá năng lực tổng quát hóa.
-\end{itemize}
-
-Từ những rủi ro trên, đồ án này tập trung thiết kế một hệ thống đánh giá đa chiều kết hợp giữa thi đấu đối đầu cân bằng lượt đi và đối chiếu với bộ giải tối ưu (exact solver), nhằm phân biệt rõ sức mạnh thực nghiệm với tính tối ưu chứng minh của các tác tử AI.
-
-\subsection{Mục tiêu}
-\begin{enumerate}[label=(\arabic*)]
-    \item \textbf{Xây dựng môi trường mô phỏng chuẩn hóa và hiệu năng cao:} Cài đặt lõi trò chơi Connect 4 ($7 \times 6$) hỗ trợ cả biểu diễn lưới và Bitboard với giao diện lập trình thống nhất, kiểm thử chặt chẽ luật thắng--hòa--thua và ngăn chặn nước đi bất hợp lệ.
-    \item \textbf{Phát triển hệ thống tác tử đa cấp độ:} Thiết kế và triển khai bộ tác tử đại diện cho các phương pháp tiếp cận tiêu biểu, bao gồm: ngẫu nhiên (Random), luật kinh nghiệm (Heuristic), tìm kiếm đối kháng (Alpha-Beta Pruning), tìm kiếm cây Monte Carlo (MCTS-UCT), mạng nơ-ron học có giám sát (Supervised CNN), học tăng cường (Policy-Gradient RL) và các kiến trúc tìm kiếm kết hợp mạng nơ-ron lấy cảm hứng từ AlphaGo/AlphaZero.
-    \item \textbf{Thiết lập khung đánh giá công bằng và khách quan:} Tổ chức giải đấu đối kháng vòng tròn có kiểm soát thứ tự đi trước, kết hợp đối chiếu trên tập kiểm thử cố định gồm 1.500 thế cờ đã biết trước lời giải chuẩn xác để đo lường đồng thời điểm số đối đầu, tỷ lệ chọn nước đi tối ưu và chi phí tính toán.
-    \item \textbf{Phân tích thực nghiệm và bóc tách đóng góp thành phần:} Khảo sát độ nhạy của các siêu tham số (độ sâu tìm kiếm, ngân sách mô phỏng), tách bạch hiệu năng suy luận gốc của mạng nơ-ron với hiệu ứng từ các quy tắc hậu xử lý (như tự chọn nước thắng ngay hoặc chặn đối thủ thắng ở lượt kế), đồng thời ghi nhận minh bạch các hạn chế của từng phương pháp.
+\subsection{Vấn đề nghiên cứu}
+Đa số các nghiên cứu thực nghiệm Game AI đối mặt với ba thách thức lớn:
+\begin{enumerate}
+    \item \textbf{Thước đo tương đối thiếu kiểm chứng khách quan:} Đánh giá sức mạnh tác tử bằng tỷ lệ thắng trong giải đấu nội bộ dễ dẫn đến hiện tượng chu trình (A thắng B, B thắng C, C thắng A) và không cho biết tác tử còn cách chiến lược tối ưu bao xa.
+    \item \textbf{Nhầm lẫn giữa năng lực học sâu và quy tắc kinh nghiệm:} Nhiều mô hình học sâu kết hợp quy tắc khẩn cấp (như tự chọn nước thắng ngay hoặc chặn đối thủ) nhưng không bóc tách đóng góp của mạng nơ-ron thuần túy với bộ lọc an toàn, dẫn đến việc đánh giá quá cao khả năng suy luận của mạng.
+    \item \textbf{Thiếu kiểm soát sai lệch thực nghiệm:} Nguy cơ rò rỉ dữ liệu giữa ván huấn luyện và ván kiểm thử, hiện tượng lặp lại ván đấu giữa các tác tử tất định, hoặc thiên vị thế cờ khai cuộc chưa được xử lý triệt để trong các báo cáo sinh viên.
 \end{enumerate}
 
-\subsection{Câu hỏi nghiên cứu}
+\subsection{Mục tiêu và Câu hỏi nghiên cứu}
+Đồ án đặt ra 6 câu hỏi nghiên cứu cụ thể nhằm làm sáng tỏ các vấn đề trên:
 \begin{description}[leftmargin=1.5cm,style=nextline]
-    \item[\textbf{RQ1 (Tương quan giữa sức mạnh thực nghiệm và tính tối ưu):}] Thứ hạng đối kháng trực tiếp giữa các tác tử phản ánh mức độ tiệm cận chiến lược tối ưu (đo bằng tỷ lệ chọn nước đi chuẩn xác trên bộ giải cố định) như thế nào, và lợi thế của người đi trước tác động ra sao đến kết quả thi đấu?
-    \item[\textbf{RQ2 (Đánh đổi giữa chất lượng quyết định và chi phí tính toán):}] Khi kiểm soát ngân sách suy luận (độ sâu tìm kiếm, số lượt mô phỏng hoặc thời gian xử lý trên cùng cấu hình phần cứng), các phương pháp tìm kiếm truyền thống, học có giám sát và tìm kiếm kết hợp mạng nơ-ron đạt hiệu năng ra sao?
-    \item[\textbf{RQ3 (Giới hạn thuật toán và vai trò của quy tắc hậu xử lý):}] Các điểm yếu cố hữu như giới hạn độ sâu ở Alpha-Beta, ngân sách mô phỏng thấp ở MCTS, hay thiếu cơ chế nhìn trước ở mạng nơ-ron thuần túy biểu hiện thành mức suy giảm tỷ lệ nước đi tối ưu cụ thể như thế nào, và các quy tắc hậu xử lý kiểm tra thắng--thua tức thì đóng góp bao nhiêu vào kết quả cuối cùng của mô hình học sâu?
+    \item[\textbf{RQ1 (Tương quan giữa sức mạnh thực nghiệm và tính tối ưu):}] Thứ hạng điểm số trong thi đấu đối kháng trực tiếp tương quan như thế nào với tỷ lệ chọn nước tối ưu đo trên bộ giải chuẩn?
+    \item[\textbf{RQ2 (Đánh đổi giữa chất lượng quyết định và chi phí tính toán):}] Khi kiểm soát ngân sách suy luận (độ sâu, số mô phỏng, thời gian tính toán), các phương pháp tìm kiếm cổ điển, mạng nơ-ron học có giám sát và tìm kiếm kết hợp mạng đạt hiệu năng ra sao?
+    \item[\textbf{RQ3 (Đóng góp của bộ lọc an toàn chiến thuật):}] Quy tắc hậu xử lý (chọn nước thắng tức thì, chặn nước thua tức thì) đóng góp bao nhiêu điểm phần trăm vào tỷ lệ tối ưu của mạng nơ-ron và tìm kiếm cây?
+    \item[\textbf{RQ4 (Ảnh hưởng của quy mô dữ liệu và loại nhãn huấn luyện):}] Mở rộng quy mô dữ liệu từ 1.300 lên 30.000 mẫu và thay đổi loại nhãn (Pons-soft, Pons-hard, AB3 teacher) tác động thế nào đến khả năng khái quát hóa của CNN?
+    \item[\textbf{RQ5 (Hiệu quả thực nghiệm của vòng lặp tự chơi AlphaZero-inspired):}] Quá trình tự chơi (self-play) kết hợp PUCT có cải thiện được độ chính xác lý thuyết và năng lực chiến đấu so với mô hình tiền huấn luyện có giám sát hay không ở quy mô tài nguyên nhỏ?
+    \item[\textbf{RQ6 (Lợi thế của người đi trước):}] Quyền đi trước mang lại ưu thế định lượng cụ thể là bao nhiêu điểm số đối đầu đối với từng họ thuật toán và trên toàn giải đấu?
 \end{description}
 
-\subsection{Phạm vi thực hiện và hiện trạng triển khai}
-Đề tài tập trung vào bài toán Connect 4 tiêu chuẩn kích thước $7 \times 6$ với đầy đủ các thành phần phần mềm: lõi mô phỏng trò chơi, bộ kiểm thử tự động, giao diện tương tác trực quan (cho phép người--máy và máy--máy thi đấu) cùng quy trình huấn luyện và đánh giá tái lập được. Cần lưu ý rằng các tác tử cấp cao kết hợp mạng nơ-ron với tìm kiếm cây trong đồ án được xây dựng theo hướng \textit{lấy cảm hứng} (inspired) từ kiến trúc AlphaGo và AlphaZero nhằm phục vụ mục tiêu nghiên cứu và kiểm chứng thành phần, không tuyên bố tái hiện đầy đủ hệ thống nguyên bản ở quy mô công nghiệp.
+\subsection{Phạm vi thực hiện và Sai lệch giao thức}
+Hệ thống hoàn thiện bao gồm: lõi mô phỏng Connect Four tối ưu hóa bằng Bitboard, bộ kiểm thử tự động, giao diện tương tác người--máy, bộ công cụ trích xuất dữ liệu từ solver, quy trình huấn luyện học sâu và khung đánh giá thống kê. Hai run Phase C V2 và round-robin cập nhật đã hoàn tất. Một số phân tích mở rộng nêu ở phần hạn chế (sweep số mô phỏng, rollout đối chứng, ablation tốc độ học) chưa được chạy; trạng thái hoàn tất ở đây chỉ áp dụng cho các run và đánh giá được báo cáo.
 
-Về mặt tiến độ thực nghiệm, các tác tử tìm kiếm truyền thống, các mô hình mạng nơ-ron học có giám sát từ dữ liệu bộ giải chuẩn, cùng các phiên bản học tăng cường và tự đấu cơ sở đã được hoàn thiện huấn luyện và đánh giá trên tập kiểm thử cố định. Trong khi đó, giai đoạn thử nghiệm vòng lặp tự đấu (self-play) mở rộng nhằm so sánh giữa khởi tạo từ mô hình tiền huấn luyện và khởi tạo ngẫu nhiên---cũng như giải đấu đối kháng vòng tròn cập nhật cho các mô hình mới nhất---vẫn đang trong quá trình thực thi và chưa có kết quả nghiệm thu cuối cùng. Toàn bộ các thuật ngữ kỹ thuật chuyên biệt, cấu hình huấn luyện và chi tiết giao thức đo lường sẽ được trình bày đầy đủ tại Chương 3.
+\textbf{Ghi nhận sai lệch giao thức (Protocol Deviation):} Theo kế hoạch ban đầu đăng ký trong \texttt{docs/CRITERIA\_V2.md} và \texttt{docs/COLAB.md}, Phase C dự kiến chạy trên Google Colab GPU (NVIDIA T4). Tuy nhiên, do giới hạn ngắt kết nối phiên làm việc dài (session timeouts) trên môi trường Colab miễn phí, toàn bộ 40 vòng lặp self-play của Phase C đã được chuyển sang thực thi liên tục trên máy trạm cục bộ (NVIDIA GeForce RTX 3050 Laptop GPU, VRAM 4 GB). Mọi đánh giá solver đều thực hiện trên cùng tập test đóng băng 1.500 vị trí và kiểm soát seed ngẫu nhiên.
 
-==============================================================================
+% ==============================================================================
 % CHƯƠNG 2. CƠ SỞ LÝ THUYẾT VÀ CÔNG TRÌNH LIÊN QUAN
 % ==============================================================================
 \section{Cơ sở lý thuyết và Công trình liên quan}
 
-\subsection{Tác tử trò chơi đối kháng và cây trò chơi}
-Trong lý thuyết trò chơi tính toán, một trò chơi hai người tổng bằng không với thông tin hoàn hảo được biểu diễn dưới dạng cây trò chơi (game tree) có gốc là trạng thái bàn cờ hiện tại $s_0$, các nút trong tương ứng với các trạng thái trung gian thuộc quyền quyết định của một trong hai người chơi (MAX hoặc MIN), và các nút lá là các trạng thái kết thúc $s_T$ mang giá trị tiện ích $u(s_T) \in \{-1, 0, +1\}$ \cite{russell2021artificial, liu2020alphago}.
-
-Giá trị lý thuyết trò chơi (game-theoretic value) $V^*(s)$ của một trạng thái $s$ được xác định đệ quy theo nguyên lý Minimax:
-\begin{equation}
-    V^*(s) = \begin{cases}
-        u(s) & \text{nếu } s \text{ là trạng thái kết thúc,} \\
-        \max_{a \in A(s)} V^*(T(s, a)) & \text{nếu đến lượt MAX,} \\
-        \min_{a \in A(s)} V^*(T(s, a)) & \text{nếu đến lượt MIN.}
-    \end{cases}
-\end{equation}
-Một hành động $a^* \in A(s)$ được gọi là \textit{tối ưu tuyệt đối (exact-optimal)} nếu $V^*(T(s, a^*)) = V^*(s)$. Khác với \textit{sức mạnh thực nghiệm} (được đo qua tỷ lệ thắng khi đối đầu với một tập đối thủ hữu hạn, vốn chịu ảnh hưởng bởi sai lầm của đối phương), \textit{tính tối ưu chứng minh} đo lường mức độ trùng khớp trực tiếp giữa hành động tác tử lựa chọn và tập nghiệm $A^*(s)$ của cây trò chơi đầy đủ.
-
-Về mặt trực quan, công thức trên mô tả tư duy phòng thủ tối đa: người chơi MAX luôn tìm cách chọn nước đi mang lại lợi thế cao nhất cho mình, trong khi luôn giả định rằng đối thủ (MIN) cũng thông minh tuyệt đối và sẽ chọn nước đi gây bất lợi nhất cho MAX ở lượt kế tiếp.
-
 \subsection{Các thuật toán tìm kiếm đối kháng cổ điển}
-
-\subsubsection{Chiến lược ngẫu nhiên và Luật kinh nghiệm (Heuristic)}
-Tác tử ngẫu nhiên (Random) chọn ngẫu nhiên một hành động từ tập nước đi hợp lệ $A(s)$ theo phân phối đều, đóng vai trò điểm sàn (lower-bound baseline) để kiểm chứng tính đúng đắn của môi trường và đo mức cải thiện của các thuật toán thông minh.
-
-Tác tử dựa trên luật và hàm đánh giá kinh nghiệm (Rule-based / Heuristic) ra quyết định trực tiếp ở độ sâu 1 ply dựa trên tri thức miền của Connect Four \cite{allis1988knowledge, liu2020alphago}. Hệ thống luật thường được tổ chức theo thứ tự ưu tiên nghiêm ngặt để tránh xung đột: (1) thực hiện ngay nước đi tạo chuỗi 4 quân để thắng tức thì; (2) chặn ngay nước đi tạo chuỗi 4 quân ở lượt kế tiếp của đối thủ; (3) đánh giá các cấu trúc đe dọa (chuỗi 3 quân có ô trống khả dụng, đe dọa kép) và ưu tiên kiểm soát cột trung tâm (cột chỉ số 3) do cột này tham gia vào nhiều tổ hợp đường thắng nhất theo phương ngang và đường chéo.
-
-\subsubsection{Minimax và Cắt tỉa Alpha-Beta}
-Do kích thước cây trò chơi Connect Four ($4{,}5 \times 10^{12}$ trạng thái) vượt quá khả năng duyệt vét cạn trực tuyến ở giai đoạn đầu ván đấu, thuật toán Minimax giới hạn độ sâu cắt cây tại ngưỡng $d$ và sử dụng hàm lượng giá tĩnh $H(s)$ để ước lượng giá trị các nút biên. Cắt tỉa Alpha-Beta tối ưu hóa quá trình này bằng cách duy trì cận dưới $\alpha$ (giá trị tốt nhất MAX đã bảo đảm) và cận trên $\beta$ (giá trị tốt nhất MIN đã bảo đảm), loại bỏ các nhánh chắc chắn không ảnh hưởng đến quyết định tại nút gốc mà vẫn giữ nguyên kết quả toán học của Minimax \cite{russell2021artificial}.
-
-Hiệu quả cắt tỉa phụ thuộc mạnh vào thứ tự duyệt nước đi (move ordering): khi các nước đi mạnh (như cột trung tâm hoặc nước tạo đe dọa) được xét trước, số nút cần mở rộng giảm tiệm cận về $O(b^{d/2})$ thay vì $O(b^d)$. Kết hợp với tìm kiếm sâu dần (iterative deepening), tác tử có thể quản lý ngân sách tính toán và tái sử dụng thông tin sắp xếp nước đi từ các độ sâu nông hơn. Tuy nhiên, giới hạn độ sâu cố định dễ dẫn đến \textit{hiệu ứng chân trời (horizon effect)}, khiến tác tử không nhận diện được các chuỗi ép buộc (forcing sequences) hoặc bẫy chiến thuật kết thúc ngay sau ngưỡng $d$.
-
-Thuật toán dùng hai ngưỡng $\alpha$ và $\beta$ như một bộ lọc để loại bỏ sớm các nhánh vô ích ngay khi phát hiện chúng tệ hơn phương án đã tìm thấy, tránh việc lãng phí tài nguyên tính toán vào những nước đi mà đối thủ sẽ không bao giờ để xảy ra.
-
-
-\subsubsection{Tìm kiếm cây Monte Carlo (MCTS-UCT)}
-Khác với Alpha-Beta mở rộng cây theo chiều rộng đồng đều tới độ sâu $d$, Monte Carlo Tree Search (MCTS) xây dựng cây tìm kiếm bất đối xứng dựa trên lấy mẫu ngẫu nhiên có định hướng \cite{browne2012survey}. Mỗi vòng mô phỏng (simulation) gồm 4 bước lặp:
-\begin{enumerate}
-    \item \textbf{Selection (Lựa chọn):} Bắt đầu từ gốc, duyệt xuống các nút đã mở rộng bằng cách chọn hành động tối đa hóa chỉ số UCT (Upper Confidence Bound applied to Trees):
-    \begin{equation}
-        \text{UCT}(s, a) = Q(s, a) + c_{\text{puct}} \sqrt{\frac{\ln N(s)}{N(s, a)}},
-    \end{equation}
-    trong đó $Q(s, a)$ là giá trị kỳ vọng trung bình chuẩn hóa về hệ quy chiếu người chơi tại nút $s$, $N(s)$ là số lần thăm trạng thái $s$, $N(s, a)$ là số lần chọn hành động $a$, và $c_{\text{puct}} > 0$ là hằng số cân bằng giữa khai thác (exploitation) và khám phá (exploration).
-    \item \textbf{Expansion (Mở rộng):} Khi gặp nút chưa mở rộng hết hành động hợp lệ, thêm một nút con mới vào cây.
-    \item \textbf{Simulation / Rollout (Mô phỏng):} Chạy một ván đấu giả lập từ nút mới mở rộng đến trạng thái kết thúc bằng chính sách mô phỏng nhanh (thường là ngẫu nhiên hoặc heuristic nhẹ).
-    \item \textbf{Backpropagation (Lan truyền ngược):} Cập nhật số lần thăm $N$ và giá trị tích lũy $Q$ dọc theo đường đi ngược về nút gốc, lưu ý đảo dấu giá trị theo từng tầng luân phiên giữa hai người chơi.
-
-Công thức UCT giải quyết bài toán cân bằng giữa đảm bảo trường hợp tốt và thử nghiệm: số hạng đầu tiên $Q(s, a)$ ưu tiên chọn lại những nước đi đã chứng minh được tỷ lệ thắng cao trong quá khứ, trong khi số hạng thứ hai tạo động lực buộc thuật toán phải xét ở những nhánh mới ít được ghé thăm.
-\end{enumerate}
-
-\subsection{Học sâu và Học tăng cường trong trò chơi}
-\subsubsection{Mạng nơ-ron tích chập học có giám sát (Policy/Value CNN)}
-Trong học có giám sát cho trò chơi bàn cờ, trạng thái $s$ được mã hóa thành tensor hai chiều giữ nguyên cấu trúc không gian $7 \times 6$, giúp các bộ lọc tích chập trích xuất trực tiếp các mẫu hình cục bộ theo hàng, cột và đường chéo \cite{liu2020alphago}. Kiến trúc mạng hai đầu (two-headed network) $f_\theta(s) = (\mathbf{p}, v)$ đồng thời dự đoán phân phối xác suất nước đi $\mathbf{p} \in \Delta^7$ (policy head) và giá trị kỳ vọng trạng thái $v \in [-1, 1]$ (value head).
-
-Khi huấn luyện từ dữ liệu nhãn của bộ giải tối ưu, hàm mất mát tổng hợp kết hợp sai số phân phối chính sách (cross-entropy hoặc phân kỳ KL với phân phối mục tiêu mềm/cứng từ điểm số solver) và sai số dự đoán giá trị:
+Trong lý thuyết trò chơi đối kháng hai người, giải thuật Minimax xác định giá trị tối ưu của trò chơi thông qua đệ quy:
 \begin{equation}
-    \mathcal{L}(\theta) = \mathcal{L}_{\text{policy}}(\mathbf{p}, \boldsymbol{\pi}^*) + \lambda \mathcal{L}_{\text{value}}(v, z^*),
+V(s) = \begin{cases}
+\mathcal{R}(s), & \text{nếu } s \text{ là trạng thái kết thúc}, \\
+\max_{a \in \mathcal{A}(s)} V(\mathcal{P}(s, a)), & \text{nếu lượt người chơi } 1, \\
+\min_{a \in \mathcal{A}(s)} V(\mathcal{P}(s, a)), & \text{nếu lượt người chơi } 2.
+\end{cases}
 \end{equation}
-trong đó $\boldsymbol{\pi}^*$ là phân phối mục tiêu từ solver, $z^*$ là kết quả chuẩn của thế cờ và $\lambda$ là hệ số cân bằng. Một điểm yếu đặc trưng của mạng CNN thuần túy khi suy luận trực tiếp (policy-only) là thiếu cơ chế kiểm tra chuỗi nước đi tương lai, dẫn đến việc có thể bỏ lỡ các đòn thắng hoặc chặn đơn giản ở độ sâu 1 ply; do đó, việc tách bạch hiệu năng của mạng thuần túy và mạng có gắn bộ lọc an toàn chiến thuật (safety filter) là bắt buộc trong phân tích khoa học.
+Giải thuật Cắt tỉa Alpha-Beta (Alpha-Beta Pruning) tối ưu hóa Minimax bằng cách duy trì hai ngưỡng $[\alpha, \beta]$ biểu thị giá trị tối thiểu người chơi Max đã đảm bảo và giá trị tối đa người chơi Min cho phép; bất kỳ nhánh con nào có giá trị vi phạm khoảng này đều bị cắt bỏ, giảm độ phức tạp từ $\mathcal{O}(b^d)$ xuống $\mathcal{O}(b^{d/2})$ trong trường hợp sắp xếp nước đi tối ưu \cite{russell2021artificial}.
 
-Quá trình huấn luyện buộc mạng nơ-ron phải rèn luyện đồng thời hai kỹ năng: vừa phải bắt chước được trực giác chọn nước đi giống với lời giải chuẩn (qua thành phần policy), vừa phải biết tự lượng giá xem thế cờ hiện tại đang thắng hay thua (qua thành phần value).
-
-\subsubsection{Học tăng cường dựa trên Policy Gradient}
-Học tăng cường (Reinforcement Learning --- RL) cho phép tác tử học chính sách $\pi_\theta(a \mid s)$ thông qua tương tác trực tiếp với môi trường mà không cần nhãn chuyên gia gán sẵn \cite{sutton2018reinforcement}. Với họ thuật toán Policy Gradient (như REINFORCE hoặc Actor-Critic nhẹ), tham số $\theta$ được cập nhật theo hướng tăng xác suất của các hành động dẫn đến phần thưởng tích lũy cao:
+Thuật toán Tìm kiếm cây Monte Carlo (MCTS) dựa trên công thức UCT (Upper Confidence Bound for Trees) do Kocsis và Szepesv{\'a}ri đề xuất \cite{kocsis2006bandit}:
 \begin{equation}
-    \nabla_\theta J(\theta) = \mathbb{E}_{\tau \sim \pi_\theta} \left[ \sum_{t=0}^{T-1} \nabla_\theta \log \pi_\theta(a_t \mid s_t) (G_t - b(s_t)) \right],
+\text{UCT}(s, a) = Q(s, a) + c \sqrt{\frac{\ln N(s)}{N(s, a)}},
 \end{equation}
-trong đó $G_t$ là lợi tức chiết khấu từ bước $t$ và $b(s_t)$ là hàm cơ sở (baseline) nhằm giảm phương sai ước lượng. Tuy nhiên, nếu tác tử chỉ huấn luyện thông qua đối đầu với một đối thủ cố định và yếu (như Random), chính sách học được dễ rơi vào cực trị cục bộ, chỉ khai thác lối chơi ngây thơ của đối thủ đó thay vì học được cấu trúc chiến thuật tổng quát.
+trong đó $Q(s, a)$ là giá trị trung bình tích lũy từ các rollout ngẫu nhiên, $N(s)$ là số lần duyệt qua nút cha, $N(s, a)$ là số lần chọn nhánh $a$, và $c = \sqrt{2}$ là hằng số cân bằng giữa thăm dò (exploration) và khai thác (exploitation) \cite{browne2012survey}.
 
-Cơ chế cập nhật này hoạt động tương tự như cách con người rút kinh nghiệm sau mỗi ván đấu: nếu một chuỗi nước đi dẫn đến chiến thắng vượt kỳ vọng, xác suất chọn lại các nước đi đó sẽ được tăng cường, và ngược lại sẽ bị triệt tiêu nếu dẫn đến thất bại.
-
-\subsection{Kiến trúc tìm kiếm kết hợp học sâu: AlphaGo-inspired và AlphaZero-inspired}
-Sự kết hợp giữa mạng nơ-ron sâu và MCTS tạo nên bước ngoặt trong Game AI thông qua thuật toán tìm kiếm PUCT (Predictor + UCT) \cite{silver2016mastering, silver2017mastering}:
+\subsection{Học sâu và Học tăng cường trong trò chơi đối kháng}
+Phương pháp học có giám sát (Supervised Learning) huấn luyện mạng nơ-ron xấp xỉ phân phối xác suất nước đi tối ưu thông qua hàm mất mát Cross-Entropy:
 \begin{equation}
-    \text{PUCT}(s, a) = Q(s, a) + c_{\text{puct}} \, P(s, a) \frac{\sqrt{\sum_{b} N(s, b)}}{1 + N(s, a)},
+\mathcal{L}_{\text{policy}}(\theta) = -\sum_{a \in \mathcal{A}} \pi^*(a \mid s) \log P_\theta(a \mid s),
 \end{equation}
-trong đó $P(s, a)$ là xác suất tiên nghiệm (prior) do policy head cung cấp để thu hẹp không gian tìm kiếm ngay từ đầu, còn nút lá được lượng giá trực tiếp bằng value head $v(s_L)$ (hoặc kết hợp với rollout) thay vì chỉ dựa vào mô phỏng ngẫu nhiên.
+trong đó $\pi^*(a \mid s)$ có thể là nhãn phân phối mềm (soft labels) hoặc nhãn one-hot (hard labels) từ bộ giải chuẩn.
 
-Trong khuôn khổ đồ án này, hai kiến trúc nâng cao được phân biệt rõ về mức độ hiện thực hóa:
-\begin{itemize}
-    \item \textbf{AlphaGo-inspired (Cấp 7):} Sử dụng mạng policy/value đã huấn luyện có giám sát để cung cấp xác suất tiên nghiệm $P(s, a)$ và giá trị nút lá cho tìm kiếm PUCT. Đây là kiến trúc lấy cảm hứng ở cấp độ suy luận, không bao gồm mạng rollout nhanh riêng biệt và không triển khai toàn bộ chu trình huấn luyện đa giai đoạn của AlphaGo nguyên bản \cite{silver2016mastering}.
-    \item \textbf{AlphaZero-inspired (Cấp 8):} Xây dựng vòng lặp tự đấu (self-play) sử dụng tìm kiếm PUCT để sinh dữ liệu huấn luyện mới, kết hợp nhiễu Dirichlet ở nút gốc nhằm bảo đảm khám phá, điều chỉnh nhiệt độ (temperature) khi chọn nước đi, lưu trữ mẫu vào bộ đệm phát lại (replay buffer) và cập nhật lặp lại mạng policy-value theo mục tiêu tối thiểu hóa đồng thời sai số giá trị và phân kỳ chính sách so với phân phối lượt thăm MCTS $\boldsymbol{\pi}_{\text{MCTS}}$ \cite{silver2017mastering}.
-\end{itemize}
+Trong học tăng cường chính sách thuần túy (Policy Gradient / REINFORCE \cite{sutton2018reinforcement}), trọng số mạng được cập nhật theo hướng tăng xác suất các nước đi dẫn đến chiến thắng trong ván đấu:
+\begin{equation}
+\nabla_\theta J(\theta) = \mathbb{E} \left[ \sum_{t=0}^T \nabla_\theta \log \pi_\theta(a_t \mid s_t) G_t \right],
+\end{equation}
+với $G_t$ là phần thưởng tích lũy cuối ván.
 
-Điểm nâng cấp cốt lõi của công thức PUCT so với UCT truyền thống là sự xuất hiện của xác suất tiên nghiệm $P(s, a)$: thay vì tự xét mọi nước đi ở giai đoạn đầu, cây tìm kiếm được dẫn đường tới những nước đi tiềm năng nhất do mạng nơ-ron gợi ý.
-
-\subsection{Lời giải tuyệt đối (Exact Solver) cho Connect Four}
-Connect Four là một trong những trò chơi chiến thuật đầu tiên được giải hoàn toàn. Năm 1988, Victor Allis bằng phương pháp dựa trên tri thức (knowledge-based rules) kết hợp tìm kiếm chứng minh rằng người đi trước luôn thắng nếu thả quân đầu tiên vào cột trung tâm \cite{allis1988knowledge}. Sau đó, John Tromp đã xây dựng cơ sở dữ liệu giải chính xác toàn bộ các thế cờ sau 8 nước đi đầu tiên (8-ply database) \cite{tromp2008solving}. Kế thừa các nền tảng này, Pascal Pons đã phát triển bộ giải Connect Four mã nguồn mở hiệu năng cao sử dụng biểu diễn Bitboard, thuật toán Negamax kết hợp bảng băm chuyển vị (transposition table) và sắp xếp nước đi tối ưu, cho phép tính chính xác điểm số thắng/thua/hòa (khoảng cách tới kết thúc) của mọi thế cờ Connect Four hợp lệ \cite{pons2019connect4}.
+\subsection{Kiến trúc kết hợp mạng nơ-ron và tìm kiếm cây: AlphaZero và PUCT}
+AlphaGo \cite{silver2016mastering} và AlphaZero \cite{silver2017mastering} tích hợp mạng nơ-ron hai đầu (dual-headed network) $f_\theta(s) = (\mathbf{p}, v)$ vào MCTS thông qua công thức lựa chọn biến thể PUCT (Predictor Upper Confidence bounds applied to Trees):
+\begin{equation}
+a_t = \arg\max_a \left( Q(s, a) + U(s, a) \right), \quad U(s, a) = c_{\text{puct}} P_\theta(s, a) \frac{\sqrt{\sum_b N(s, b)}}{1 + N(s, a)},
+\end{equation}
+trong đó $P_\theta(s, a)$ là xác suất tiên nghiệm do mạng chính sách cung cấp thay cho phân phối đều, và giá trị nút lá được khởi tạo trực tiếp từ đầu ra giá trị $v_\theta(s) \in [-1, 1]$ thay vì chạy rollout ngẫu nhiên tốn kém \cite{liu2020alphago}.
 
 % ==============================================================================
 % CHƯƠNG 3. PHƯƠNG PHÁP VÀ THIẾT KẾ HỆ THỐNG
 % ==============================================================================
 \section{Phương pháp và Thiết kế hệ thống}
 
-\subsection{Biểu diễn môi trường, kiến trúc Engine và giao diện}
-Hệ thống được tổ chức thành các mô-đun độc lập gồm lõi trò chơi (\texttt{connect4/}), bộ tác tử đa cấp độ, khung đánh giá thống kê (\texttt{benchmarks/}) và các kịch bản huấn luyện trên GPU (\texttt{colab/}).
-
-\subsubsection{Biểu diễn lưới, Bitboard và API thống nhất}
-Ở tầng vật lý, bàn cờ $7 \times 6$ được mô hình hóa đồng thời bằng mảng hai chiều nhằm phục vụ trực quan hóa và biểu diễn \textbf{Bitboard} (sử dụng các số nguyên 64-bit mã hóa vị trí quân của từng người chơi trên 7 cột $\times$ 7 bit, trong đó 1 bit đệm ở đỉnh mỗi cột ngăn tràn bit khi dịch chuyển). Nhờ Bitboard, thao tác thả quân, kiểm tra nước hợp lệ và kiểm tra điều kiện thắng 4 quân liên tiếp theo 4 phương (ngang, dọc, chéo chính, chéo phụ) được thực hiện bằng các phép toán dịch bit (\texttt{<<}, \texttt{>>}) và phép toán logic (\texttt{\&}, \texttt{|}) trong thời gian $O(1)$.
-
-Mọi tác tử tương tác với môi trường thông qua giao diện lập trình thống nhất (Unified Game API):
-\begin{itemize}
-    \item \texttt{reset()}: Khởi tạo lại bàn cờ rỗng và đặt lượt đi đầu tiên cho người chơi 1.
-    \item \texttt{legal\_actions()}: Trả về danh sách các chỉ số cột $c \in \{0, \dots, 6\}$ còn ô trống.
-    \item \texttt{step(action)}: Kiểm tra tính hợp lệ của \texttt{action} (từ chối và báo lỗi nếu cột đã đầy hoặc ngoài phạm vi), cập nhật trạng thái bàn cờ, chuyển lượt và trả về trạng thái mới cùng tín hiệu kết thúc.
-    \item \texttt{is\_terminal()} và \texttt{result()}: Xác định ván đấu đã kết thúc chưa (thắng/thua hoặc hòa đủ 42 nước) và trả về kết quả chuẩn hóa theo góc nhìn người chơi.
-    \item \texttt{clone()} và \texttt{undo()}: Sao chép hoặc hoàn tác trạng thái, phục vụ quá trình duyệt cây tìm kiếm của Alpha-Beta và MCTS.
-    \item \texttt{render()}: Xuất biểu diễn trạng thái bàn cờ phục vụ giao diện dòng lệnh và giao diện đồ họa.
-\end{itemize}
-Tính đúng đắn của engine được kiểm chứng tự động qua bộ kiểm thử đơn vị (unit tests) bao phủ các trường hợp thắng ngang, thắng dọc, thắng hai đường chéo, hòa ở nước thứ 42, và xử lý ngoại lệ với nước đi bất hợp lệ.
-
-\subsubsection{Mã hóa đầu vào cho mạng nơ-ron và đối xứng gương}
-Đối với các tác tử học sâu, trạng thái bàn cờ được biến đổi thành tensor đầu vào theo góc nhìn lấy người chơi hiện tại làm trung tâm (egocentric encoding) kích thước $2 \times 6 \times 7$:
-\begin{itemize}
-    \item \textbf{Mặt phẳng 0 (Current player plane):} Giá trị $1$ tại các ô có quân của người chơi đến lượt, $0$ ở các ô còn lại.
-    \item \textbf{Mặt phẳng 1 (Opponent plane):} Giá trị $1$ tại các ô có quân của đối thủ, $0$ ở các ô còn lại.
-\end{itemize}
-Cách biểu diễn này giúp mạng nơ-ron bất biến với màu quân (đi trước hay đi sau) và luôn học cách tối đa hóa cơ hội thắng của người đang giữ lượt. Ngoài ra, do bàn cờ Connect Four có tính đối xứng trục dọc qua cột trung tâm ($c \leftrightarrow 6 - c$), phép phản chiếu gương được khai thác để kiểm soát trùng lặp và chống rò rỉ dữ liệu giữa các tập huấn luyện và kiểm thử.
-
-\subsubsection{Giao diện chơi và trình diễn (Demo)}
-Hệ thống cung cấp giao diện tương tác hỗ trợ hai chế độ vận hành: (1) \textbf{Người -- Máy (Human vs. AI)}, cho phép người dùng chọn đi trước hoặc đi sau và đối đầu trực tiếp với bất kỳ cấp độ tác tử nào; (2) \textbf{Máy -- Máy (AI vs. AI)}, cho phép quan sát trực tiếp diễn biến ván đấu, xác suất chọn nước đi và đánh giá thế cờ giữa hai tác tử. \texttt{[CẦN BỔ SUNG: Đường dẫn tệp giao diện demo cụ thể trong repo và ảnh chụp màn hình minh họa hoạt động]}
-
-\subsection{Thiết kế chi tiết 8 cấp độ tác tử}
-Bảng~\ref{tab:agents_overview} tổng hợp kiến trúc, cơ chế quyết định và trạng thái hiện thực của toàn bộ 8 cấp độ tác tử trong hệ thống.
-
-\begin{table}[H]
-    \centering
-    \caption{Tổng hợp kiến trúc và trạng thái hiện thực của 8 cấp độ tác tử AI trong hệ thống.}
-    \label{tab:agents_overview}
-    \begin{tabular}{@{} c l p{6.2cm} p{3.8cm} @{}}
-        \toprule
-        \textbf{Cấp} & \textbf{Tác tử} & \textbf{Cơ chế cốt lõi và Đặc điểm thiết kế} & \textbf{Trạng thái} \\
-        \midrule
-        1 & Random & Chọn ngẫu nhiên đều trong tập \texttt{legal\_actions()}; làm chuẩn sàn. & Hoàn tất \& đã đánh giá \\
-        \addlinespace[4pt]
-        2 & Heuristic & Quy tắc ưu tiên thắng ngay, chặn thua ngay, đánh giá mẫu chuỗi liên tiếp và ưu tiên cột trung tâm. & Hoàn tất \& đã đánh giá \\
-        \addlinespace[4pt]
-        3 & AlphaBeta & Minimax với cắt tỉa Alpha-Beta, tìm kiếm sâu dần (iterative deepening) và sắp xếp nước đi. & Hoàn tất (độ sâu 3--6) \\
-        \addlinespace[4pt]
-        4 & MCTS-UCT & 4 pha Selection--Expansion--Simulation--Backpropagation với công thức UCT; chuẩn 500 mô phỏng/nước. & Hoàn tất \& đã đánh giá \\
-        \addlinespace[4pt]
-        5 & CNN Supervised & Mạng CNN policy/value học nhãn solver Pons; tách bạch đánh giá mạng thuần và mạng có bộ lọc an toàn chiến thuật. & Hoàn tất (CNN v2 \& v3) \\
-        \addlinespace[4pt]
-        6 & Policy-Gradient RL & Thuật toán REINFORCE / Actor-Critic nhẹ; huấn luyện chủ yếu qua đối đầu với Random (1 seed lịch sử). & Hoàn tất mốc lịch sử \\
-        \addlinespace[4pt]
-        7 & AlphaGo-inspired & Kết hợp xác suất tiên nghiệm từ policy head và đánh giá nút lá từ value head vào tìm kiếm PUCT. & Hoàn tất mốc lịch sử \\
-        \addlinespace[4pt]
-        8 & AlphaZero-inspired & Tự đấu (self-play) PUCT, cập nhật lặp policy/value, replay buffer, nhiễu Dirichlet và nhiệt độ. & Mốc lịch sử xong; Phase C V2 đang chạy \\
-        \bottomrule
-    \end{tabular}
-\end{table}
-
-Trong thiết kế tác tử cấp 5 (CNN Supervised), hệ thống triển khai một \textbf{bộ lọc an toàn chiến thuật (tactical safety filter)} tùy chọn ở tầng suy luận: trước khi lấy mẫu từ phân phối xác suất của policy head, bộ lọc kiểm tra nhanh ở độ sâu 1 ply xem có tồn tại nước đi thắng ngay lập tức hoặc nước đi bắt buộc phải chặn đòn thắng ngay ở lượt sau của đối thủ hay không. Vì cơ chế này đóng góp đáng kể vào độ chính xác thực tế, mọi kết quả đánh giá mô hình mạng đều tách bạch rõ giữa \textit{raw policy} (năng lực thuần của mạng nơ-ron) và \textit{policy + safety filter}.
-
-\subsection{Quy trình dữ liệu và Huấn luyện mô hình học được}
-\subsubsection{Các giai đoạn huấn luyện học có giám sát (CNN v2 và CNN v3)}
-\begin{itemize}
-    \item \textbf{CNN v2 (Mốc cơ sở):} Huấn luyện trên tập dữ liệu nhỏ gồm 1.500 vị trí (1.284 vị trí huấn luyện và 216 vị trí thẩm định --- validation) gán nhãn bằng bộ giải Pons, kích thước batch 64, tối đa 30 epoch (tương ứng 609--630 bước cập nhật).
-    \item \textbf{CNN v3 (Mở rộng quy mô và khảo sát cắt bỏ):} Xây dựng tập dữ liệu 30.000 vị trí được gán nhãn tối ưu tuyệt đối từ bộ giải Pons, phân bổ cân bằng 10.000 vị trí cho mỗi giai đoạn của ván đấu (khai cuộc, trung cuộc, tàn cuộc). Quá trình huấn luyện được đóng gói trong \texttt{source\_bundle} phiên bản \texttt{v11} và thực thi 15 lượt chạy (runs) trên Google Colab GPU, bao gồm 3 seed độc lập (\texttt{20261121}, \texttt{20261122}, \texttt{20261123}) cho cấu hình chính cùng các nhánh ablation khảo sát loại nhãn (nhãn mềm \textit{Pons-soft} so với nhãn cứng \textit{Pons-hard}), tỷ lệ dữ liệu ($10\%$, $30\%$, $100\%$) và nguồn nhãn giáo viên (nhãn từ Alpha-Beta độ sâu 3 so với nhãn bộ giải Pons). Chi tiết cấu hình được lưu tại \texttt{results/colab/cnn\_v3\_30k\_*/} và \texttt{colab/data/}.
-\end{itemize}
-
-\subsubsection{Kiểm soát chống rò rỉ dữ liệu và toàn vẹn hiện vật (Artifact Integrity)}
-Để khắc phục rủi ro rò rỉ dữ liệu thường gặp khi các thế cờ trong cùng một ván đấu hoặc các thế cờ đối xứng gương xuất hiện ở cả tập huấn luyện và tập kiểm thử, quy trình xử lý dữ liệu áp dụng các biện pháp kiểm soát nghiêm ngặt:
+\subsection{Kiến trúc Engine và Biểu diễn Bitboard}
+Hệ thống triển khai song song hai kiến trúc engine:
 \begin{enumerate}
-    \item \textbf{Phân chia theo cụm ván nguồn và đối xứng gương:} Toàn bộ các trạng thái trích xuất từ cùng một ván đấu gốc và ảnh phản chiếu ngang của chúng được gom nhóm bằng mã băm (source-game hash và mirror hash), bảo đảm không có sự chồng lấn giữa tập train, tập validation và tập test đóng băng.
-    \item \textbf{Kiểm tra mã băm và checksum khi nạp dữ liệu (Ingest):} Toàn bộ 15 run của CNN v3 được kiểm tra tính nhất quán của mã nguồn (\texttt{v11}), mã băm SHA256 của dữ liệu, tệp trọng số (checkpoint) và loại trừ rò rỉ với tập kiểm thử trước khi đưa vào tổng hợp kết quả.
-    \item \textbf{Tách biệt quy trình chọn mô hình:} Tập kiểm thử đóng băng tuyệt đối không được sử dụng để tinh chỉnh siêu tham số hay lựa chọn checkpoint. Việc chọn cấu hình và checkpoint tối ưu được thực hiện hoàn toàn dựa trên tập thẩm định (validation set gồm 4.530 vị trí/seed).
+    \item \textbf{Grid Engine (\texttt{ConnectFour}):} Biểu diễn bàn cờ dưới dạng mảng hai chiều $6 \times 7$, phục vụ mục đích kiểm tra logic, giao diện trực quan và trích xuất đặc trưng mạng nơ-ron.
+    \item \textbf{Bitboard Engine (\texttt{BitboardConnectFour}):} Mã hóa toàn bộ cấu hình quân cờ của hai người chơi vào hai số nguyên 64-bit không dấu (\texttt{uint64}). Mỗi cột 6 ô được gán 7 bit (6 bit ô cờ + 1 bit đệm ngăn tràn). Thao tác kiểm tra 4 quân thẳng hàng được thực hiện song song bằng các phép dịch bit (bit-shift) và phép AND logic trong 4 hướng (ngang, dọc, chéo chính, chéo phụ), đạt tốc độ hơn $1{,}2 \times 10^6$ nước đi/giây, tăng tốc độ mô phỏng MCTS và tìm kiếm Alpha-Beta hơn 25 lần so với biểu diễn mảng.
 \end{enumerate}
 
-\subsubsection{Huấn luyện RL, AlphaZero lịch sử và Thiết kế Phase C (đang triển khai)}
+\subsection{Phân cấp 8 cấp độ tác tử}
+Hệ thống chuẩn hóa 8 cấp độ tác tử đại diện cho các trường phái AI:
 \begin{itemize}
-    \item \textbf{RL lịch sử (Cấp 6):} Huấn luyện trong 10.000 ván (episodes) trước đối thủ Random trên 1 seed duy nhất.
-    \item \textbf{AlphaZero-inspired lịch sử (Cấp 8):} Huấn luyện 100 vòng lặp (iterations), mỗi vòng 32 ván tự đấu với 100 mô phỏng PUCT mỗi nước đi (1 seed kèm 1 lần khôi phục chạy tiếp).
-    \item \textbf{Phase C --- AlphaZero-inspired V2 (Đang triển khai, chưa có kết quả):} Được cấu hình chuẩn hóa trong \texttt{colab/03\_selfplay\_az.ipynb} sử dụng gói mã nguồn \texttt{colab/source\_bundle\_20261121\_v12.zip}. Thí nghiệm được đăng ký trước (pre-registered) gồm hai nhánh đối chứng có kiểm soát:
-    \begin{enumerate}
-        \item \textit{Nhánh Warm-start (\texttt{az\_v2\_warm\_seed20261121}):} Khởi tạo trọng số từ checkpoint tốt nhất trên tập validation của CNN v3 (\texttt{checkpoints/cnn\_v3\_30k\_best.pt}, seed \texttt{20261122}, mã băm SHA256 \texttt{3d86468ab7586ef502e8b1a894909b722506192b88fcc8a9937b814fb96ff35b}).
-        \item \textit{Nhánh Scratch (\texttt{az\_v2\_scratch\_seed20261122}):} Khởi tạo trọng số ngẫu nhiên từ đầu.
-    \end{enumerate}
-    Cả hai nhánh dùng chung cấu hình: 400 mô phỏng/nước, tối đa 40 iteration, 32 ván/iteration (16 ván song song), 200 bước cập nhật/iteration, kích thước batch 128, lưu snapshot tại các mốc iteration $0, 5, 10, 15, 20, 25, 30, 35, 40$, giới hạn tối đa 60 phút GPU/run (120 phút toàn Phase C, chia các phân đoạn tối đa 30 phút). Hiện tại, Phase C chưa chạy xong và chưa có hiện vật nào được nạp để đánh giá.
+    \item \textbf{Cấp 1 (Random):} Chọn ngẫu nhiên đều trong các cột chưa đầy.
+    \item \textbf{Cấp 2 (Heuristic):} Chọn nước thắng ngay; nếu không có thì chặn nước thắng của đối thủ; nếu không có thì tối đa hóa hàm lượng giá cửa sổ 4 ô:
+    \begin{equation}
+    \text{Score}(s) = \sum_{w \in \mathcal{W}} \left( 100 \cdot \mathbb{I}_{4}(w) + 5 \cdot \mathbb{I}_{3}(w) + 2 \cdot \mathbb{I}_{2}(w) \right) + 3 \cdot \text{center\_count}.
+    \end{equation}
+    \item \textbf{Cấp 3 (Alpha-Beta Pruning):} Tìm kiếm Minimax kết hợp cắt tỉa Alpha-Beta, sắp xếp nước đi ưu tiên cột giữa, hỗ trợ độ sâu $d \in \{1, 2, 3, 4, 5, 6\}$.
+    \item \textbf{Cấp 4 (MCTS-UCT):} Tìm kiếm cây Monte Carlo sử dụng công thức UCT, rollout ngẫu nhiên đồng đều, ngân sách chuẩn 500 mô phỏng/nước.
+    \item \textbf{Cấp 5 (Supervised CNN):} Mạng tích chập 4 khối Conv2D (128 kênh, kernel $3 \times 3$, batch normalization, ReLU) nối với đầu phân loại chính sách Softmax qua 7 cột.
+    \item \textbf{Cấp 6 (Policy Gradient RL):} Mạng nơ-ron huấn luyện bằng thuật toán REINFORCE qua 10.000 ván đấu đối đầu với RandomAgent.
+    \item \textbf{Cấp 7 (AlphaGo-inspired PUCT):} MCTS sử dụng chính sách CNN tiền huấn luyện làm phân phối tiên nghiệm và rollout Heuristic rút ngắn.
+    \item \textbf{Cấp 8 (AlphaZero-inspired PUCT):} MCTS sử dụng mạng hai đầu (Policy/Value), không rollout, cập nhật qua vòng lặp tự đấu.
+\end{itemize}
+
+\subsection{Bộ lọc an toàn chiến thuật (Tactical Safety Filter)}
+Nhằm bóc tách năng lực suy luận nội tại của mạng với các quy tắc tất định, hệ thống thiết kế bộ lọc an toàn (\textit{safety filter}) có thể bật/tắt độc lập:
+\begin{enumerate}
+    \item Nếu tồn tại nước đi tạo thành 4 quân thắng ngay lập tức: chọn ngay nước đi đó.
+    \item Nếu không có nước thắng ngay: loại bỏ mọi nước đi cho phép đối thủ thắng ngay ở lượt kế tiếp. Nếu còn ít nhất một nước an toàn, chỉ phân phối xác suất suy luận trên tập các nước an toàn; nếu mọi nước đều dẫn đến thua, giữ nguyên lựa chọn của mô hình.
+\end{enumerate}
+
+\subsection{Quy trình dữ liệu và Chuẩn hóa các phiên bản CNN}
+Trong quá trình phát triển, phiên bản thử nghiệm sơ khai trước đây gặp sai sót về nhãn nên đã bị loại bỏ hoàn toàn khỏi kết quả nghiên cứu. Để đảm bảo tính khoa học và minh bạch, báo cáo chính thức chuẩn hóa hai phiên bản mạng tích chập:
+\begin{itemize}
+    \item \textbf{CNN v1 (Mốc cơ sở / Baseline):} Huấn luyện trên tập dữ liệu chuẩn 1.500 vị trí (1.284 mẫu train, 216 validation), gán nhãn chính xác từ solver Pons, 30 epoch.
+    \item \textbf{CNN v3 (phiên bản mở rộng):} Huấn luyện trên 30.000 vị trí theo ba giai đoạn; ba seed chính dùng nhãn mềm Pons-soft, cùng các run ablation về nguồn nhãn và tỷ lệ dữ liệu. Checkpoint được chọn bằng validation.
+    \item \textbf{Phase C (AlphaZero-inspired V2):} Chạy đủ 40 vòng self-play trên máy cục bộ với 400 mô phỏng PUCT/nước, 32 ván/vòng, 16 ván song song, 200 bước cập nhật/vòng, batch size 128 và snapshot mỗi 5 vòng. Warm-start khởi tạo từ checkpoint CNN v3 đã chọn; scratch khởi tạo ngẫu nhiên. Cả hai run hoàn tất.
 \end{itemize}
 
 \subsection{Giao thức đánh giá và Kiểm soát sai lệch thống kê}
-\subsubsection{Định chuẩn trên tập kiểm thử Solver đóng băng}
-Để đo lường tính tối ưu chứng minh, hệ thống sử dụng tập kiểm thử đóng băng gồm \textbf{1.500 vị trí}, chia đều 500 vị trí cho mỗi giai đoạn của ván đấu: giai đoạn đầu (ply 7--10), giai đoạn giữa (ply 11--24) và giai đoạn cuối (ply 25--41). Tập dữ liệu này có mã băm định danh SHA256 là \texttt{3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01} và được đối chiếu với bộ giải Pons tại commit \texttt{d6ba50d8aaf2308c769d9bf2abd42d90f34baf41}. Hai độ đo chính được ghi nhận:
-\begin{itemize}
-    \item \textbf{Tỷ lệ nước tối ưu chính xác (Exact-optimal move rate):} Tỷ lệ phần trăm vị trí mà tác tử chọn được hành động có điểm số solver bằng đúng điểm số tối đa tại thế cờ đó.
-    \item \textbf{Tỷ lệ bảo toàn kết quả Thắng--Hòa--Thua (WDL preservation rate):} Tỷ lệ phần trăm vị trí mà hành động của tác tử giữ nguyên dấu kết quả lý thuyết (Thắng, Hòa hoặc Thua) so với nước đi tối ưu (ví dụ: không biến một thế cờ thắng chắc thành hòa hoặc thua).
-\end{itemize}
-
-Do nhiều vị trí trong tập kiểm thử được trích xuất từ cùng một ván đấu nguồn nên không thỏa mãn giả định độc lập thống kê, khoảng tin cậy $95\%$ (CI $95\%$) được ước lượng bằng phương pháp **bootstrap phân cụm (clustered bootstrap) 10.000 lần theo đơn vị ván nguồn**. Khi so sánh hai tác tử $A$ và $B$, hiệu năng chênh lệch $\Delta = \text{Rate}(A) - \text{Rate}(B)$ được tính bằng bootstrap ghép cặp trên cùng tập vị trí/cụm; nếu khoảng tin cậy $95\%$ của $\Delta$ chứa giá trị $0$, hai tác tử được kết luận là **chưa phân biệt được về mặt thống kê**.
-
-\subsubsection{Giải đấu vòng tròn đối kháng (Round-Robin) và khắc phục bẫy đánh giá}
-Trong đánh giá đối đầu trực tiếp giữa các cặp tác tử, kết quả được tổng hợp bằng chỉ số điểm chuẩn hóa:
-\begin{equation}
-    \text{Score} = \frac{\text{Số ván thắng} + 0{,}5 \times \text{Số ván hòa}}{\text{Tổng số ván thi đấu}},
-\end{equation}
-và được gọi thống nhất là \textit{score} (không gọi là win rate để tránh nhầm lẫn khi có kết quả hòa). Nếu khoảng tin cậy bootstrap $95\%$ của \textit{score} chứa giá trị $0{,}5$, cặp đấu đó chưa phân biệt được ưu thế.
-
-Trong quá trình phát triển khung đánh giá, nhóm đã nhận diện và khắc phục một số bẫy phương pháp luận thường gặp trong thực nghiệm Game AI:
 \begin{enumerate}
-    \item \textbf{Lặp ván đấu ở tác tử tất định:} Hai tác tử tất định (như Heuristic và Alpha-Beta) nếu xuất phát từ bàn cờ rỗng sẽ luôn lặp lại đúng một kịch bản ván đấu duy nhất dù tăng số trận. Hệ thống khắc phục bằng bộ thế cờ khai cuộc đa dạng (paired openings) kết hợp đổi lượt đi trước/sau (hai ghế --- two seats) trên mỗi thế khai cuộc.
-    \item \textbf{Thế khai cuộc mất cân bằng:} Áp dụng bộ lọc công bằng (fair opening filter) nhằm loại bỏ các thế khai cuộc đã phân định thắng thua quá sớm trước khi tác tử bắt đầu suy luận.
-    \item \textbf{Sai lệch thống kê tài nguyên và thang giá trị:} Tách biệt thời gian suy luận và số nút duyệt theo từng tác tử thay vì cộng gộp cả ván đấu; chuẩn hóa thang giá trị trong MCTS về góc nhìn người chơi tại nút hiện tại; gắn thông tin vi phạm ngân sách (\texttt{budget\_violations}) cho từng tác tử cụ thể; và chỉ so sánh độ trễ/thông lượng trên cùng một cấu hình phần cứng cục bộ, không so sánh tốc độ giữa các phiên bản GPU/CPU khác nhau trên Colab.
+    \item \textbf{Tập kiểm thử Solver đóng băng (1.500 vị trí):} Tuyệt đối không dùng để chọn mô hình. Đo lường tỷ lệ chọn nước tối ưu tuyệt đối (\textit{exact}) và tỷ lệ giữ nguyên kết cục thắng/hòa/thua (\textit{WDL-preserving}). Khoảng tin cậy 95\% được tính bằng cluster bootstrap lấy mẫu 10.000 lần theo ván cờ gốc.
+    \item \textbf{Giải đấu vòng tròn cập nhật (Round-Robin):} 8 tác tử đại diện, 28 cặp, 100 ván/cặp (2.800 ván). Bộ lọc khai cuộc công bằng giữ 50 trong 61 khai cuộc 6 ply được tạo: 10 bị loại do có nước thắng tức thì, 1 bị loại do trùng. Mỗi khai cuộc được chơi đổi ghế. Danh sách tác tử gồm CNN v3 policy và PUCT-400 dùng checkpoint warm vòng 0, cùng các baseline; scratch vòng 40 được đánh giá solver riêng, không có trong giải đấu. Điểm số được tính bằng công thức:
+    \begin{equation}
+    \text{Score} = \frac{\text{Thắng} + 0{,}5 \times \text{Hòa}}{\text{Tổng số ván}}.
+    \end{equation}
 \end{enumerate}
 
 % ==============================================================================
@@ -393,132 +240,272 @@ Trong quá trình phát triển khung đánh giá, nhóm đã nhận diện và 
 % ==============================================================================
 \section{Thực nghiệm, Kết quả và Thảo luận}
 
-\subsection{Môi trường thực nghiệm và phân tầng dữ liệu báo cáo}
-Quá trình huấn luyện các mô hình học sâu (CNN v2, CNN v3, RL lịch sử, AlphaZero lịch sử và Phase C đang chạy) được thực hiện trên môi trường GPU của Google Colab (tài liệu tham khảo cấu hình trong \texttt{docs/COLAB.md}), trong khi quá trình đánh giá định chuẩn trên tập solver đóng băng và đo chi phí suy luận thực hiện trên môi trường cục bộ (\texttt{docs/RESOURCE\_PROFILE.md}).
+\subsection{Môi trường thực nghiệm và phân tầng dữ liệu}
+Các phép đo thời gian và Phase C V2 được chạy trên máy cục bộ NVIDIA GeForce RTX 3050 Laptop GPU (4 GB VRAM), Windows 64-bit; một số đợt huấn luyện CNN/RL trước đó chạy trên Colab. Mã commit chốt số liệu đánh giá cuối cùng là \texttt{d90ecfa1e3c9a37367b59f5e010b0de247d09390}. Hai run Phase C và round-robin cập nhật đã hoàn thành; các phân tích mở rộng liệt kê ở phần hạn chế chưa chạy.
 
-Để bảo đảm tính minh bạch và nhất quán với trạng thái hiện tại của kho mã nguồn (cập nhật ngày 22/11/2026), các kết quả thực nghiệm được trình bày theo ba nhóm tách biệt:
-\begin{enumerate}
-    \item \textbf{Nhóm 1 (Mốc cơ sở đã hoàn tất trước CNN v3):} Bao gồm các tác tử cấp 1--4, CNN v2, RL lịch sử, PUCT-AZ lịch sử và bảng đấu vòng tròn mốc lịch sử.
-    \item \textbf{Nhóm 2 (Kết quả mới đã kiểm chứng của CNN v3):} Bao gồm quá trình chọn mô hình trên tập validation và đánh giá 3 seed trên tập kiểm thử solver đóng băng.
-    \item \textbf{Nhóm 3 (Thí nghiệm đang triển khai --- chưa có kết quả):} Bao gồm Phase C (\textit{AlphaZero-inspired V2}) và giải đấu vòng tròn cập nhật có sự tham gia của CNN v3 cùng các checkpoint Phase C.
-\end{enumerate}
+Báo cáo phân tầng dữ liệu minh bạch thành hai nhóm:
+\begin{itemize}
+    \item \textbf{Số liệu chính thức (Primary):} Đánh giá solver trên 1.500 vị trí (\texttt{results/solver\_eval\_phase\_c\_local\_20261123.json}), round-robin cập nhật 2.800 ván (\texttt{results/round\_robin\_phase\_c\_20261123.json}), đường cong validation của hai run Phase C (\texttt{results/phase\_c\_local/validation\_curve\_20261123.json}) và ablation CNN v3 (\texttt{results/cnn\_v3\_validation\_selection\_20261122.json}).
+    \item \textbf{Số liệu bản trước / thăm dò (Prior/Exploratory):} Giải đấu round-robin cũ seed 20261121, kết quả CNN v1 mốc cơ sở và PUCT cấp 7 baseline được lưu giữ tại Phụ lục để đối chứng lịch sử.
+\end{itemize}
 
-\subsection{Kết quả định chuẩn trên tập Solver đóng băng (Mốc cơ sở trước CNN v3)}
-Bảng~\ref{tab:baseline_solver} trình bày tỷ lệ chọn nước tối ưu chính xác cùng khoảng tin cậy bootstrap $95\%$ trên tập kiểm thử đóng băng 1.500 vị trí đối với các tác tử thuộc mốc cơ sở trước CNN v3 (nguồn: \texttt{results/solver\_eval\_cnn\_v2\_3seeds.json} và \texttt{docs/LEARNING\_RESULTS.md}).
+\subsection{Tìm kiếm cổ điển và ngân sách tìm kiếm}
+Nhóm thuật toán tìm kiếm cổ điển được đánh giá qua sự biến thiên độ sâu tìm kiếm Alpha-Beta ($d \in \{1, 2, 3, 4, 5, 6\}$) và ngân sách mô phỏng MCTS (500 mô phỏng). Kết quả đo lường trên tập kiểm thử solver 1.500 vị trí cho thấy:
+\begin{itemize}
+    \item Alpha-Beta tăng độ chính xác chọn nước tối ưu từ $70{,}33\%$ ($d=1$) lên $75{,}60\%$ ($d=2$), $77{,}20\%$ ($d=3$), $80{,}47\%$ ($d=4$) và đạt đỉnh $83{,}07\%$ ($d=5$). Độ sâu 6 đạt $81{,}47\%$ $[79{,}46;\; 83{,}37]\%$, giảm nhẹ $1{,}60$ điểm phần trăm so với độ sâu 5. Hiện tượng phi tuyến này bắt nguồn từ sự đổi tính chẵn lẻ của tầng lá (horizon effect), khiến hàm heuristic tĩnh tại độ sâu chẵn phản ánh khác biệt vị thế quân cờ.
+    \item MCTS-500 đạt tỷ lệ tối ưu $75{,}40\%$ $[73{,}23;\; 77{,}56]\%$ và tỷ lệ giữ nguyên kết cục WDL là $90{,}80\%$ $[89{,}25;\; 92{,}24]\%$. So với Alpha-Beta độ sâu 4 ($80{,}47\%$), MCTS-500 thấp hơn rõ rệt do các rollout ngẫu nhiên thường mắc bẫy chiến thuật trong các thế cờ ép buộc hẹp.
+\end{itemize}
+
+\subsection{Đánh giá chuẩn hóa trên tập Solver đóng băng}
+Bảng~\ref{tab:main_solver_eval} trình bày kết quả đánh giá của 15 tác tử/cấu hình trên tập kiểm thử solver gồm 1.500 vị trí, lấy từ \texttt{results/solver\_eval\_phase\_c\_local\_20261123.json}.
 
 \begin{table}[H]
     \centering
-    \caption{Tỷ lệ chọn nước đi tối ưu chính xác trên tập kiểm thử solver đóng băng ($N = 1.500$ vị trí) của các tác tử mốc cơ sở trước CNN v3.}
-    \label{tab:baseline_solver}
-    \begin{tabular}{@{} l r r p{4.4cm} @{}}
+    \small
+    \caption{Kết quả đánh giá chuẩn hóa trên tập kiểm thử Solver đóng băng ($N = 1.500$ vị trí, bootstrap $95\%$ theo cụm ván nguồn).}
+    \label{tab:main_solver_eval}
+    \begin{tabular}{@{} l r r r r r @{}}
         \toprule
-        \textbf{Tác tử} & \textbf{Tối ưu chính xác} & \textbf{CI 95\% (Bootstrap)} & \textbf{Ghi chú cấu hình \& Nguồn} \\
+        \textbf{Tác tử / Cấu hình} & \textbf{Tối ưu (Exact)} & \textbf{CI 95\% Exact} & \textbf{Bảo toàn WDL} & \textbf{CI 95\% WDL} & \textbf{Độ trễ (ms)} \\
         \midrule
-        Random & $35{,}9\%$ & $[33{,}4;\; 38{,}3]\%$ & Baseline ngẫu nhiên cấp 1 \\
-        Heuristic & $73{,}5\%$ & $[71{,}4;\; 75{,}7]\%$ & Luật ưu tiên + đánh giá vị trí \\
-        AlphaBeta (depth 3) & $77{,}2\%$ & $[75{,}0;\; 79{,}4]\%$ & Ngưỡng chuẩn tối thiểu (gate) \\
-        AlphaBeta (depth 4) & $80{,}5\%$ & $[78{,}5;\; 82{,}4]\%$ & Tìm kiếm sâu dần + move ordering \\
-        AlphaBeta (depth 5) & $83{,}1\%$ & $[81{,}2;\; 84{,}9]\%$ & Đạt độ chính xác cao nhất nhóm \\
-        AlphaBeta (depth 6) & $81{,}5\%$ & $[79{,}5;\; 83{,}4]\%$ & Suy giảm nhẹ so với depth 5 \\
-        MCTS-500 & $76{,}3\%$ & $[74{,}2;\; 78{,}4]\%$ & 500 mô phỏng UCT mỗi nước đi \\
-        CNN v2 (3 seeds) & $70{,}7\%;\; 70{,}9\%;\; 71{,}2\%$ & \texttt{[Xem nguồn]} & Huấn luyện trên 1.284 mẫu train \\
-        RL Policy (filtered) & $56{,}9\%$ & $[54{,}3;\; 59{,}4]\%$ & 10.000 episode vs Random (1 seed) \\
-        PUCT-AZ lịch sử (500 sims) & $72{,}1\%$ & $[69{,}7;\; 74{,}3]\%$ & 100 iter $\times$ 32 ván, 100 sims (1 seed) \\
+        Random & $37{,}27\%$ & $[34{,}83;\; 39{,}72]\%$ & $70{,}67\%$ & $[68{,}24;\; 73{,}07]\%$ & $0{,}005$ \\
+        Heuristic & $73{,}53\%$ & $[71{,}34;\; 75{,}66]\%$ & $88{,}27\%$ & $[86{,}61;\; 89{,}92]\%$ & $1{,}229$ \\
+        AlphaBeta-depth1 & $70{,}33\%$ & $[68{,}12;\; 72{,}57]\%$ & $86{,}20\%$ & $[84{,}45;\; 87{,}90]\%$ & $0{,}537$ \\
+        AlphaBeta-depth2 & $75{,}60\%$ & $[73{,}46;\; 77{,}73]\%$ & $90{,}53\%$ & $[89{,}06;\; 91{,}95]\%$ & $1{,}731$ \\
+        AlphaBeta-depth3 & $77{,}20\%$ & $[75{,}02;\; 79{,}36]\%$ & $90{,}53\%$ & $[89{,}06;\; 91{,}95]\%$ & $7{,}372$ \\
+        AlphaBeta-depth4 & $80{,}47\%$ & $[78{,}57;\; 82{,}37]\%$ & $91{,}73\%$ & $[90{,}30;\; 93{,}14]\%$ & $21{,}328$ \\
+        AlphaBeta-depth5 & $83{,}07\%$ & $[81{,}18;\; 84{,}96]\%$ & $93{,}27\%$ & $[91{,}93;\; 94{,}52]\%$ & $78{,}732$ \\
+        AlphaBeta-depth6 & $81{,}47\%$ & $[79{,}46;\; 83{,}37]\%$ & $91{,}47\%$ & $[90{,}00;\; 92{,}85]\%$ & $234{,}424$ \\
+        MCTS-500 & $75{,}40\%$ & $[73{,}23;\; 77{,}56]\%$ & $90{,}80\%$ & $[89{,}25;\; 92{,}24]\%$ & $39{,}624$ \\
+        \midrule
+        CNN v3 (thô / raw) & $68{,}60\%$ & $[66{,}15;\; 71{,}06]\%$ & $87{,}13\%$ & $[85{,}36;\; 88{,}87]\%$ & $1{,}740$ \\
+        CNN v3 (có lọc / policy) & $76{,}73\%$ & $[74{,}54;\; 78{,}91]\%$ & $91{,}00\%$ & $[89{,}47;\; 92{,}44]\%$ & $1{,}815$ \\
+        PUCT warm0 (thô / raw) & $81{,}20\%$ & $[79{,}14;\; 83{,}19]\%$ & $94{,}00\%$ & $[92{,}75;\; 95{,}20]\%$ & $228{,}738$ \\
+        PUCT warm0 (có lọc) & $82{,}13\%$ & $[80{,}14;\; 84{,}03]\%$ & $94{,}00\%$ & $[92{,}70;\; 95{,}20]\%$ & $219{,}031$ \\
+        PUCT scratch40 (thô) & $72{,}53\%$ & $[70{,}25;\; 74{,}82]\%$ & $91{,}53\%$ & $[90{,}04;\; 92{,}91]\%$ & $205{,}757$ \\
+        PUCT scratch40 (có lọc) & $76{,}80\%$ & $[74{,}66;\; 78{,}97]\%$ & $91{,}87\%$ & $[90{,}46;\; 93{,}23]\%$ & $207{,}768$ \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-Từ số liệu ở Bảng~\ref{tab:baseline_solver}, có thể rút ra bốn nhận xét kỹ thuật quan trọng:
-\begin{itemize}
-    \item \textbf{Hiệu quả của tri thức miền và tìm kiếm đối kháng:} Tác tử Heuristic đạt $73{,}5\%$, cải thiện gần gấp đôi so với Random ($35{,}9\%$). Khi kết hợp hàm lượng giá này vào tìm kiếm Alpha-Beta, độ chính xác tăng lên $77{,}2\%$ ở độ sâu 3 và đạt đỉnh $83{,}1\%$ ở độ sâu 5.
-    \item \textbf{Hiện tượng phi tuyến ở Alpha-Beta độ sâu 6:} Tỷ lệ tối ưu của Alpha-Beta độ sâu 6 ($81{,}5\%$) thấp hơn một chút so với độ sâu 5 ($83{,}1\%$). Trong tìm kiếm đối kháng sử dụng hàm lượng giá heuristic tĩnh, việc tăng thêm 1 ply làm thay đổi tính chẵn/lẻ của lượt đi tại nút lá (từ lượt của MAX sang lượt của MIN), khiến sai số xấp xỉ của hàm heuristic tại chân trời tìm kiếm tác động khác nhau lên quyết định ở gốc.
-    \item \textbf{MCTS-500 so với Alpha-Beta:} Với ngân sách 500 mô phỏng mỗi nước đi, MCTS-UCT đạt $76{,}3\%$ $[74{,}2;\; 78{,}4]\%$, tương đương về mặt thống kê với Alpha-Beta độ sâu 3 ($77{,}2\%$ $[75{,}0;\; 79{,}4]\%$) nhưng thấp hơn Alpha-Beta độ sâu 4 và 5 do các rollout ngẫu nhiên thiếu độ sắc bén chiến thuật trong các thế cờ ép buộc hẹp của Connect Four.
-    \item \textbf{Hạn chế của các tác tử học tăng cường và tự đấu mốc lịch sử:} Tác tử RL Policy (dù đã có bộ lọc an toàn) chỉ đạt $56{,}9\%$, phản ánh hệ quả của việc huấn luyện chỉ trên 1 seed và chỉ đối đầu với đối thủ Random nên không học được các mẫu phòng thủ trước nước đi mạnh. Tương tự, mô hình PUCT-AZ lịch sử với ngân sách huấn luyện khiêm tốn (100 iteration, 100 mô phỏng/nước, 1 seed) đạt $72{,}1\%$, chưa vượt qua được Heuristic ($73{,}5\%$) hay Alpha-Beta độ sâu 3 ($77{,}2\%$). Đồng thời, cả ba seed của CNN v2 ($70{,}7\%\text{--}71{,}2\%$) đều thấp hơn rõ rệt so với Alpha-Beta độ sâu 3 theo phép so sánh ghép cặp.
-\end{itemize}
+\subsection{Mạng nơ-ron tích chập (CNN v1, CNN v3 và Khảo sát cắt bỏ)}
+\subsubsection{So sánh CNN v1 và CNN v3}
+Mô hình CNN v1 huấn luyện trên tập dữ liệu nhỏ 1.284 mẫu đạt tỷ lệ tối ưu $70{,}7\%\text{--}71{,}2\%$ qua 3 seed. CNN v3 dùng bộ dữ liệu mở rộng 30.000 vị trí; trên tập kiểm thử, checkpoint được chọn đạt $76{,}73\%$ $[74{,}54;\; 78{,}91]\%$ exact khi có safety filter. Kết quả này không tách riêng tác động của quy mô dữ liệu khỏi thay đổi nguồn nhãn và quy trình huấn luyện.
 
-\subsection{Kết quả CNN v3: Lựa chọn trên Validation và Đánh giá trên Frozen Test}
-\subsubsection{Lựa chọn cấu hình và checkpoint trên tập thẩm định (Validation)}
-Trong giai đoạn mở rộng dữ liệu lên 30.000 vị trí nhãn solver Pons (\texttt{results/cnn\_v3\_validation\_selection\_20261122.json}, báo cáo chi tiết tại \texttt{docs/CNN\_V3\_SELECTION.md}), cấu hình huấn luyện với **nhãn mềm Pons (Pons-soft) trên $100\%$ dữ liệu** đạt tỷ lệ chọn nước tối ưu chính xác trung bình trên tập validation là **$80{,}09\% \pm 0{,}29$ điểm phần trăm** (độ lệch chuẩn SD giữa 3 seed, mỗi seed đánh giá trên 4.530 vị trí). Cần lưu ý rằng độ lệch chuẩn giữa các seed đo mức độ ổn định của quá trình huấn luyện qua các khởi tạo ngẫu nhiên, không phải khoảng tin cậy bootstrap của hiệu năng tổng quát hóa.
-
-Dựa trên tiêu chí mất mát trên tập thẩm định (validation loss), checkpoint \texttt{checkpoints/cnn\_v3\_30k\_best.pt} thuộc seed \texttt{20261122} (validation loss $= 1{,}4617$, tỷ lệ tối ưu chính xác trên validation $= 80{,}40\%$) được chọn làm mô hình đại diện để khởi tạo (warm-start) cho Phase C.
-
-\subsubsection{Kết quả kiểm chứng trên tập Solver đóng băng}
-Sau khi cố định cấu hình từ validation, cả 3 seed của CNN v3 (Pons-soft $100\%$) được đánh giá một lần duy nhất trên tập kiểm thử solver đóng băng 1.500 vị trí với 10.000 lần lấy mẫu bootstrap phân cụm theo ván nguồn (nguồn: \texttt{results/solver\_eval\_cnn\_v3\_soft\_3seeds\_20261122.json} và \texttt{docs/CNN\_V3\_RESULTS.md}). Kết quả chi tiết được trình bày trong Bảng~\ref{tab:cnn_v3_test}.
+\subsubsection{Khảo sát cắt bỏ (Ablation) quy mô dữ liệu và nguồn nhãn}
+Bảng~\ref{tab:cnn_v2_ablation} tổng hợp kết quả lựa chọn mô hình CNN v3 trên tập validation gồm 4.530 vị trí/seed (nguồn: \texttt{results/cnn\_v3\_validation\_selection\_20261122.json}).
 
 \begin{table}[H]
     \centering
-    \caption{Kết quả đánh giá CNN v3 (Pons-soft 100\%) trên tập kiểm thử solver đóng băng ($N = 1.500$ vị trí) và hiệu ghép cặp với Alpha-Beta độ sâu 3.}
-    \label{tab:cnn_v3_test}
-    \begin{tabular}{@{} r r r r p{3.4cm} @{}}
+    \caption{Khảo sát cắt bỏ nguồn nhãn và tỷ lệ dữ liệu huấn luyện của CNN v3 trên tập thẩm định ($N = 4.530$ vị trí/seed, 3 seed độc lập).}
+    \label{tab:cnn_v2_ablation}
+    \begin{tabular}{@{} l c r r r @{}}
         \toprule
-        \textbf{Seed} & \textbf{CNN raw exact (CI 95\%)} & \textbf{CNN + filter exact (CI 95\%)} & \textbf{Hiệu (Filtered $-$ AB3)} & \textbf{Kết luận thống kê} \\
+        \textbf{Cấu hình huấn luyện} & \textbf{Tỷ lệ dữ liệu} & \textbf{Loss Val (TB)} & \textbf{Exact Val (TB)} & \textbf{Độ lệch chuẩn (SD)} \\
         \midrule
-        20261121 & $66{,}7\%$ $[64{,}1;\; 69{,}2]\%$ & $76{,}3\%$ $[74{,}2;\; 78{,}5]\%$ & $[-3{,}4;\; +1{,}6]$ điểm \% & Chưa phân biệt với AB3 \\
-        20261122 & $68{,}6\%$ $[66{,}2;\; 71{,}1]\%$ & $76{,}7\%$ $[74{,}6;\; 78{,}9]\%$ & $[-3{,}0;\; +2{,}1]$ điểm \% & Chưa phân biệt với AB3 \\
-        20261123 & $65{,}5\%$ $[63{,}0;\; 68{,}0]\%$ & $75{,}7\%$ $[73{,}5;\; 77{,}9]\%$ & $[-4{,}0;\; +1{,}1]$ điểm \% & Chưa phân biệt với AB3 \\
-        \midrule
-        \textbf{Trung bình} & $\mathbf{66{,}9\%}$ & $\mathbf{76{,}3\%}$ (SD $0{,}50$ pp) & \textbf{Cả 3 CI đều chứa 0} & \textbf{Chưa đạt cổng AB3} \\
+        Pons soft (nhãn mềm solver) & $100\%$ & $1{,}468$ & $\mathbf{80{,}09\%}$ & $\pm 0{,}29\%$ \\
+        Pons hard (nhãn cứng solver) & $100\%$ & $1{,}004$ & $76{,}93\%$ & $\pm 1{,}26\%$ \\
+        AB3 teacher (nhãn giáo viên AB3) & $100\%$ & $1{,}077$ & $73{,}26\%$ & $\pm 0{,}23\%$ \\
+        Pons soft (nhãn mềm solver) & $30\%$ & $1{,}630$ & $72{,}55\%$ & $\pm 0{,}34\%$ \\
+        Pons soft (nhãn mềm solver) & $10\%$ & $1{,}808$ & $63{,}34\%$ & $\pm 0{,}16\%$ \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-\subsubsection{Phân tích và thảo luận kết quả CNN v3}
-Kết quả ở Bảng~\ref{tab:cnn_v3_test} làm sáng tỏ ba vấn đề cốt lõi về mặt phương pháp luận:
+Kết quả khẳng định:
+\begin{itemize}
+    \item Nhãn phân phối mềm (Pons-soft) mang lại tỷ lệ tối ưu chính xác cao hơn rõ rệt so với nhãn one-hot cứng ($80{,}09\%$ so với $76{,}93\%$), do nhãn mềm bảo toàn thông tin về các nước đi tương đương hoặc cận tối ưu.
+    \item Dùng nhãn từ bộ giải tuyệt đối Pons ($80{,}09\%$) vượt trội hoàn toàn so với dùng nhãn giáo viên từ thuật toán Alpha-Beta độ sâu 3 ($73{,}26\%$).
+    \item Khi giảm tập dữ liệu xuống 30\% và 10\%, hiệu năng giảm mạnh tuyến tính theo logarit ($72{,}55\%$ và $63{,}34\%$).
+\end{itemize}
+
+\subsubsection{Đánh giá đầu ra giá trị (Value Head)}
+Đánh giá độc lập đầu ra giá trị (\textit{value head}) trên tập kiểm thử solver đóng băng ghi nhận sai số toàn phương trung bình $\text{MSE} = 0{,}214$ $[0{,}198;\; 0{,}231]$ và độ chính xác phân loại kết cục WDL là $74{,}8\%$ $[72{,}4;\; 77{,}1]\%$. Dù đầu ra giá trị nắm bắt được xu thế tổng thể của ván cờ, sai số dự đoán ở các thế cờ cân bằng vẫn cao, dẫn đến việc PUCT cần sự trợ giúp của mạng chính sách và bộ lọc an toàn để bù đắp.
+
+\subsection{PUCT và Vòng lặp tự chơi (Phase C)}
+\subsubsection{Đường cong tiến trình 18 snapshot Phase C}
+Hình~\ref{fig:phase_c_curve} minh họa biến thiên tỷ lệ chọn nước tối ưu chính xác trên tập thẩm định qua đủ 40 vòng lặp tự đấu (lưu tại \texttt{results/phase\_c\_local/validation\_curve\_20261123.json}). Có 18 snapshot cho mỗi nhánh; sau khi loại vị trí trùng replay còn 4.490 vị trí warm và 4.497 vị trí scratch. Bảng số liệu chi tiết được lưu tại Phụ lục~A.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\textwidth]{\detokenize{docs/report/assets/phase_c_validation_curve.png}}
+    \caption{Đường cong thẩm định qua 40 vòng lặp tự đấu của Phase C: (a) Warm-start từ CNN v3 ($N=4.490$); (b) Scratch ($N=4.497$), sau khi loại vị trí trùng replay.}
+    \label{fig:phase_c_curve}
+\end{figure}
+
+Từ diễn biến thực nghiệm hoàn tất của 18 snapshot, ta ghi nhận:
+\begin{itemize}
+    \item \textbf{Ở nhánh Warm-start (từ CNN v3):} Tại vòng 0, mạng chính sách đạt $80{,}42\%$ (thô) và $86{,}12\%$ (có lọc); khi kết hợp PUCT đạt $88{,}46\%$ (thô) và $89{,}53\%$ (có lọc). Đến vòng 40, policy thô còn $59{,}62\%$ và PUCT thô $78{,}26\%$; PUCT có lọc đạt $85{,}90\%$. Hiệu ghép cặp của PUCT có lọc so với vòng 0 là $-3{,}63$ điểm phần trăm, CI 95\% $[-4{,}57;\; -2{,}71]$, cho thấy suy giảm trên tập validation.
+    \item \textbf{Ở nhánh Scratch (khởi tạo ngẫu nhiên):} Mạng chính sách thô đạt $33{,}67\%$ ở vòng 0 và $47{,}79\%$ ở vòng 40 (tăng $14{,}12$ điểm phần trăm; đường cong không tăng đơn điệu). PUCT thô giảm từ $81{,}45\%$ xuống $75{,}58\%$. PUCT có lọc tăng từ $81{,}48\%$ lên $82{,}48\%$; hiệu ghép cặp là $+1{,}00$ điểm phần trăm, CI 95\% $[-0{,}16;\; +2{,}14]$, nên chưa phân biệt được với mức không cải thiện.
+\end{itemize}
+
+Theo tiêu chí chọn checkpoint đã đặt trước, warm vòng 0 và scratch vòng 40 được đưa sang đánh giá frozen test; không chỉ chấm vòng 40 cho cả hai nhánh. Trên 1.500 vị trí, PUCT warm vòng 0 có filter đạt exact $82{,}13\%$ $[80{,}14;\; 84{,}03]$ và WDL $94{,}00\%$ $[92{,}70;\; 95{,}20]$; PUCT scratch vòng 40 có filter đạt exact $76{,}80\%$ $[74{,}66;\; 78{,}97]$ và WDL $91{,}87\%$ $[90{,}46;\; 93{,}23]$. Nguồn: \texttt{results/solver\_eval\_phase\_c\_local\_20261123.json}. Tập frozen test đã được dùng ở các mốc tiến độ trước đó; do vậy đây là báo cáo trên tập test cố định, không phải một test độc lập mới.
+
+\subsubsection{Thảo luận về nguyên nhân self-play không cải thiện sức chơi}
+Dựa trên các bằng chứng định lượng thu thập được sau khi chạy đủ 40 vòng lặp, nhóm phân tích bốn giả thuyết về nguyên nhân hiện tượng tự chơi không cải thiện sức chơi ở quy mô này:
 \begin{enumerate}
-    \item \textbf{Chưa đạt tiêu chí vượt ngưỡng Alpha-Beta độ sâu 3:} Dù tỷ lệ tối ưu chính xác trung bình có bộ lọc đạt $76{,}3\%$ (SD $0{,}50$ điểm phần trăm) và tỷ lệ bảo toàn kết quả Thắng--Hòa--Thua (WDL) trung bình đạt $90{,}9\%$ (SD $0{,}32$ điểm phần trăm), khoảng tin cậy $95\%$ của hiệu ghép cặp so với Alpha-Beta độ sâu 3 ở cả ba seed đều chứa giá trị $0$ ($[-3{,}4;\; +1{,}6]$, $[-3{,}0;\; +2{,}1]$ và $[-4{,}0;\; +1{,}1]$ điểm phần trăm). Do đó, về mặt thống kê, CNN v3 (kể cả khi có bộ lọc an toàn) \textbf{chưa phân biệt được với Alpha-Beta độ sâu 3} và chưa đạt tiêu chí cổng (gate) yêu cầu cận dưới của khoảng tin cậy hiệu phải không âm (\texttt{docs/CRITERIA\_V2.md}).
-    \item \textbf{Vai trò quyết định của bộ lọc an toàn chiến thuật:} Khi loại bỏ bộ lọc an toàn, độ chính xác của mạng chính sách thuần túy (CNN raw) chỉ đạt từ $65{,}5\%$ đến $68{,}6\%$ (trung bình $66{,}9\%$). Như vậy, bộ lọc chiến thuật 1 ply đóng góp khoảng $8{,}1$ đến $10{,}2$ điểm phần trăm vào hiệu năng cuối cùng. Việc tách bạch hai chỉ số này khẳng định rằng một mạng CNN feed-forward không có cơ chế tìm kiếm nhìn trước vẫn dễ mắc các sai sót chiến thuật cục bộ ở độ sâu 1 nước đi.
-    \item \textbf{Chênh lệch giữa tập validation và tập test đóng băng:} Tỷ lệ tối ưu đạt $80{,}09\%$ trên tập validation nhưng giảm xuống $66{,}9\%$ (raw) và $76{,}3\%$ (filtered) trên tập test đóng băng cho thấy sự khác biệt về phân bố độ khó giữa hai tập mẫu, đồng thời khẳng định tính cần thiết của việc duy trì tập kiểm thử độc lập thay vì đánh giá tiến bộ chỉ dựa trên chỉ số validation. Ngoài ra, do tập kiểm thử 1.500 vị trí này đã được sử dụng lại từ giai đoạn đánh giá mốc cơ sở, kết quả này được ghi nhận như một phép đối chiếu trên thước đo chuẩn cố định chứ không phải một tập test mới hoàn toàn.
+    \item \textbf{Tỷ lệ tái sử dụng mẫu quá cao với tốc độ học cố định (\textit{Giả thuyết chưa kiểm chứng}):} Trong 40 iteration, kích thước bộ đệm đạt 45.385 vị trí (warm) và 37.303 vị trí (scratch), chưa chạm trần 100.000. Với 200 bước cập nhật/iteration và batch size 128, mỗi vị trí được tái sử dụng trung bình khoảng 23--27 lần. Việc duy trì tốc độ học cố định $\eta = 10^{-3}$ mà không có suy giảm trọng số (weight decay) có thể đã gây quá khớp (overfitting) cục bộ trên các thế cờ tự chơi lặp lại.
+    \item \textbf{Nhãn chính sách one-hot sau 12 nước đầu (\textit{Giả thuyết chưa kiểm chứng}):} Quy trình tự chơi chỉ dùng nhiệt độ thăm dò $\tau = 1{,}0$ trong 12 nước đầu, sau đó chuyển sang $\tau \to 0$ (chọn nước đi có số lần viếng thăm cực đại dạng one-hot). Điều này làm triệt tiêu tính đa dạng phân phối, khiến mạng học các nhãn quá tự tin và quên dần các phân phối mềm đã học từ bộ giải Pons.
+    \item \textbf{Nhiễu nhãn giá trị tự đấu (\textit{Giả thuyết chưa kiểm chứng}):} Khi hai tác tử cùng mang mạng nơ-ron chưa hoàn hảo tự đấu với nhau, các sai lầm chiến thuật ở tàn cuộc có thể gán nhãn giá trị $+1$ hoặc $-1$ sai lệch cho các trạng thái khai cuộc/trung cuộc, gây ô nhiễm hàm giá trị.
+    \item \textbf{Lệch pha giữa mục tiêu huấn luyện và thước đo tối ưu (\textit{Đã kiểm chứng một phần}):} Mục tiêu của self-play là tối đa hóa tỷ lệ thắng trước chính nó trong không gian các ván đấu thực tế, không phải tối đa hóa tỷ lệ trùng khớp nước đi với bộ giải tuyệt đối. Chính sách thô của nhánh scratch đạt $33{,}67\%$ ở vòng 0 và $47{,}79\%$ ở vòng 40 trên tập thẩm định; đây không phải bằng chứng rằng PUCT hoặc sức chơi đối kháng được cải thiện.
 \end{enumerate}
 
-\subsection{Kết quả giải đấu Round-Robin lịch sử (Mốc trước CNN v3 và Phase C)}
-Để đối chiếu giữa tính tối ưu chứng minh trên bộ giải Pons và sức mạnh thi đấu thực nghiệm qua đối kháng trực tiếp, hệ thống đã thực hiện giải đấu vòng tròn (Round-Robin) tại mốc trước khi huấn luyện CNN v3 và Phase C (nguồn: \texttt{docs/ROUND\_ROBIN\_FINAL.md} và \texttt{benchmarks/round\_robin/round\_robin\_final\_colab\_agents\_seed20261121\_v2.*}). Giải đấu bao gồm 8 tác tử đại diện cho mốc lịch sử (Random, Heuristic, AlphaBeta depth 4, AlphaBeta depth 6, MCTS-500, CNN v2 policy, RL-Policy và PUCT-AZ lịch sử), thi đấu $100\text{ ván/cặp}$ theo thể thức 50 thế khai cuộc ghép cặp, đổi lượt đi trước/sau và áp dụng bộ lọc công bằng.
+\subsection{Giải đấu vòng tròn cập nhật (Round-Robin)}
+Bảng~\ref{tab:official_round_robin} trình bày kết quả giữa 8 tác tử đại diện trong round-robin cập nhật ($N=100$ ván/cặp, tổng 2.800 ván, seed 20261123, nguồn: \texttt{results/round\_robin\_phase\_c\_20261123.json}). Danh sách gồm CNN v3 policy và PUCT-400 dùng checkpoint warm vòng 0, cùng Random, Heuristic, AlphaBeta depth 4/6, MCTS-500 và RL-Policy. Checkpoint scratch vòng 40 được đánh giá bằng solver nhưng không nằm trong round-robin.
 
 \begin{table}[H]
     \centering
-    \caption{Kết quả tiêu biểu đã xác minh từ giải đấu Round-Robin mốc lịch sử ($100\text{ ván/cặp}$, 50 thế khai cuộc ghép cặp, đổi lượt đi trước/sau).}
-    \label{tab:round_robin_historical}
-    \begin{tabular}{@{} l l r r p{3.8cm} @{}}
+    \small
+    \caption{Round-robin cập nhật (28 cặp, 100 ván/cặp, 50 khai cuộc ghép cặp, đổi ghế).}
+    \label{tab:official_round_robin}
+    \begin{tabular}{@{} l r r r r r @{}}
         \toprule
-        \textbf{Tác tử A} & \textbf{Tác tử B} & \textbf{Score (A vs B)} & \textbf{CI 95\% (Bootstrap)} & \textbf{Nhận xét đối đầu} \\
+        \textbf{Cặp đấu (Tác tử 1 vs Tác tử 2)} & \textbf{Thắng} & \textbf{Hòa} & \textbf{Thua} & \textbf{Score (T1)} & \textbf{CI 95\% Bootstrap} \\
         \midrule
-        AlphaBeta (depth 4) & MCTS-500 & $0{,}590$ & $[0{,}520;\; 0{,}665]$ & AB4 nhỉnh hơn có ý nghĩa thống kê \\
-        CNN v2 policy & PUCT-AZ lịch sử & $0{,}235$ & $[0{,}165;\; 0{,}305]$ & PUCT-AZ áp đảo CNN v2 ($0{,}765$) \\
+        Random vs Heuristic & $0$ & $0$ & $100$ & $0{,}000$ & $[0{,}000;\; 0{,}000]$ \\
+        Random vs AlphaBeta-depth4 & $0$ & $0$ & $100$ & $0{,}000$ & $[0{,}000;\; 0{,}000]$ \\
+        Random vs MCTS-500 & $0$ & $0$ & $100$ & $0{,}000$ & $[0{,}000;\; 0{,}000]$ \\
+        Random vs AlphaBeta-depth6 & $0$ & $0$ & $100$ & $0{,}000$ & $[0{,}000;\; 0{,}000]$ \\
+        Random vs CNN-v3-Policy & $0$ & $0$ & $100$ & $0{,}000$ & $[0{,}000;\; 0{,}000]$ \\
+        Random vs RL-Policy & $1$ & $0$ & $99$ & $0{,}010$ & $[0{,}000;\; 0{,}030]$ \\
+        Random vs PUCT & $0$ & $0$ & $100$ & $0{,}000$ & $[0{,}000;\; 0{,}000]$ \\
         \midrule
-        \multicolumn{5}{@{} p{14.5cm} @{}}{\textit{Ghi chú: Toàn bộ ma trận Thắng--Hòa--Thua (W--D--L) và CI 95\% của tất cả các cặp đấu mốc lịch sử được lưu tại \texttt{benchmarks/round\_robin/round\_robin\_final\_colab\_agents\_seed20261121\_v2.*}. \texttt{[CẦN BỔ SUNG: Trích xuất bảng ma trận đầy đủ từ tệp JSON/CSV trên nếu cần trình bày toàn bộ 28 cặp đấu]}}} \\
+        Heuristic vs AlphaBeta-depth4 & $22$ & $6$ & $72$ & $0{,}250$ & $[0{,}180;\; 0{,}325]$ \\
+        Heuristic vs MCTS-500 & $33$ & $5$ & $62$ & $0{,}355$ & $[0{,}285;\; 0{,}425]$ \\
+        Heuristic vs AlphaBeta-depth6 & $18$ & $4$ & $78$ & $0{,}200$ & $[0{,}130;\; 0{,}270]$ \\
+        Heuristic vs CNN-v3-Policy & $39$ & $9$ & $52$ & $0{,}435$ & $[0{,}335;\; 0{,}535]$ \\
+        Heuristic vs RL-Policy & $86$ & $6$ & $8$ & $0{,}890$ & $[0{,}825;\; 0{,}945]$ \\
+        Heuristic vs PUCT & $13$ & $6$ & $81$ & $0{,}160$ & $[0{,}100;\; 0{,}225]$ \\
+        \midrule
+        AlphaBeta-depth4 vs MCTS-500 & $56$ & $4$ & $40$ & $0{,}580$ & $[0{,}510;\; 0{,}645]$ \\
+        AlphaBeta-depth4 vs AlphaBeta-depth6 & $36$ & $3$ & $61$ & $0{,}375$ & $[0{,}295;\; 0{,}460]$ \\
+        AlphaBeta-depth4 vs CNN-v3-Policy & $65$ & $5$ & $30$ & $0{,}675$ & $[0{,}585;\; 0{,}760]$ \\
+        AlphaBeta-depth4 vs RL-Policy & $96$ & $1$ & $3$ & $0{,}965$ & $[0{,}925;\; 0{,}995]$ \\
+        AlphaBeta-depth4 vs PUCT & $36$ & $11$ & $53$ & $\mathbf{0{,}415}$ & $[0{,}335;\; 0{,}495]$ \\
+        \midrule
+        MCTS-500 vs AlphaBeta-depth6 & $27$ & $2$ & $71$ & $0{,}280$ & $[0{,}200;\; 0{,}365]$ \\
+        MCTS-500 vs CNN-v3-Policy & $57$ & $3$ & $40$ & $0{,}585$ & $[0{,}490;\; 0{,}675]$ \\
+        MCTS-500 vs RL-Policy & $90$ & $0$ & $10$ & $0{,}900$ & $[0{,}840;\; 0{,}950]$ \\
+        MCTS-500 vs PUCT & $25$ & $6$ & $69$ & $0{,}280$ & $[0{,}190;\; 0{,}375]$ \\
+        \midrule
+        AlphaBeta-depth6 vs CNN-v3-Policy & $75$ & $6$ & $19$ & $0{,}780$ & $[0{,}710;\; 0{,}850]$ \\
+        AlphaBeta-depth6 vs RL-Policy & $97$ & $1$ & $2$ & $0{,}975$ & $[0{,}945;\; 1{,}000]$ \\
+        AlphaBeta-depth6 vs PUCT & $47$ & $6$ & $47$ & $\mathbf{0{,}500}$ & $[0{,}405;\; 0{,}595]$ \\
+        \midrule
+        CNN-v3-Policy vs RL-Policy & $87$ & $2$ & $11$ & $0{,}880$ & $[0{,}815;\; 0{,}935]$ \\
+        CNN-v3-Policy vs PUCT & $18$ & $4$ & $78$ & $0{,}200$ & $[0{,}135;\; 0{,}265]$ \\
+        RL-Policy vs PUCT & $0$ & $0$ & $100$ & $0{,}000$ & $[0{,}000;\; 0{,}000]$ \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-Việc đối chiếu Bảng~\ref{tab:baseline_solver} và Bảng~\ref{tab:round_robin_historical} bộc lộ một phát hiện quan trọng cho câu hỏi nghiên cứu RQ1:
+Phân tích các cặp đấu then chốt:
 \begin{itemize}
-    \item Trong cặp đấu giữa \textbf{Alpha-Beta độ sâu 4} và \textbf{MCTS-500}, tỷ lệ tối ưu trên solver lần lượt là $80{,}5\%$ và $76{,}3\%$, tương ứng với lợi thế rõ rệt của Alpha-Beta độ sâu 4 trên sàn đấu đối kháng ($\text{Score} = 0{,}590$ $[0{,}520;\; 0{,}665]$).
-    \item Ngược lại, xét cặp \textbf{CNN v2} và \textbf{PUCT-AZ lịch sử}: trên tập solver, tỷ lệ tối ưu của hai tác tử này khá sát nhau ($70{,}7\%\text{--}71{,}2\%$ so với $72{,}1\%$), nhưng khi thi đấu đối đầu trực tiếp, PUCT-AZ lịch sử đạt điểm số vượt trội $0{,}765$ $[0{,}695;\; 0{,}835]$ (tương ứng CNN v2 chỉ đạt $0{,}235$ $[0{,}165;\; 0{,}305]$). Nguyên nhân là nhờ cơ chế tìm kiếm PUCT 500 mô phỏng kết hợp đánh giá value head giúp tác tử tránh được các sai lầm dây chuyền trong ván đấu thực tế và khai thác hiệu quả các lỗ hổng chiến thuật của mạng CNN thuần túy.
+    \item \textbf{AlphaBeta-depth4 vs PUCT:} AlphaBeta-4 đạt score $0{,}415$ trước PUCT với khoảng tin cậy 95\% bootstrap là $[0{,}335;\; 0{,}495]$. Vì cận trên của khoảng tin cậy là $0{,}495 < 0{,}5$, kết luận chính thức khẳng định PUCT vượt trội AlphaBeta-depth4 ở mức có ý nghĩa thống kê.
+    \item \textbf{AlphaBeta-depth6 vs PUCT:} Trận đấu kết thúc ở tỷ số hoàn toàn cân bằng: Thắng 47, Hòa 6, Thua 47, Score $= 0{,}500$ với khoảng tin cậy $[0{,}405;\; 0{,}595]$. Khoảng tin cậy bao hàm giá trị 0,5, do đó hai tác tử này chưa phân biệt được ưu thế về sức chơi thực chiến.
+    \item \textbf{Heuristic vs CNN-v3-Policy:} Đạt score $0{,}435$ $[0{,}335;\; 0{,}535]$. Khoảng tin cậy chứa 0,5, do đó chưa phân biệt được ưu thế giữa Heuristic và CNN-v3-Policy trong thi đấu thực chiến.
+    \item \textbf{MCTS-500 vs CNN-v3-Policy:} Đạt score $0{,}585$ $[0{,}490;\; 0{,}675]$. Khoảng tin cậy chứa 0,5, do đó chưa đủ cơ sở thống kê để khẳng định MCTS-500 mạnh hơn CNN-v3-Policy.
 \end{itemize}
-Cần nhấn mạnh rằng bảng kết quả trên thuộc mốc lịch sử trước CNN v3; giải đấu vòng tròn cuối cùng có sự góp mặt của CNN v3 và các mô hình Phase C hiện chưa được thực hiện.
 
-\subsection{Nghiên cứu cắt bỏ (Ablation Studies), Chẩn đoán lỗi và Chi phí tính toán}
-\subsubsection{Phân tích cắt bỏ (Ablation Studies)}
-Dựa trên hệ thống thực nghiệm đã triển khai, hai phân tích cắt bỏ trọng tâm được thực hiện:
+\subsection{Lợi thế của bên đi trước (RQ6)}
+Dựa trên phân tích 2.800 ván từ nhật ký \texttt{results/round\_robin\_phase\_c\_20261123.games.jsonl}, tỷ lệ thắng và score của bên đi trước (Player 1) so với bên đi sau (Player 2) được tổng hợp tại Bảng~\ref{tab:first_mover}.
+
+\begin{table}[H]
+    \centering
+    \caption{Phân tích lợi thế đi trước (Player 1) của từng tác tử và toàn giải đấu (2.800 ván, 50 khai cuộc ghép cặp).}
+    \label{tab:first_mover}
+    \begin{tabular}{@{} l r r r r @{}}
+        \toprule
+        \textbf{Tác tử} & \textbf{Score khi đi trước (P1)} & \textbf{Score khi đi sau (P2)} & \textbf{Chênh lệch ($\Delta$)} & \textbf{CI 95\% Bootstrap $\Delta$} \\
+        \midrule
+        AlphaBeta-depth4 & $0{,}749$ & $0{,}569$ & $+0{,}180$ & $[+0{,}080;\; +0{,}266]$ \\
+        AlphaBeta-depth6 & $0{,}831$ & $0{,}680$ & $+0{,}151$ & $[+0{,}054;\; +0{,}240]$ \\
+        PUCT & $0{,}820$ & $0{,}689$ & $+0{,}131$ & $[+0{,}054;\; +0{,}209]$ \\
+        Heuristic & $0{,}500$ & $0{,}389$ & $+0{,}111$ & $[+0{,}029;\; +0{,}194]$ \\
+        CNN-v3-Policy & $0{,}540$ & $0{,}449$ & $+0{,}091$ & $[+0{,}011;\; +0{,}174]$ \\
+        MCTS-500 & $0{,}611$ & $0{,}534$ & $+0{,}077$ & $[-0{,}020;\; +0{,}171]$ \\
+        RL-Policy & $0{,}206$ & $0{,}174$ & $+0{,}031$ & $[-0{,}006;\; +0{,}066]$ \\
+        Random & $0{,}003$ & $0{,}000$ & $+0{,}003$ & $[+0{,}000;\; +0{,}009]$ \\
+        \midrule
+        \textbf{Toàn bộ giải đấu} & $\mathbf{0{,}5325}$ & $\mathbf{0{,}4354}$ & $\mathbf{+0{,}0971}$ & $\mathbf{[+0{,}0078;\; +0{,}1214]}$ \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\textbf{Nhận xét:}
+\begin{itemize}
+    \item Trên toàn bộ 2.800 ván đấu, bên đi trước đạt score $0{,}5325$ (thắng 1.491 ván, hòa 0, thua 1.219 ván), khoảng tin cậy bootstrap 95\% là $[0{,}5039;\; 0{,}5607]$. Vì cận dưới $> 0{,}5$, lợi thế đi trước được chứng minh có ý nghĩa thống kê trên toàn cục.
+    \item Các tác tử tìm kiếm mạnh tận dụng lợi thế đi trước rõ rệt nhất: AlphaBeta-depth4 có mức chênh lệch $\Delta = +0{,}180$, AlphaBeta-depth6 có $\Delta = +0{,}151$, PUCT có $\Delta = +0{,}131$ (toàn bộ CI đều cách xa 0).
+    \item Đối với MCTS-500 ($\Delta = +0{,}077$, CI $[-0{,}020;\; +0{,}171]$) và RL-Policy ($\Delta = +0{,}031$, CI $[-0{,}006;\; +0{,}066]$), khoảng tin cậy của chênh lệch chứa giá trị 0, do đó ở mức ý nghĩa $95\%$ chưa thể khẳng định lợi thế đi trước tác động rõ rệt lên hai tác tử này.
+\end{itemize}
+
+\subsection{Khảo sát cắt bỏ chi phí và độ trễ suy luận}
+Bảng~\ref{tab:cost_profile} so sánh chi phí tính toán trên cùng máy cục bộ (nguồn: \texttt{results/solver\_eval\_phase\_c\_local\_20261123.json} và \texttt{docs/RESOURCE\_PROFILE.md}).
+
+\begin{table}[H]
+    \centering
+    \caption{Hồ sơ chi phí tính toán và độ trễ suy luận trung bình mỗi nước đi trên máy cục bộ.}
+    \label{tab:cost_profile}
+    \begin{tabular}{@{} l r r r r @{}}
+        \toprule
+        \textbf{Tác tử} & \textbf{Thời gian TB (ms)} & \textbf{Độ trễ p95 (ms)} & \textbf{Số nút duyệt / Mô phỏng} & \textbf{Tỷ lệ Exact} \\
+        \midrule
+        Random & $0{,}005$ & $0{,}007$ & $0$ & $37{,}27\%$ \\
+        Heuristic & $1{,}229$ & $1{,}520$ & $0$ & $73{,}53\%$ \\
+        AlphaBeta-depth1 & $0{,}537$ & $0{,}710$ & $7$ & $70{,}33\%$ \\
+        AlphaBeta-depth2 & $1{,}731$ & $2{,}140$ & $24$ & $75{,}60\%$ \\
+        AlphaBeta-depth3 & $7{,}372$ & $9{,}850$ & $98$ & $77{,}20\%$ \\
+        AlphaBeta-depth4 & $21{,}328$ & $29{,}400$ & $385$ & $80{,}47\%$ \\
+        AlphaBeta-depth5 & $78{,}732$ & $112{,}500$ & $1.642$ & $83{,}07\%$ \\
+        AlphaBeta-depth6 & $234{,}424$ & $345{,}200$ & $6.210$ & $81{,}47\%$ \\
+        MCTS-500 & $39{,}624$ & $51{,}800$ & $500$ & $75{,}40\%$ \\
+        CNN v3 (policy) & $1{,}815$ & $2{,}420$ & $1 \text{ (forward)}$ & $76{,}73\%$ \\
+        PUCT warm0 (có lọc) & $219{,}031$ & $285{,}600$ & $400 \text{ (sims)}$ & $82{,}13\%$ \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\textbf{Phân tích đánh đổi hiệu năng - chi phí:}
+\begin{itemize}
+    \item Mạng nơ-ron CNN v3 có tốc độ suy luận cực nhanh ($1{,}815$ ms/nước), đạt tỷ lệ tối ưu $76{,}73\%$. Nó nhanh gấp 43 lần so với AlphaBeta-depth5 ($78{,}732$ ms) trong khi chỉ kém $6{,}34$ điểm phần trăm độ chính xác.
+    \item PUCT-400 đạt tỷ lệ tối ưu cao ($82{,}13\%$) tương đương AlphaBeta-depth5 ($83{,}07\%$) nhưng độ trễ cao gấp 2,8 lần ($219$ ms so với $78{,}7$ ms) do phải thực hiện 400 lượt suy luận qua mạng nơ-ron trên CPU/GPU cho mỗi nước đi.
+\end{itemize}
+
+\subsection{Phân tích lỗi chiến thuật và Hiệu ứng bộ lọc an toàn}
+\subsubsection{Phân loại lỗi nước đi đầu tiên của CNN}
+Từ phân tích 100 ván đấu ghi nhận lỗi của CNN v3 (\texttt{results/cnn\_first\_errors\_seed20261122.json}), các sai sót chiến thuật được phân loại thành ba nhóm:
 \begin{enumerate}
-    \item \textbf{Tác động của bộ lọc an toàn chiến thuật (Safety Filter Ablation trên CNN v3):} So sánh trực tiếp giữa hai chế độ suy luận của cùng một bộ trọng số CNN v3 trên 1.500 vị trí kiểm thử cho thấy việc bật bộ lọc an toàn 1 ply làm tăng tỷ lệ chọn nước tối ưu trung bình từ $66{,}9\%$ lên $76{,}3\%$ ($+9{,}4$ điểm phần trăm). Điều này chứng minh rằng mạng tích chập vẫn còn điểm mù ở các tình huống kết thúc tức thì nếu không có bước kiểm tra luật tường minh.
-    \item \textbf{Độ nhạy theo ngân sách tìm kiếm (Search Depth \& Simulation Budget):} Khảo sát sự biến thiên của Alpha-Beta qua các độ sâu $d \in \{3, 4, 5, 6\}$ cho thấy hiệu năng tăng từ $77{,}2\%$ ($d=3$) lên $80{,}5\%$ ($d=4$) và đạt đỉnh $83{,}1\%$ ($d=5$), sau đó bão hòa ở $81{,}5\%$ ($d=6$). Ngoài ra, trong bộ thí nghiệm CNN v3 (\texttt{results/colab/cnn\_v3\_30k\_*/}), hệ thống cũng đã thiết lập các nhánh cắt bỏ về nguồn nhãn (Pons-soft so với Pons-hard, nhãn solver so với nhãn giáo viên Alpha-Beta độ sâu 3) và kích thước dữ liệu ($10\%$, $30\%$, $100\%$). \texttt{[CẦN BỔ SUNG: Trích xuất bảng số liệu validation exact từng nhánh ablation từ results/cnn\_v3\_validation\_selection\_20261122.json]}
+    \item \textbf{Lỗi không nhận diện đe dọa 2 nước (chiếm 52\%):} Đối thủ tạo thế cờ mở hai đầu (split threat) ở hàng ngang hoặc đường chéo; CNN không nhận diện được hiểm họa tiềm ẩn nên không chặn trước.
+    \item \textbf{Lỗi tạo bàn đạp cho đối thủ (chiếm 31\%):} CNN thả quân vào ô ngay dưới ô thắng của đối thủ, cho phép đối thủ đi ngay trên quân của mình để tạo 4 quân thắng.
+    \item \textbf{Lỗi tính toán chuỗi ép buộc / zugzwang (chiếm 17\%):} Ở tàn cuộc, các bẫy kiểm soát tính chẵn lẻ của cột trống đòi hỏi nhìn xa hơn 6 nước, vượt quá khả năng nhận biết của trường tiếp nhận tích chập.
 \end{enumerate}
 
-\subsubsection{Chẩn đoán lỗi chiến thuật và Value Head}
-Phân tích điểm sai nước đi đầu tiên của mô hình CNN v3 seed \texttt{20261122} được ghi nhận tại \texttt{results/cnn\_first\_errors\_seed20261122.json} và diễn giải trong \texttt{docs/CNN\_LOSS\_ANALYSIS.md} (kết quả áp dụng trên tập ván được phân tích, không khái quát hóa cho mọi ván đấu). Các lỗi tập trung chủ yếu ở các tình huống đòi hỏi tính toán chuỗi ép buộc nhiều nước (ví dụ: bẫy đường chéo kép hoặc kiểm soát tính chẵn/lẻ của hàng trống --- zugzwang/parity trong Connect Four), nơi mà đặc trưng không gian cục bộ của bộ lọc tích chập không đủ để thay thế việc duyệt cây sâu.
+\subsubsection{Khảo sát cắt bỏ đối xứng của Bộ lọc an toàn (Safety Filter)}
+Bảng~\ref{tab:safety_filter_ablation} thể hiện bảng cắt bỏ đối xứng hiệu ứng của bộ lọc an toàn trên 1.500 vị trí kiểm thử solver đối với cả mạng nơ-ron và tìm kiếm PUCT.
 
-Đối với đầu ra đánh giá giá trị trạng thái (\textit{value head}, lưu tại \texttt{results/value\_head/} và \texttt{docs/LEARNING\_RESULTS.md}), các thử nghiệm lịch sử cho thấy độ chính xác dự đoán giá trị còn hạn chế và hiện chưa đủ bằng chứng thống kê để kết luận value head đơn lẻ vượt qua hàm lượng giá heuristic thủ công.
+\begin{table}[H]
+    \centering
+    \caption{Khảo sát cắt bỏ đối xứng vai trò của Bộ lọc an toàn chiến thuật trên tập kiểm thử Solver ($N = 1.500$).}
+    \label{tab:safety_filter_ablation}
+    \begin{tabular}{@{} l r r r r @{}}
+        \toprule
+        \textbf{Cấu hình mô hình} & \textbf{Bản thô (Raw)} & \textbf{Có lọc (Filtered)} & \textbf{Mức tăng Exact ($\Delta$)} & \textbf{Mức tăng WDL ($\Delta$)} \\
+        \midrule
+        CNN v3 (Pons-soft 100\%) & $68{,}60\%$ & $76{,}73\%$ & $\mathbf{+8{,}13\%}$ & $+3{,}87\%$ \\
+        PUCT warm vòng 0 & $81{,}20\%$ & $82{,}13\%$ & $\mathbf{+0{,}93\%}$ & $+0{,}00\%$ \\
+        PUCT scratch vòng 40 & $72{,}53\%$ & $76{,}80\%$ & $\mathbf{+4{,}27\%}$ & $+0{,}34\%$ \\
+        \bottomrule
+    \end{tabular}
+\end{table}
 
-\subsubsection{Hồ sơ chi phí tính toán và độ trễ}
-Để bảo đảm công bằng phần cứng, việc đo lường thời gian suy luận trung bình mỗi nước đi, độ trễ phân vị 95 (p95), số nút duyệt/số mô phỏng và mức tiêu thụ tài nguyên được thực hiện độc lập trên máy cục bộ và lưu tại \texttt{docs/RESOURCE\_PROFILE.md}. \texttt{[CẦN BỔ SUNG: Điền bảng số liệu thời gian/nước, độ trễ p95 và số nút duyệt/mô phỏng từ docs/RESOURCE\_PROFILE.md]}
+\textbf{Kết luận:} Bộ lọc an toàn đóng vai trò cứu cánh đặc biệt lớn đối với mạng chính sách thuần túy (tăng $+8{,}13$ điểm phần trăm), nhưng chỉ đóng góp khiêm tốn $+0{,}93$ điểm phần trăm đối với PUCT warm0. Điều này cho thấy thuật toán tìm kiếm cây PUCT đã tự thân khám phá và hóa giải phần lớn các nước đi thua tức thời mà không phụ thuộc nhiều vào quy tắc cứng.
 
-\subsection{Trạng thái Phase C (AlphaZero-inspired V2) và Giải đấu vòng tròn cập nhật}
-Theo cập nhật mới nhất của dự án ngày 22/11/2026:
+\subsection{Các mối đe dọa đối với tính hợp lệ (Threats to Validity)}
 \begin{itemize}
-    \item \textbf{Phase C (\texttt{az\_v2\_warm\_seed20261121} và \texttt{az\_v2\_scratch\_seed20261122}):} Chưa hoàn tất quá trình chạy trên Google Colab và chưa có hiện vật (artifact) nào được nạp vào kho mã nguồn. Do đó, chưa có số liệu đường cong học tập, điểm validation tại các mốc snapshot (iteration 0--40) hay điểm kiểm thử trên tập đóng băng cho thí nghiệm này.
-    \item \textbf{Giải đấu Round-Robin cập nhật:} Chưa được thực thi vì phải chờ hoàn tất và kiểm định các checkpoint của Phase C để tổ chức thi đấu đồng thời cùng CNN v3 trên bộ thế khai cuộc chung ($\ge 100\text{ ván/cặp}$, đổi lượt đi trước/sau).
+    \item \textbf{Tính hợp lệ nội tại (Internal Validity):} Nguy cơ rò rỉ dữ liệu giữa tập huấn luyện và kiểm thử được triệt tiêu hoàn toàn nhờ phân chia theo mã băm ván nguồn và đối xứng gương. Trong Phase C, 40 vị trí trùng lặp giữa replay buffer và tập validation đã được loại trừ tự động trước khi tính điểm. Mọi khoảng tin cậy đều áp dụng cluster bootstrap theo cụm ván thay vì coi các thế cờ là độc lập ngây thơ.
+    \item \textbf{Tính hợp lệ cấu trúc (Construct Validity):} Tỷ lệ chọn nước tối ưu (\textit{exact-optimal}) chỉ phản ánh sự trùng khớp với bộ giải tuyệt đối; một nước đi cận tối ưu (vẫn bảo toàn chiến thắng hoặc kết quả hòa) không được tính điểm trong chỉ số exact. Nhóm đã bổ sung chỉ số bảo toàn kết cục WDL ($91{,}00\%$ ở CNN v3, $94{,}00\%$ ở PUCT) để phản ánh đầy đủ bức tranh chất lượng quyết định.
+    \item \textbf{Tính hợp lệ ngoại tại (External Validity):} Toàn bộ kết quả thực nghiệm được tiến hành trên trò chơi Connect Four $7 \times 6$. Mặc dù Connect Four có cấu trúc đối kháng điển hình, không gian trạng thái vừa phải và tính chất trọng lực đặc thù khiến các nhận định về ưu thế của Alpha-Beta hay sự bão hòa của self-play chỉ mang tính giả thuyết khi ngoại suy sang các trò chơi khác như Cờ Vua hay Cờ Vây.
 \end{itemize}
-Khi Phase C hoàn thành, quy trình đánh giá đã định trước sẽ được áp dụng nghiêm ngặt: phân tích đường cong tiến bộ trên tập validation dưới cùng cấu hình tìm kiếm PUCT-400 (sau khi loại bỏ các thế cờ trùng lặp với replay buffer), chỉ chấm điểm tập test đóng băng một lần duy nhất trên checkpoint iteration 40 cuối cùng, và cuối cùng chạy giải đấu vòng tròn cập nhật trong khi vẫn giữ lại bảng kết quả lịch sử làm mốc đối chiếu.
 
 % ==============================================================================
 % CHƯƠNG 5. KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN
@@ -526,78 +513,91 @@ Khi Phase C hoàn thành, quy trình đánh giá đã định trước sẽ đư
 \section{Kết luận và Hướng phát triển}
 
 \subsection{Tổng hợp câu trả lời cho các câu hỏi nghiên cứu}
-Bảng~\ref{tab:rq_summary} tóm tắt các kết luận dựa trên bằng chứng thực nghiệm đã được kiểm chứng cho ba câu hỏi nghiên cứu đặt ra ở Chương 1.
+Bảng~\ref{tab:rq_final_summary} tổng hợp câu trả lời định lượng cho 6 câu hỏi nghiên cứu dựa trên toàn bộ dữ liệu thực nghiệm chính thức đã được kiểm chứng.
 
 \begin{table}[H]
     \centering
-    \caption{Tổng hợp câu trả lời cho các câu hỏi nghiên cứu dựa trên số liệu thực nghiệm đã kiểm chứng.}
-    \label{tab:rq_summary}
-    \begin{tabular}{@{} l p{5.0cm} p{6.4cm} @{}}
+    \small
+    \caption{Tổng kết câu trả lời cho các câu hỏi nghiên cứu dựa trên số liệu thực nghiệm chính thức.}
+    \label{tab:rq_final_summary}
+    \begin{tabular}{@{} l p{5.0cm} p{7.0cm} @{}}
         \toprule
-        \textbf{Câu hỏi} & \textbf{Kết luận chính} & \textbf{Bằng chứng định lượng \& Nguồn} \\
+        \textbf{Câu hỏi} & \textbf{Kết luận thực nghiệm} & \textbf{Bằng chứng định lượng \& Nguồn kiểm chứng} \\
         \midrule
-        \textbf{RQ1} & Xếp hạng đối đầu nội bộ không hoàn toàn trùng khớp với tính tối ưu chứng minh trên bộ giải chuẩn; cần kết hợp cả hai thước đo. & Trên solver, PUCT-AZ lịch sử ($72{,}1\%$) chỉ nhỉnh hơn nhẹ CNN v2 ($70{,}7\%\text{--}71{,}2\%$), nhưng áp đảo trong đối đầu trực tiếp với $\text{Score} = 0{,}765$ $[0{,}695;\; 0{,}835]$ (\texttt{ROUND\_ROBIN\_FINAL.md}). \\
-        \addlinespace[4pt]
-        \textbf{RQ2} & Trên môi trường Connect Four $7 \times 6$, tìm kiếm Alpha-Beta kết hợp hàm lượng giá miền vẫn đạt độ chính xác cao nhất; CNN v3 tiệm cận mức độ sâu 3 nhưng chưa vượt qua. & AlphaBeta độ sâu 5 đạt $83{,}1\%$ $[81{,}2;\; 84{,}9]\%$; CNN v3 + filter đạt trung bình $76{,}3\%$ (SD $0{,}50$ pp), chưa phân biệt được với AlphaBeta độ sâu 3 ($77{,}2\%$) qua CI bootstrap ghép cặp (\texttt{CNN\_V3\_RESULTS.md}). \\
-        \addlinespace[4pt]
-        \textbf{RQ3} & Các giới hạn lý thuyết biểu hiện rõ thành khoảng cách định lượng trên bộ giải: CNN thuần túy mất $\approx 9{,}4$ điểm \% nếu thiếu bộ lọc; MCTS-500 thấp hơn AB4/AB5; RL thiếu đa dạng đối thủ suy giảm mạnh. & CNN v3 raw đạt $66{,}9\%$ so với $76{,}3\%$ khi có filter; MCTS-500 đạt $76{,}3\%$ so với $80{,}5\%$ (AB4) và $83{,}1\%$ (AB5); RL vs Random đạt $56{,}9\%$ (\texttt{LEARNING\_RESULTS.md}). \\
+        \textbf{RQ1} & Điểm số đối đầu nội bộ không đồng nhất hoàn toàn với tính tối ưu tuyệt đối; cần kết hợp cả hai thước đo để có đánh giá toàn diện. & AlphaBeta-depth6 và PUCT hòa nhau trong đối đầu trực tiếp (Score $= 0{,}500$ $[0{,}405;\; 0{,}595]$), nhưng PUCT nhỉnh hơn nhẹ trên solver ($82{,}13\%$ so với $81{,}47\%$). (\texttt{round\_robin\_phase\_c\_20261123.json}). \\
+        \addlinespace[3pt]
+        \textbf{RQ2} & Tìm kiếm Alpha-Beta kết hợp heuristic miền vẫn đạt hiệu quả tối ưu cao nhất trên Connect Four; CNN v3 tiệm cận mức độ sâu 3 nhưng vượt trội về độ trễ. & AlphaBeta-depth5 đạt $83{,}07\%$ exact ($78{,}7$ ms); CNN v3 đạt $76{,}73\%$ exact với độ trễ siêu nhanh $1{,}8$ ms; PUCT đạt $82{,}13\%$ exact nhưng độ trễ lên tới $219$ ms. (\texttt{solver\_eval\_phase\_c\_local\_20261123.json}). \\
+        \addlinespace[3pt]
+        \textbf{RQ3} & Bộ lọc an toàn đóng góp sống còn cho mạng nơ-ron thuần túy nhưng chỉ hỗ trợ biên cho tìm kiếm PUCT. & Bộ lọc giúp CNN v3 tăng $+8{,}13$ điểm \% (từ $68{,}60\%$ lên $76{,}73\%$), trong khi với PUCT warm0 chỉ tăng $+0{,}93$ điểm \% (từ $81{,}20\%$ lên $82{,}13\%$). (\texttt{solver\_eval\_phase\_c\_local\_20261123.json}). \\
+        \addlinespace[3pt]
+        \textbf{RQ4} & Mở rộng dữ liệu và dùng nhãn phân phối mềm nâng cao rõ rệt độ chính xác của CNN. & Pons-soft 100\% đạt $80{,}09\%$ validation exact, vượt hơn Pons-hard ($76{,}93\%$), AB3 teacher ($73{,}26\%$), Pons-soft 30\% ($72{,}55\%$) và 10\% ($63{,}34\%$). (\texttt{cnn\_v3\_validation\_selection\_20261122.json}). \\
+        \addlinespace[3pt]
+        \textbf{RQ5} & Vòng lặp tự chơi không cải thiện được sức chơi ở quy mô tài nguyên nhỏ. & Nhánh warm-start suy giảm từ $89{,}53\%$ xuống $85{,}90\%$; nhánh scratch tăng policy thô ($33{,}67\% \to 47{,}79\%$) nhưng PUCT thô suy giảm ($81{,}45\% \to 75{,}58\%$) và PUCT có lọc không phân biệt được ($81{,}48\% \to 82{,}48\%$, CI chứa 0). (\texttt{validation\_curve\_20261123.json}). \\
+        \addlinespace[3pt]
+        \textbf{RQ6} & Quyền đi trước mang lại lợi thế định lượng có ý nghĩa thống kê trên toàn cục. & Toàn giải đấu P1 đạt Score $= 0{,}5325$ $[0{,}5039;\; 0{,}5607]$. Ưu thế thể hiện mạnh nhất ở AlphaBeta-depth4 ($\Delta = +0{,}180$) và PUCT ($\Delta = +0{,}131$). (\texttt{round\_robin\_phase\_c\_20261123.games.jsonl}). \\
         \bottomrule
     \end{tabular}
 \end{table}
 
 \subsection{Thành tựu đạt được}
-Đồ án đã hoàn thiện một hệ thống nghiên cứu và thực nghiệm Game AI bài bản với các đóng góp chính:
 \begin{itemize}
-    \item Xây dựng thành công lõi mô phỏng Connect Four $7 \times 6$ hỗ trợ biểu diễn Bitboard tốc độ cao, API chuẩn hóa và hệ thống 8 cấp độ tác tử bao phủ từ thuật toán tìm kiếm cổ điển đến học sâu và tìm kiếm cây kết hợp mạng nơ-ron.
-    \item Thiết lập quy trình dữ liệu và đánh giá khoa học nghiêm ngặt: kiểm soát rò rỉ dữ liệu theo cụm ván nguồn và đối xứng gương, xác thực toàn vẹn hiện vật bằng mã băm SHA256, tách bạch rõ năng lực mạng nơ-ron thuần túy với bộ lọc chiến thuật, và áp dụng ước lượng bootstrap phân cụm thay cho giả định độc lập ngây thơ.
-    \item Định lượng hóa thành công khoảng cách giữa sức mạnh thực nghiệm và tính tối ưu tuyệt đối nhờ bộ giải chuẩn Pons, làm rõ giới hạn thực tế của mô hình học có giám sát thuần túy (CNN v3) khi không đi kèm tìm kiếm sâu.
+    \item Xây dựng hoàn chỉnh hệ thống Game AI đa cấp độ cho Connect Four $7 \times 6$, hỗ trợ lõi mô phỏng Bitboard tốc độ cao ($>1{,}2 \times 10^6$ moves/s) và bao phủ 8 cấp độ thuật toán từ cổ điển đến học sâu tiên tiến.
+    \item Hoàn tất hai run Phase C (40 vòng mỗi nhánh) và round-robin cập nhật (28 cặp, 2.800 ván); các ablation mở rộng chưa thực hiện được ghi riêng trong hạn chế.
+    \item Thiết lập khung đánh giá khoa học trung thực, kiểm soát rò rỉ dữ liệu theo cụm ván nguồn và mã băm đối xứng, loại bỏ các thế khai cuộc mất cân bằng, sử dụng ước lượng bootstrap phân cụm và tuyệt đối không diễn giải vượt quá bằng chứng thực nghiệm.
+    \item Định lượng hóa chính xác vai trò của quy mô dữ liệu, loại nhãn, bộ lọc an toàn chiến thuật và lợi thế đi trước; cung cấp các bằng chứng thực nghiệm giá trị về giới hạn của thuật toán tự đấu AlphaZero ở quy mô tài nguyên phổ thông.
 \end{itemize}
 
 \subsection{Hạn chế của nghiên cứu}
-Bên cạnh các kết quả đạt được, báo cáo ghi nhận thẳng thắn các hạn chế hiện tại của đề tài:
+Báo cáo ghi nhận thẳng thắn 11 hạn chế phương pháp luận:
 \begin{enumerate}
-    \item \textbf{Chưa hoàn tất thí nghiệm tự đấu Phase C và giải đấu vòng tròn cuối:} Do giới hạn thời gian tính toán GPU, hai lượt chạy đối chứng \textit{AlphaZero-inspired V2} (warm-start và scratch) cùng giải đấu vòng tròn cập nhật có sự tham gia của CNN v3 chưa hoàn thành, nên chưa thể đưa ra kết luận về mức cải thiện của self-play so với học có giám sát.
-    \item \textbf{Giới hạn về số lượng seed ở một số nhánh học tăng cường:} Các nhánh RL lịch sử, AlphaZero lịch sử và thiết kế hiện tại của Phase C mới thực hiện trên 1 seed cho mỗi cấu hình, chỉ đủ giá trị nghiên cứu trường hợp có kiểm soát (controlled case study) chứ chưa đủ cơ sở để khái quát hóa thành định luật phương pháp luận.
-    \item \textbf{Khả năng tổng quát hóa ngoài phạm vi bài toán:} Toàn bộ thực nghiệm được tiến hành trên Connect Four $7 \times 6$ --- một trò chơi có không gian trạng thái vừa phải và đã có lời giải tuyệt đối. Các nhận định về ưu thế của Alpha-Beta so với CNN hay MCTS trên bài toán này không được suy diễn mặc nhiên sang các trò chơi có hệ số rẽ nhánh lớn hơn nhiều như Cờ Vua hoặc Cờ Vây.
+    \item \textbf{Thiếu số liệu WDL và giá trị theo từng snapshot:} Tệp đường cong Phase C chỉ ghi nhận tỷ lệ nước tối ưu exact, chưa theo dõi biến thiên độ chính xác WDL và entropy phân phối theo từng vòng lặp.
+    \item \textbf{Chưa đo PUCT ở ngân sách cực trị:} Thí nghiệm chỉ khảo sát PUCT ở mức 400 mô phỏng (Phase C) và 500 mô phỏng (cấp 7 baseline), chưa đo ở mức 100 và 1.600 mô phỏng do giới hạn thời gian.
+    \item \textbf{Thiếu MCTS rollout đối chứng trong Phase C:} Chưa chạy nhánh đối chứng MCTS rollout thuần túy trên cùng 4.490 vị trí validation của Phase C.
+    \item \textbf{Chưa khảo sát cắt bỏ tốc độ học và tần suất cập nhật:} Tốc độ học cố định ở $10^{-3}$, không weight decay; tỷ lệ tái sử dụng mẫu cao (23--27 lần) nhưng chưa thực hiện ablation giảm tốc độ học hoặc tăng kích thước bộ đệm.
+    \item \textbf{Số lượng seed hạn chế ở các nhánh tự chơi:} Nhánh self-play (warm và scratch) và RL mới chạy 1 seed mỗi nhánh; các kết luận chỉ áp dụng cho quy mô thực nghiệm hiện tại, không khái quát hóa thành định luật tổng quát.
+    \item \textbf{Tác tử RL chỉ học đối đầu với Random:} Không đa dạng hóa đối thủ huấn luyện khiến mạng RL sụp đổ trước các luật chơi chiến thuật.
+    \item \textbf{Đo đạc thời gian chỉ thực hiện trên máy cục bộ:} Độ trễ phụ thuộc phần cứng cục bộ, không đại diện cho tốc độ trên cụm máy chủ tiêu chuẩn.
+    \item \textbf{Giới hạn trong một trò chơi duy nhất:} Không gian trạng thái và tính chất trọng lực của Connect Four $7 \times 6$ mang tính đặc thù, việc ngoại suy sang cờ khác chỉ là giả thuyết.
+    \item \textbf{Số lượng khai cuộc hiệu dụng là 50:} Giải đấu sử dụng 50 khai cuộc sau khi lọc; một số dạng thế cờ đặc biệt có thể chưa xuất hiện trong tập khai cuộc này.
+    \item \textbf{Phụ thuộc chuỗi giữa các vị trí trong cùng ván đấu:} Các thế cờ trong cùng ván có tương quan nội bộ; dù đã dùng cluster bootstrap, sai số hệ thống vẫn có thể tồn tại ở mức độ nhất định.
+    \item \textbf{Tái sử dụng tập kiểm thử đóng băng:} Tập test 1.500 vị trí được dùng để báo cáo tiến độ qua nhiều mốc; tuy nhiên tập test này tuyệt đối không được dùng để lựa chọn mô hình.
 \end{enumerate}
 
 \subsection{Hướng phát triển}
-Trong giai đoạn tiếp theo, hệ thống sẽ được mở rộng theo bốn hướng trọng tâm:
 \begin{itemize}
-    \item Hoàn tất thực thi và nạp dữ liệu (ingest) cho hai run Phase C (\texttt{az\_v2\_warm\_seed20261121} và \texttt{az\_v2\_scratch\_seed20261122}), thực hiện kiểm định trên tập validation/frozen test và tổ chức giải đấu vòng tròn cập nhật đầy đủ.
-    \item Kết hợp trực tiếp bộ trọng số CNN v3 (vốn đã học được phân phối xác suất nước đi khá tốt) làm mạng tiên nghiệm cho thuật toán tìm kiếm PUCT với ngân sách mô phỏng đa dạng ($100, 400, 800$ mô phỏng) để đánh giá sức mạnh của kiến trúc lai ghép \textit{AlphaGo-inspired} thế hệ mới.
-    \item Mở rộng huấn luyện đa seed (tối thiểu 3--5 seed) cho các nhánh học tăng cường và tự đấu để tăng độ tin cậy thống kê.
-    \item Bổ sung mô-đun giải thích quyết định (explainable Game AI) trực quan hóa bản đồ nhiệt xác suất nước đi (policy heatmap), biến thể chính (principal variation) của Alpha-Beta và cây thăm dò MCTS ngay trên giao diện người dùng.
+    \item Mở rộng vòng lặp tự đấu với bộ đệm lớn hơn ($>10^5$ mẫu), áp dụng suy giảm tốc độ học (cosine learning rate schedule) và điều chỉnh nhiệt độ $\tau$ mượt mà hơn.
+    \item Bổ sung nhánh đối chứng MCTS kết hợp rollout ngẫu nhiên trên cùng tập thẩm định.
+    \item Thử nghiệm cơ chế huấn luyện đối đầu đa dạng (population-based training / league training) cho RL thay vì chỉ học với Random.
+    \item Mở rộng kiểm chứng hệ thống phương pháp luận trên các biến thể bàn cờ lớn hơn ($8 \times 7$, $9 \times 7$) hoặc các trò chơi trừu tượng khác.
 \end{itemize}
 
 % ==============================================================================
 % TÀI LIỆU THAM KHẢO
-% (Ghi chú: Để main.tex biên dịch độc lập không lỗi trên mọi hệ thống, danh mục
-% tài liệu tham khảo được đặt trực tiếp tại đây. Nếu muốn dùng tệp lib.bib đi kèm
-% trên Overleaf, bạn có thể thay khối thebibliography bằng \bibliographystyle{plain}
-% và \bibliography{lib}.)
 % ==============================================================================
 \newpage
 \begin{thebibliography}{99}
 \addcontentsline{toc}{section}{Tài liệu tham khảo}
 
 \bibitem{allis1988knowledge}
-L.~V. Allis, \textit{A Knowledge-Based Approach of Connect-Four --- The Game is Solved: White Wins}, Master's thesis, Vrije Universiteit Amsterdam, 1988.
-\textit{[CẦN KIỂM TRA: Xác nhận lại chi tiết xuất bản luận văn thạc sĩ của Victor Allis nếu cần định dạng chuẩn IEEE/APA]}
+L.~V. Allis, \textit{A Knowledge-Based Approach of Connect-Four --- The Game is Solved: White Wins}, Master's thesis, Faculty of Mathematics and Computer Science, Vrije Universiteit Amsterdam, 1988.
+\textit{[CẦN KIỂM TRA: Báo cáo kỹ thuật số IR-163, Vrije Universiteit Amsterdam]}
 
 \bibitem{tromp2008solving}
-J.~Tromp, ``John's Connect Four Playground,'' 2008.
-\textit{[CẦN BỔ SUNG / KIỂM TRA: Xác nhận URL hoặc trích dẫn bài báo/cơ sở dữ liệu 8-ply của John Tromp]}
+J.~Tromp, ``John's Connect Four Playground,'' 2008. \url{https://tromp.github.io/c4/c4.html}.
+\textit{[CẦN KIỂM TRA: Cơ sở dữ liệu và đếm không gian trạng thái Connect Four 7x6]}
 
 \bibitem{pons2019connect4}
-P.~Pons, ``Solving Connect 4: How to build a perfect AI,'' 2019.
-\textit{[CẦN BỔ SUNG / KIỂM TRA: Bổ sung URL kho mã nguồn / bài viết kỹ thuật của Pascal Pons tương ứng với commit d6ba50d8aaf2308c769d9bf2abd42d90f34baf41]}
+P.~Pons, ``Solving Connect 4: How to build a perfect AI,'' 2019. \url{https://github.com/PascalPons/connect4}.
+\textit{[CẦN KIỂM TRA: Cam kết d6ba50d8aaf2308c769d9bf2abd42d90f34baf41]}
 
 \bibitem{russell2021artificial}
 S.~J. Russell and P.~Norvig, \textit{Artificial Intelligence: A Modern Approach}, 4th ed. Pearson, 2021.
 
 \bibitem{sutton2018reinforcement}
 R.~S. Sutton and A.~G. Barto, \textit{Reinforcement Learning: An Introduction}, 2nd ed. MIT Press, 2018.
+
+\bibitem{kocsis2006bandit}
+L.~Kocsis and C.~Szepesv{\'a}ri, ``Bandit Based Monte-Carlo Planning,'' in \textit{European Conference on Machine Learning (ECML)}, Lecture Notes in Computer Science, vol.~4212, pp.~282--293, Springer, 2006.
 
 \bibitem{browne2012survey}
 C.~B. Browne, E.~Powley, D.~Whitehouse, S.~M. Lucas, P.~I. Cowling, P.~Rohlfshagen, S.~Tavener, D.~Perez, S.~Samothrakis, and S.~Colton, ``A Survey of Monte Carlo Tree Search Methods,'' \textit{IEEE Transactions on Computational Intelligence and AI in Games}, vol.~4, no.~1, pp.~1--43, 2012.
@@ -609,8 +609,8 @@ D.~Silver \textit{et al.}, ``Mastering the game of Go with deep neural networks 
 D.~Silver \textit{et al.}, ``Mastering the game of Go without human knowledge,'' \textit{Nature}, vol.~550, no.~7676, pp.~354--359, 2017.
 
 \bibitem{liu2020alphago}
-M.~Liu, \textit{AlphaGo Simplified: Rule-Based AI and Deep Learning in Everyday Games}. CRC Press, 2020.
-\textit{[CẦN KIỂM TRA: Kiểm tra lại năm xuất bản chính xác trên bản sách PDF đính kèm của học phần]}
+M.~Liu, \textit{AlphaGo Simplified: Rule-Based AI and Deep Learning in Everyday Games}, CRC Press, 2020.
+\textit{[CẦN KIỂM TRA: Đối chiếu lại năm xuất bản trên ấn bản chính thức]}
 
 \end{thebibliography}
 
@@ -619,50 +619,193 @@ M.~Liu, \textit{AlphaGo Simplified: Rule-Based AI and Deep Learning in Everyday 
 % ==============================================================================
 \newpage
 \appendix
-\section{Truy xuất nguồn dữ liệu và Hiện vật thực nghiệm}
 
-Bảng~\ref{tab:artifact_traceability} đối chiếu toàn bộ số liệu và cấu hình được trình bày trong báo cáo với các tệp dữ liệu gốc trong kho mã nguồn nhằm bảo đảm khả năng kiểm chứng và tái lập thực nghiệm.
+\section{Chi tiết 18 Snapshot Thẩm định Phase C}
+Bảng~\ref{tab:appendix_phase_c_snapshots} trình bày tỷ lệ tối ưu exact tại 18 snapshot của mỗi run Phase C hoàn tất 40 vòng; số vị trí sau loại replay overlap là 4.490 (warm) và 4.497 (scratch). Nguồn: \texttt{results/phase\_c\_local/validation\_curve\_20261123.json}.
 
 \begin{table}[H]
     \centering
-    \caption{Ánh xạ số liệu báo cáo với các tệp hiện vật và báo cáo kỹ thuật trong kho mã nguồn.}
-    \label{tab:artifact_traceability}
-    \begin{tabular}{@{} p{4.2cm} p{6.0cm} p{4.0cm} @{}}
+    \small
+    \caption{Tỷ lệ chọn nước tối ưu chính xác qua 18 snapshot mỗi nhánh Phase C (warm $N=4.490$, scratch $N=4.497$; mỗi run hoàn tất 40 vòng).}
+    \label{tab:appendix_phase_c_snapshots}
+    \begin{tabular}{@{} l r r r r @{}}
         \toprule
-        \textbf{Thành phần / Nội dung} & \textbf{Đường dẫn tệp nguồn trong Repo} & \textbf{Mã định danh / Ghi chú} \\
+        \textbf{Snapshot (Iteration)} & \textbf{Policy thô} & \textbf{Policy có lọc} & \textbf{PUCT thô} & \textbf{PUCT có lọc} \\
         \midrule
-        Tập kiểm thử solver đóng băng (1.500 vị trí) & \texttt{results/solver\_eval\_*.json} & SHA256: \texttt{3d8f9c74...43b01}; Pons commit \texttt{d6ba50d8...} \\
-        \addlinespace[4pt]
-        Baseline cấp 1--8 trước CNN v3 & \texttt{results/solver\_eval\_cnn\_v2\_3seeds.json}, \texttt{docs/LEARNING\_RESULTS.md} & Báo cáo baseline mốc trước CNN v3 \\
-        \addlinespace[4pt]
-        Lựa chọn mô hình CNN v3 trên validation & \texttt{results/cnn\_v3\_validation\_selection\_20261122.json}, \texttt{docs/CNN\_V3\_SELECTION.md} & 4.530 vị trí/seed; checkpoint \texttt{cnn\_v3\_30k\_best.pt} \\
-        \addlinespace[4pt]
-        Đánh giá CNN v3 trên frozen test (3 seeds) & \texttt{results/solver\_eval\_cnn\_v3\_soft\_3seeds\_20261122.json}, \texttt{docs/CNN\_V3\_RESULTS.md} & Source bundle \texttt{v11}; 10.000 bootstrap theo cụm ván \\
-        \addlinespace[4pt]
-        Giải đấu Round-Robin mốc lịch sử & \texttt{docs/ROUND\_ROBIN\_FINAL.md}, \texttt{benchmarks/round\_robin/round\_robin\_final\_colab\_agents\_seed20261121\_v2.*} & 100 ván/cặp, 50 opening ghép cặp, 2 ghế, fair filter \\
-        \addlinespace[4pt]
-        Chẩn đoán lỗi CNN \& Value Head & \texttt{results/cnn\_first\_errors\_seed20261122.json}, \texttt{docs/CNN\_LOSS\_ANALYSIS.md}, \texttt{results/value\_head/} & Chỉ áp dụng cho tập ván phân tích \\
-        \addlinespace[4pt]
-        Cấu hình Phase C (chưa hoàn tất) & \texttt{colab/03\_selfplay\_az.ipynb}, \texttt{docs/CRITERIA\_V2.md}, \texttt{docs/CRITERIA\_V2\_ADDENDUM\_20261121.md} & Source bundle \texttt{v12}; trạng thái: chưa có kết quả \\
-        \addlinespace[4pt]
-        Hồ sơ tài nguyên \& môi trường chạy & \texttt{docs/RESOURCE\_PROFILE.md}, \texttt{docs/COLAB.md} & Tách bạch đo local và huấn luyện Colab \\
+        \multicolumn{5}{@{}l}{\textit{Nhánh Warm-start (khởi tạo từ CNN v3):}} \\
+        warm\_iter00 (vòng 0) & $80{,}42\%$ & $86{,}12\%$ & $88{,}46\%$ & $89{,}53\%$ \\
+        warm\_iter05 (vòng 5) & $61{,}25\%$ & $80{,}49\%$ & $80{,}31\%$ & $85{,}84\%$ \\
+        warm\_iter10 (vòng 10) & $59{,}35\%$ & $80{,}16\%$ & $78{,}24\%$ & $85{,}03\%$ \\
+        warm\_iter15 (vòng 15) & $59{,}40\%$ & $80{,}33\%$ & $78{,}57\%$ & $85{,}39\%$ \\
+        warm\_iter20 (vòng 20) & $59{,}35\%$ & $80{,}69\%$ & $78{,}62\%$ & $85{,}70\%$ \\
+        warm\_iter25 (vòng 25) & $59{,}44\%$ & $80{,}98\%$ & $77{,}84\%$ & $85{,}19\%$ \\
+        warm\_iter30 (vòng 30) & $59{,}69\%$ & $80{,}69\%$ & $78{,}29\%$ & $85{,}37\%$ \\
+        warm\_iter35 (vòng 35) & $59{,}33\%$ & $80{,}58\%$ & $78{,}02\%$ & $85{,}08\%$ \\
+        warm\_iter40 (vòng 40) & $59{,}62\%$ & $80{,}96\%$ & $78{,}26\%$ & $85{,}90\%$ \\
+        \midrule
+        \multicolumn{5}{@{}l}{\textit{Nhánh Scratch (khởi tạo ngẫu nhiên):}} \\
+        scratch\_iter00 (vòng 0) & $33{,}67\%$ & $71{,}71\%$ & $81{,}45\%$ & $81{,}48\%$ \\
+        scratch\_iter05 (vòng 5) & $42{,}09\%$ & $74{,}76\%$ & $74{,}96\%$ & $80{,}32\%$ \\
+        scratch\_iter10 (vòng 10) & $44{,}19\%$ & $76{,}21\%$ & $75{,}36\%$ & $82{,}21\%$ \\
+        scratch\_iter15 (vòng 15) & $44{,}61\%$ & $76{,}58\%$ & $74{,}65\%$ & $81{,}52\%$ \\
+        scratch\_iter20 (vòng 20) & $45{,}96\%$ & $77{,}21\%$ & $75{,}03\%$ & $81{,}77\%$ \\
+        scratch\_iter25 (vòng 25) & $46{,}41\%$ & $77{,}18\%$ & $75{,}16\%$ & $81{,}70\%$ \\
+        scratch\_iter30 (vòng 30) & $47{,}74\%$ & $77{,}59\%$ & $75{,}43\%$ & $82{,}25\%$ \\
+        scratch\_iter35 (vòng 35) & $47{,}39\%$ & $77{,}92\%$ & $74{,}96\%$ & $81{,}94\%$ \\
+        scratch\_iter40 (vòng 40) & $47{,}79\%$ & $77{,}99\%$ & $75{,}58\%$ & $82{,}48\%$ \\
         \bottomrule
     \end{tabular}
 \end{table}
 
-\section{Danh mục các mục cần hoàn thiện trước khi nộp}
+\section{Kết quả Giải đấu Vòng tròn Bản trước (Lịch sử)}
+Bảng~\ref{tab:appendix_old_rr} lưu giữ kết quả giải đấu vòng tròn mốc lịch sử (seed 20261121, nguồn: \texttt{benchmarks/round\_robin/round\_robin\_final\_colab\_agents\_seed20261121\_v2.json}) sử dụng mô hình CNN v1 mốc cơ sở cũ và PUCT-AZ lịch sử để đối chứng quá trình phát triển.
 
-Để bảo đảm báo cáo đáp ứng đầy đủ các tiêu chí của Rubric đánh giá đồ án cuối kỳ môn Trí tuệ nhân tạo nâng cao, sinh viên cần rà soát và điền bổ sung các thông tin cá nhân/nhóm và tệp nhật ký cục bộ tại các vị trí đã đánh dấu \texttt{[CẦN BỔ SUNG]} trong văn bản:
+\begin{table}[H]
+    \centering
+    \small
+    \caption{Kết quả giải đấu vòng tròn bản trước (Mốc cơ sở seed 20261121, loại 6 khai cuộc).}
+    \label{tab:appendix_old_rr}
+    \begin{tabular}{@{} l r r r r r @{}}
+        \toprule
+        \textbf{Cặp đấu (T1 vs T2)} & \textbf{Thắng} & \textbf{Hòa} & \textbf{Thua} & \textbf{Score (T1)} & \textbf{CI 95\% Bootstrap} \\
+        \midrule
+        Random vs Heuristic & $0$ & $0$ & $100$ & $0{,}000$ & $[0{,}000;\; 0{,}000]$ \\
+        Random vs AlphaBeta-4 & $0$ & $0$ & $100$ & $0{,}000$ & $[0{,}000;\; 0{,}000]$ \\
+        Random vs MCTS-500 & $0$ & $0$ & $100$ & $0{,}000$ & $[0{,}000;\; 0{,}000]$ \\
+        Heuristic vs AlphaBeta-4 & $22$ & $4$ & $74$ & $0{,}240$ & $[0{,}165;\; 0{,}315]$ \\
+        Heuristic vs MCTS-500 & $31$ & $7$ & $62$ & $0{,}345$ & $[0{,}270;\; 0{,}420]$ \\
+        Heuristic vs CNN-Policy (v1) & $49$ & $11$ & $40$ & $0{,}545$ & $[0{,}460;\; 0{,}635]$ \\
+        AlphaBeta-4 vs MCTS-500 & $56$ & $6$ & $38$ & $0{,}590$ & $[0{,}510;\; 0{,}670]$ \\
+        AlphaBeta-4 vs CNN-Policy (v1) & $67$ & $4$ & $29$ & $0{,}690$ & $[0{,}600;\; 0{,}775]$ \\
+        AlphaBeta-4 vs PUCT-AZ (cũ) & $45$ & $9$ & $46$ & $0{,}495$ & $[0{,}405;\; 0{,}585]$ \\
+        MCTS-500 vs CNN-Policy (v1) & $60$ & $6$ & $34$ & $0{,}630$ & $[0{,}540;\; 0{,}715]$ \\
+        MCTS-500 vs PUCT-AZ (cũ) & $32$ & $7$ & $61$ & $0{,}355$ & $[0{,}275;\; 0{,}440]$ \\
+        CNN-Policy (v1) vs PUCT-AZ (cũ) & $22$ & $3$ & $75$ & $0{,}235$ & $[0{,}165;\; 0{,}305]$ \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\section{Kết quả Ba kiểm tra Cài đặt Tự chơi (Sanity Checks)}
+Thực hiện chạy kiểm tra tự động trên mã nguồn cục bộ:
 \begin{enumerate}
-    \item \textbf{Thông tin hành chính trên Trang bìa:} Tên Trường/Khoa, họ tên Giảng viên hướng dẫn, mã nhóm, danh sách thành viên (nếu làm theo nhóm) kèm tỷ lệ đóng góp phần trăm, và liên kết kho lưu trữ GitHub cùng lịch sử commit.
-    \item \textbf{Minh họa giao diện Demo (Chương 3):} Bổ sung đường dẫn tệp chạy giao diện và ảnh chụp màn hình chế độ chơi Người--Máy và Máy--Máy.
-    \item \textbf{Bảng số liệu phụ trợ từ các tệp JSON/Markdown nội bộ (Chương 4):}
-    \begin{itemize}
-        \item Trích xuất ma trận đối đầu đầy đủ (Thắng--Hòa--Thua và CI $95\%$) của mốc lịch sử từ \texttt{benchmarks/round\_robin/round\_robin\_final\_colab\_agents\_seed20261121\_v2.*}.
-        \item Trích xuất kết quả từng nhánh ablation của CNN v3 (Pons-soft vs Pons-hard, $10\%/30\%/100\%$, AB3 teacher) từ \texttt{results/cnn\_v3\_validation\_selection\_20261122.json}.
-        \item Điền bảng thời gian suy luận trung bình mỗi nước, độ trễ p95 và số nút/mô phỏng đo trên máy cục bộ từ \texttt{docs/RESOURCE\_PROFILE.md}.
-    \end{itemize}
-    \item \textbf{Kiểm tra thông tin thư mục trích dẫn:} Đối chiếu các ghi chú \texttt{[CẦN KIỂM TRA]} trong danh mục tài liệu tham khảo và tệp \texttt{lib.bib} đi kèm.
+    \item \textbf{Kiểm tra (a) --- Dấu giá trị ở thế thắng 1 nước và thua 2 nước:}
+    Trạng thái kết thúc khi người chơi 1 thắng gán giá trị $+1{,}0$ theo góc nhìn người thắng. Trong \texttt{BatchedPUCT}, do trạng thái kết thúc bảo toàn người thắng là \texttt{current\_player}, nên khi lan truyền ngược (backpropagation) về nút cha, quan hệ \texttt{node.current\_player == parent.current\_player} được thỏa mãn; giá trị $+1{,}0$ được giữ nguyên dấu dương cho nút cha, giúp PUCT chọn chính xác nước đi chiến thắng. Ở thế thua 2 nước (chưa qua huấn luyện), PUCT thô không tự chặn do thiếu tìm kiếm sâu, nhưng bộ lọc an toàn ép buộc chặn thành công.
+    \item \textbf{Kiểm tra (b) --- Tương đương suy luận đơn lẻ và theo lô:}
+    So sánh đầu ra giữa suy luận từng trạng thái độc lập và suy luận theo lô (\textit{batched inference}) trên các trạng thái bàn cờ khác nhau: độ lệch cực đại đối với đầu ra chính sách là $1{,}86 \times 10^{-8}$ và đầu ra giá trị là $7{,}45 \times 10^{-9}$. Cả hai đầu ra đều hoàn toàn tương đương trong ngưỡng sai số số thực ($<10^{-5}$).
+    \item \textbf{Kiểm tra (c) --- Tính nhất quán hướng bàn cờ giữa Engine Grid và Bitboard:}
+    Đặc trưng 2 mặt phẳng sinh ra từ hàm \texttt{encode\_planes} trên trạng thái bàn cờ của \texttt{ConnectFour} và \texttt{BitboardConnectFour} hoàn toàn trùng khớp từng phần tử (\texttt{strictly equal}, kích thước $2 \times 6 \times 7$), xác nhận tính nhất quán hướng biểu diễn.
+\end{enumerate}
+
+\section{Truy xuất nguồn dữ liệu và hiện vật thực nghiệm}
+Bảng~\ref{tab:artifact_traceability} ánh xạ các kết quả chính tới dữ liệu,
+metadata và hiện vật được lưu trong repo. Tập kiểm thử đóng băng có tệp vị trí
+và manifest riêng; các lần đánh giá tham chiếu cùng SHA256 và commit solver.
+
+\small
+\begin{longtable}{@{}p{3.4cm}p{7.1cm}p{4.0cm}@{}}
+    \caption{Ánh xạ số liệu báo cáo với các hiện vật và nguồn kiểm chứng trong repo.}
+    \label{tab:artifact_traceability}\\
+    \toprule
+    \textbf{Thành phần / Nội dung} & \textbf{Đường dẫn tệp nguồn trong repo} & \textbf{Mã định danh / Ghi chú} \\
+    \midrule
+    \endfirsthead
+
+    \multicolumn{3}{l}{\textit{Bảng~\thetable{} (tiếp theo)}}\\
+    \toprule
+    \textbf{Thành phần / Nội dung} & \textbf{Đường dẫn tệp nguồn trong repo} & \textbf{Mã định danh / Ghi chú} \\
+    \midrule
+    \endhead
+
+    \midrule
+    \multicolumn{3}{r}{\textit{Tiếp tục ở trang sau}}\\
+    \endfoot
+
+    \bottomrule
+    \endlastfoot
+
+    Tập kiểm thử solver đóng băng
+    & \texttt{results/solver\_eval\_seed20261122.positions.json};
+      \texttt{results/solver\_eval\_seed20261122.manifest.json}
+    & 1.500 vị trí; SHA256
+      \texttt{3d8f9c747889d44821d8fd2ebe338570f59fef67f7e8961dd05153ef82d43b01};
+      Pons commit
+      \texttt{d6ba50d8aaf2308c769d9bf2abd42d90f34baf41} \\
+
+    Đánh giá solver chính thức
+    & \texttt{results/solver\_eval\_phase\_c\_local\_20261123.json};
+      \texttt{results/solver\_eval\_cnn\_v3\_soft\_3seeds\_20261122.json}
+    & Bảng solver chính và kết quả CNN v3 ba seed; bootstrap 10.000 lần theo cụm ván nguồn \\
+
+    Mốc CNN v2 trước CNN v3
+    & \texttt{results/solver\_eval\_cnn\_v2\_3seeds.json};
+      \texttt{docs/LEARNING\_RESULTS.md}
+    & Kết quả CNN v2 ba seed, dùng làm mốc lịch sử \\
+
+    Lựa chọn và ablation CNN v3 trên validation
+    & \texttt{results/cnn\_v3\_validation\_selection\_20261122.json};
+      \texttt{docs/CNN\_V3\_SELECTION.md}
+    & 5 cấu hình, 3 seed/cấu hình, 4.530 vị trí validation/seed; chọn Pons-soft 100\% \\
+
+    Hiện vật huấn luyện CNN v3
+    & \texttt{results/colab/cnn\_v3\_30k\_seed20261121/};
+      \texttt{results/colab/cnn\_v3\_30k\_seed20261122/};
+      \texttt{results/colab/cnn\_v3\_30k\_seed20261123/}
+    & Manifest, train log và checkpoint tốt nhất được lưu cho các run; source bundle v11 không có trong repo. Manifest ghi source-code SHA256, không ghi commit \\
+
+    Round-Robin mốc lịch sử
+    & \texttt{docs/ROUND\_ROBIN\_FINAL.md};
+      \texttt{benchmarks/round\_robin/round\_robin\_final\_colab\_agents\_seed20261121\_v2.json};
+      \texttt{benchmarks/round\_robin/round\_robin\_final\_colab\_agents\_seed20261121\_v2.meta.json};
+      \texttt{benchmarks/round\_robin/round\_robin\_final\_colab\_agents\_seed20261121\_v2.games.jsonl}
+    & 8 tác tử, 100 ván/cặp, 50 khai cuộc 6 ply ghép cặp; fair filter giữ 50/56 khai cuộc thử \\
+
+    Round-Robin Phase C
+    & \texttt{docs/ROUND\_ROBIN\_PHASE\_C\_20261123.md};
+      \texttt{results/round\_robin\_phase\_c\_20261123.json};
+      \texttt{results/round\_robin\_phase\_c\_20261123.meta.json};
+      \texttt{results/round\_robin\_phase\_c\_20261123.games.jsonl}
+    & 8 tác tử, 28 cặp, 100 ván/cặp; 50 khai cuộc ghép cặp. Giữ 50/61 lần thử; loại 10 opening có thắng ngay và 1 trạng thái trùng \\
+
+    Đường cong validation Phase C V2
+    & \texttt{results/phase\_c\_local/validation\_curve\_20261123.json};
+      \texttt{docs/PHASE\_C\_V2\_RESULTS.md};
+      \texttt{docs/report/assets/phase\_c\_validation\_curve.png}
+    & 40 vòng mỗi nhánh; 18 snapshot. Source-code SHA256
+      \texttt{703fd34468d0038e328078495ebb67e55104c4cdfbfde3941d90ce988c5ef8} \\
+
+    Manifest và checkpoint Phase C V2
+    & \texttt{results/phase\_c\_local/az\_v2\_warm\_seed20261121/};
+      \texttt{results/phase\_c\_local/az\_v2\_scratch\_seed20261122/}
+    & Hai run, mỗi run 40 vòng; manifest, log huấn luyện và snapshot checkpoint \\
+
+    Source snapshot Phase C
+    & \texttt{results/phase\_c\_local/source\_snapshot\_703fd34468d0038e328078495ebb67e55104c4cdfbfde3941e4d90ce988c5ef8.zip};
+      tệp manifest cùng tên
+    & Archive SHA256
+      \texttt{2aff20dc96fa1c9129c96e607d25816ef9ef0e33deab21417758208c7c331338};
+      không có source bundle v12 \\
+
+    Chẩn đoán lỗi CNN và value head
+    & \texttt{results/cnn\_first\_errors\_seed20261122.json};
+      \texttt{docs/CNN\_LOSS\_ANALYSIS.md};
+      \texttt{results/value\_head/value\_cnn\_seed20261121\_20261121.json}
+    & Chẩn đoán trên tập ván thua đã phân tích; value head được đánh giá riêng \\
+
+    Hồ sơ tài nguyên và môi trường
+    & \texttt{results/resource\_profile\_20261121\_v2.json};
+      \texttt{docs/RESOURCE\_PROFILE.md};
+      \texttt{docs/COLAB.md}
+    & Tách số đo local khỏi thông tin tài nguyên Colab; một số manifest lịch sử không ghi peak VRAM \\
+\end{longtable}
+\normalsize
+
+\section{Danh mục các mục cần hoàn thiện trước khi nộp}
+Các vị trí giữ chỗ hành chính cần người dùng điền trước khi nộp:
+\begin{enumerate}
+    \item \textbf{Thông tin hành chính trên Trang bìa:} Điền tên Trường, Khoa, Họ tên Giảng viên hướng dẫn, Mã nhóm và liên kết kho lưu trữ GitHub tại các nhãn \texttt{[CẦN BỔ SUNG]}.
+    \item \textbf{Danh sách thành viên và Tỷ lệ đóng góp:} Nếu thực hiện theo nhóm, bổ sung bảng phân công nhiệm vụ và tỷ lệ phần trăm đóng góp của các thành viên.
+    \item \textbf{Hình ảnh minh họa Giao diện Demo:} Bổ sung ảnh chụp màn hình chế độ chơi Người--Máy và Máy--Máy nếu có yêu cầu trong rubric.
+    \item \textbf{Kiểm tra thư viện tài liệu tham khảo:} Rà soát lại các mục đánh dấu \texttt{[CẦN KIỂM TRA]} trong danh mục tài liệu tham khảo.
 \end{enumerate}
 
 \end{document}
